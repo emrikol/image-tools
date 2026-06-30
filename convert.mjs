@@ -137,6 +137,8 @@ async function runSingle() {
       if (e.curves.length > 1) console.log(`${'Using (max)'.padEnd(16)} — WebP: q=${e.calibWebP}  AVIF: q=${e.calibAVIF}`);
     } else if (e.type === 'mode' && !DRY_RUN) {
       console.log(`Mode: ${e.mode === 'verify' ? `verify (floor ${FLOOR.toFixed(1)})` : 'fast (curve-only)'}\n`);
+    } else if (e.type === 'normalize') {
+      console.log(`Normalizing input (${e.why}) via ImageMagick…`);
     } else if (e.type === 'search') {
       if (e.format !== curFmt) { if (curFmt) console.log(); process.stdout.write(`Searching ${e.format.toUpperCase()} `); curFmt = e.format; }
       process.stdout.write('.');
@@ -150,6 +152,7 @@ async function runSingle() {
     if (e.code === 'ENOTJPEG') console.error(`Could not read a JPEG quantization table from ${basename(INPUT)} — is it a JPEG? (This tool converts JPEGs.)`);
     else if (e.code === 'ENOCURVES') console.error(`No calibration curves found for this content type — expected {metric}-calibration-*.json beside the script (they ship with the repo).`);
     else if (e.code === 'ENOSSIM') console.error('Could not measure encodes — is `ssimulacra2` installed? Omit --verify for fast (curve-only) mode.');
+    else if (e.code === 'ENEEDMAGICK') console.error(`${e.message}. Install ImageMagick (brew install imagemagick) to convert CMYK / EXIF-rotated JPEGs.`);
     else console.error(`Conversion failed: ${e.message}`);
     process.exit(1);
   }

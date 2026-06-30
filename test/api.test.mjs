@@ -1,7 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { convert, detectJpegQuality, loadCalibrations } from '../lib/convert.mjs';
@@ -55,6 +56,18 @@ test('convert() verify mode meets the absolute floor', { skip: skipVerify }, asy
   // the winning encode should clear the floor (or be flagged best-effort)
   const best = r[r.winner];
   assert.ok(best.score >= 80 || best.met === false, `winner score ${best.score} should clear floor 80`);
+});
+
+const skipMagick = (skip || !has('magick')) ? 'requires magick + encoders' : false;
+test('convert() normalizes a CMYK JPEG (which cwebp/avifenc reject) to a valid output', { skip: skipMagick }, async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'imgtest-'));
+  const cmyk = join(dir, 'cmyk.jpg');
+  execFileSync('magick', ['-size', '64x64', 'plasma:fractal', '-colorspace', 'CMYK', '-quality', '85', cmyk]);
+  let normalized = false;
+  const r = await convert(cmyk, { type: 'photo', onProgress: (e) => { if (e.type === 'normalize') normalized = true; } });
+  assert.ok(normalized, 'CMYK input should trigger normalization');
+  assert.ok(r.winner, 'produced a winner from CMYK input');
+  assert.ok(Buffer.isBuffer(r[r.winner].buffer) && r[r.winner].buffer.length > 0);
 });
 
 test('convert() emits progress events in order', { skip }, async () => {

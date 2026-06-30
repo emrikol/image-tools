@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { jpegQualityFromBuffer, readQuantTables, jpegQualityFromTables } from '../lib/jpeg-quality.mjs';
+import { jpegQualityFromBuffer, readQuantTables, jpegQualityFromTables, jpegMeta } from '../lib/jpeg-quality.mjs';
 
 const FIX = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
 const jpegQualityFromBytes = (p) => jpegQualityFromBuffer(readFileSync(p));
@@ -39,4 +39,34 @@ test('quality is bounded 1..100', () => {
     const q = jpegQualityFromBytes(join(FIX, f));
     assert.ok(q >= 1 && q <= 100, `${f}: ${q} out of range`);
   }
+});
+
+test('jpegMeta defaults to RGB/upright and reads grayscale fixtures', () => {
+  const color = jpegMeta(readFileSync(join(FIX, 'color-q75.jpg')));
+  assert.equal(color.components, 3); assert.equal(color.orientation, 1);
+  assert.equal(jpegMeta(readFileSync(join(FIX, 'gray-q80.jpg'))).components, 1);
+});
+
+test('jpegMeta reads EXIF orientation (synthetic little-endian buffer)', () => {
+  const buf = Buffer.from([
+    0xFF, 0xD8,                                            // SOI
+    0xFF, 0xE1, 0x00, 0x22,                                // APP1, length 34
+    0x45, 0x78, 0x69, 0x66, 0x00, 0x00,                    // "Exif\0\0"
+    0x49, 0x49, 0x2A, 0x00, 0x08, 0x00, 0x00, 0x00,        // TIFF little-endian, IFD @ 8
+    0x01, 0x00,                                            // 1 entry
+    0x12, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, // Orientation = 6
+    0x00, 0x00, 0x00, 0x00,                                // next IFD
+    0xFF, 0xD9,                                            // EOI
+  ]);
+  assert.equal(jpegMeta(buf).orientation, 6);
+});
+
+test('jpegMeta reads CMYK component count (synthetic SOF0)', () => {
+  const buf = Buffer.from([
+    0xFF, 0xD8,
+    0xFF, 0xC0, 0x00, 0x14, 0x08, 0x00, 0x10, 0x00, 0x10, 0x04, // SOF0: 16x16, 4 components (CMYK)
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,                          // 4 component specs (12 bytes)
+    0xFF, 0xD9,
+  ]);
+  assert.equal(jpegMeta(buf).components, 4);
 });
