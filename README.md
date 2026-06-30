@@ -204,6 +204,16 @@ dssim, xpsnr, ms_ssim, lpips, dists, fsim, vif, and entropy_diff — across phot
 and line-art. The one exception is **vmaf**, kept as a coarse 11-point line-art-only curve
 (it's intentionally disabled for photo/illustration; see the limitations below).
 
+## Performance
+
+Both modes encode AVIF at `--speed 0` (max compression). Rough timings on ~0.4 MP images
+(scale with megapixels):
+
+- **Fast mode:** ~1–2 s/image (one WebP + one AVIF encode, no measurement).
+- **`--verify`:** ~15–20 s/image (binary search ≈ 7 AVIF encodes + WebP parameter tuning, each
+  scored with ssimulacra2).
+- **Batch:** runs across all CPU cores, one isolated process per image.
+
 ## Status & known limitations
 
 This is a research toolkit. Current rough edges:
