@@ -67,6 +67,15 @@ main.wrap { padding: 24px 0 8px; flex: 1; }
 .status { text-align: center; color: var(--muted); margin: 16px 0; font-variant-numeric: tabular-nums; }
 .status.err { color: var(--warn); }
 
+/* Spinner — transform-based so it keeps animating on the compositor */
+.spin {
+  display: inline-block; width: 14px; height: 14px; vertical-align: -2px; margin-right: 8px;
+  border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spin { animation-duration: 1.6s; } }
+
 /* Meta bar */
 .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 4px 0 18px; }
 .m-name { font-weight: 600; margin-right: 2px; word-break: break-all; }

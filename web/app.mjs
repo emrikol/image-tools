@@ -3,8 +3,26 @@
 
 import { interpolate } from '../lib/curves.mjs';
 import { jpegQualityFromBuffer } from '../lib/jpeg-quality.mjs';
-import { encode as encodeWebp } from 'https://esm.sh/@jsquash/webp@1.5.0';
-import { encode as encodeAvif } from 'https://esm.sh/@jsquash/avif@2.1.0';
+
+// Encoding runs in a Web Worker so the WASM codecs never block the UI thread (no freeze).
+const worker = new Worker(new URL('./encode-worker.mjs', import.meta.url), { type: 'module' });
+let rpcId = 0;
+const pending = new Map();
+worker.onmessage = (e) => {
+  const { id, ok, buf, error } = e.data; const p = pending.get(id);
+  if (!p) return; pending.delete(id);
+  ok ? p.resolve(buf) : p.reject(new Error(error || 'encode failed'));
+};
+worker.onerror = () => { for (const p of pending.values()) p.reject(new Error('worker error')); pending.clear(); };
+const rpc = (msg, transfer = []) => new Promise((resolve, reject) => {
+  const id = ++rpcId; pending.set(id, { resolve, reject }); worker.postMessage({ ...msg, id }, transfer);
+});
+// Hand the decoded pixels to the worker once per image (copy, so the main thread keeps its own).
+function workerLoad(imageData) {
+  const data = new Uint8ClampedArray(imageData.data);
+  return rpc({ type: 'load', width: imageData.width, height: imageData.height, data }, [data.buffer]);
+}
+const workerEncode = (format, quality, speed) => rpc({ type: 'encode', format, quality, speed });
 
 const MAX_EDGE = 2000;        // cap working dimension for a snappy demo
 const AVIF_SPEED = 6;         // WASM-friendly (CLI uses --speed 0 for slightly smaller files)
@@ -18,8 +36,10 @@ let state = null;   // { name, imageData, srcBytes, jpegQ, type, results }
 
 // ─── boot ──────────────────────────────────────────────────────────────────
 const status = $('status');
-function setStatus(msg, isErr = false) {
-  status.hidden = !msg; status.textContent = msg || ''; status.classList.toggle('err', isErr);
+function setStatus(msg, isErr = false, busy = false) {
+  status.hidden = !msg; status.classList.toggle('err', isErr);
+  status.textContent = msg || '';
+  if (msg && busy) status.insertAdjacentHTML('afterbegin', '<span class="spin" aria-hidden="true"></span>');
 }
 
 fetch('./curves.json').then(r => r.json()).then(c => { curves = c; })
@@ -59,7 +79,7 @@ async function handleFile(file) {
     if (!/jpe?g/i.test(file.type) && !/\.jpe?g$/i.test(file.name)) {
       setStatus('Please choose a JPEG (.jpg/.jpeg) — that’s what this converts.', true); return;
     }
-    setStatus('Decoding…');
+    setStatus('Decoding…', false, true);
     const srcBytes = new Uint8Array(await file.arrayBuffer());
     const jpegQ = jpegQualityFromBuffer(srcBytes);
     if (jpegQ === null) { setStatus('That file isn’t a readable JPEG.', true); return; }
@@ -83,6 +103,7 @@ async function handleFile(file) {
     $('m-dims').textContent = `${bmp.width}×${bmp.height}${scale < 1 ? ` · preview ${w}×${h}` : ''}`;
     $('m-q').textContent = `JPEG q${jpegQ}`;
     setType(type);
+    await workerLoad(imageData);   // hand pixels to the worker once
     await encodeAndRender();
   } catch (e) {
     console.error(e);
@@ -96,21 +117,22 @@ function setType(type) {
 }
 
 async function encodeAndRender() {
-  setStatus('');
-  const { imageData, jpegQ, type } = state;
+  setStatus('Encoding WebP + AVIF…', false, true);
+  const { jpegQ, type } = state;
   const webpQ = clamp(interpolate(curves[type], jpegQ, 'webp_q'));
   const avifQ = clamp(interpolate(curves[type], jpegQ, 'avif_q'));
   state.webpQ = webpQ; state.avifQ = avifQ;
 
-  // reset card states
-  for (const k of ['webp', 'avif']) { $(`s-${k}`).textContent = '…'; $(`d-${k}`).textContent = 'encoding…'; }
+  // reset card states (spinner while the worker encodes)
+  for (const k of ['webp', 'avif']) { $(`s-${k}`).innerHTML = '<span class="spin"></span>'; $(`d-${k}`).textContent = 'encoding…'; }
   $('s-jpeg').textContent = fmtKB(state.srcBytes.length);
   $('compare').hidden = true; $('winner').hidden = true; $('again').hidden = true;
 
   const [webp, avif] = await Promise.all([
-    encodeWebp(imageData, { quality: webpQ }).then(buf => ({ buf, q: `q${webpQ}` })).catch(err),
-    encodeAvif(imageData, { quality: avifQ, speed: AVIF_SPEED }).then(buf => ({ buf, q: `q${avifQ}` })).catch(err),
+    workerEncode('webp', webpQ).then(buf => ({ buf, q: `q${webpQ}` })).catch(err),
+    workerEncode('avif', avifQ, AVIF_SPEED).then(buf => ({ buf, q: `q${avifQ}` })).catch(err),
   ]);
+  setStatus('');
   state.results = { webp, avif };
   renderCard('webp', webp); renderCard('avif', avif);
   renderWinner();
@@ -249,16 +271,18 @@ function buildCurveChart() {
 const SWEEP = [20, 30, 40, 50, 60, 70, 80, 90, 95];
 async function buildSizeChart() {
   const cap = $('chart-size-cap');
+  const building = (n) => { cap.innerHTML = `<span class="spin" aria-hidden="true"></span>Your image: file size vs encoder quality — building… ${n}/${SWEEP.length}`; };
   if (!state.sweep) {                          // cache the sweep so a type toggle doesn't re-encode
     const webp = [], avif = []; let done = 0;
+    building(0);
     for (const q of SWEEP) {
       const [w, a] = await Promise.all([
-        encodeWebp(state.imageData, { quality: q }).then(b => b.byteLength).catch(() => null),
-        encodeAvif(state.imageData, { quality: q, speed: AVIF_SPEED }).then(b => b.byteLength).catch(() => null),
+        workerEncode('webp', q).then(b => b.byteLength).catch(() => null),
+        workerEncode('avif', q, AVIF_SPEED).then(b => b.byteLength).catch(() => null),
       ]);
       if (w != null) webp.push([q, w / 1024]);
       if (a != null) avif.push([q, a / 1024]);
-      cap.textContent = `Your image: file size vs encoder quality — building… ${++done}/${SWEEP.length}`;
+      building(++done);
     }
     state.sweep = { webp, avif };
   }
