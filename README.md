@@ -12,6 +12,9 @@
 
 *Same image, same perceptual quality (SSIMULACRA2 ≈ 80 vs the source), at a fraction of the bytes.*
 
+**▶ [Try it in your browser](https://OWNER.github.io/image-tools/web/)** — drop a JPEG, compare
+WebP/AVIF, nothing uploaded. (Or run the CLI below.)
+
 ```bash
 # Fast mode needs only two encoders — no Python, no ImageMagick, no ssimulacra2.
 brew install webp libavif                      # or: apt install webp libavif-bin

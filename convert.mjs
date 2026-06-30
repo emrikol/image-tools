@@ -34,7 +34,7 @@ import { promisify }                            from 'util';
 import { randomBytes }                          from 'crypto';
 import { fileURLToPath }                        from 'url';
 import { classifyImage }                        from './classify.mjs';
-import { jpegQualityFromBytes }                 from './lib/jpeg-quality.mjs';
+import { jpegQualityFromBuffer }                from './lib/jpeg-quality.mjs';
 import { interpolate }                          from './lib/curves.mjs';
 
 const execFileAsync = promisify(execFile);
@@ -295,7 +295,8 @@ async function encodeAVIF(src, quality, out) {
 // Pure-JS DQT reader (lib/jpeg-quality.mjs); ImageMagick is only a fallback.
 
 async function detectJpegQuality(path) {
-  const q = jpegQualityFromBytes(path);
+  let q = null;
+  try { q = jpegQualityFromBuffer(readFileSync(path)); } catch {}
   if (q !== null) return q;
   // Fallback for non-standard JPEGs: ImageMagick, if available.
   const result = await exec('magick', ['identify', '-verbose', path]);

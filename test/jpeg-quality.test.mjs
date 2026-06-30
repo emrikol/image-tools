@@ -3,9 +3,10 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { jpegQualityFromBytes, readQuantTables, jpegQualityFromTables } from '../lib/jpeg-quality.mjs';
+import { jpegQualityFromBuffer, readQuantTables, jpegQualityFromTables } from '../lib/jpeg-quality.mjs';
 
 const FIX = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
+const jpegQualityFromBytes = (p) => jpegQualityFromBuffer(readFileSync(p));
 
 // Each fixture encodes its true quality in the filename (e.g. color-q75.jpg). The reader must
 // land within ±1 of it (matches ImageMagick's %Q; ±1 is negligible for smooth-curve lookup).
