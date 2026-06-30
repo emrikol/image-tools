@@ -1,0 +1,14 @@
+{
+  "extends": "stylelint-config-standard",
+  "comment": "Disabled: value-keyword-case (font names are case-sensitive), *-empty-line-before (intentional compact grouping; Prettier owns formatting), property-no-vendor-prefix (-webkit-background-clip is required), media-feature-range-notation (max-width has wider browser support), no-descending-specificity (minor).",
+  "rules": {
+    "value-keyword-case": null,
+    "rule-empty-line-before": null,
+    "at-rule-empty-line-before": null,
+    "custom-property-empty-line-before": null,
+    "declaration-empty-line-before": null,
+    "property-no-vendor-prefix": null,
+    "no-descending-specificity": null,
+    "media-feature-range-notation": null
+  }
+}

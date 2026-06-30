@@ -1,0 +1,13 @@
+{
+  // Disabled: MD013 line-length (prose; Prettier owns wrapping), MD033 inline HTML
+  // (badges/images/comments in the docs), MD041 first-line-h1 (some files open with a
+  // comment/badge), MD024 relaxed to siblings_only (CHANGELOG repeats section names per version).
+  "config": {
+    "default": true,
+    "MD013": false,
+    "MD033": false,
+    "MD041": false,
+    "MD024": { "siblings_only": true },
+  },
+  "ignores": ["node_modules", "calibration/venv", "**/node_modules"],
+}

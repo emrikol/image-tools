@@ -9,7 +9,7 @@ measured the JPEG→WebP/AVIF quality-equivalence curves. Running it is a one-ti
 
 ## Contents
 
-```
+```text
 calibrate.mjs           Generates {metric}-calibration-{type}.json curves
 measure_perceptual.py   PyTorch metrics shim (one-shot + persistent `serve` worker mode)
 requirements.txt        Python deps for the PyTorch metrics

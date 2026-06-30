@@ -14,7 +14,17 @@ jobs:
         with:
           node-version: 22
       - run: npm ci || npm install
-      - run: npm run lint
+      - name: JS + format + CSS + Markdown (eslint, prettier, stylelint, markdownlint)
+        run: npm run lint
+      - name: Python (ruff)
+        run: |
+          pipx install ruff
+          ruff check .
+          ruff format --check .
+      - name: Workflows (actionlint)
+        run: |
+          bash <(curl -s https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          ./actionlint -color
 
   test:
     name: test (${{ matrix.os }})
