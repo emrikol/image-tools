@@ -11,8 +11,7 @@
  */
 
 import { readdirSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 import { classifyImage } from '../classify.mjs';
 
 const specs = process.argv.slice(2).map(s => { const i = s.indexOf(':'); return [s.slice(0, i), s.slice(i + 1)]; });

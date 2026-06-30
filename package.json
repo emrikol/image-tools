@@ -20,6 +20,7 @@
   ],
   "scripts": {
     "test": "node --test \"test/*.test.mjs\"",
+    "lint": "eslint .",
     "classify": "node classify.mjs",
     "convert": "node convert.mjs",
     "calibrate": "node calibration/calibrate.mjs",
@@ -34,6 +35,10 @@
     "perceptual-quality",
     "image-optimization"
   ],
-  "dependencies": {},
-  "comment": "No npm dependencies. The converter's fast (default) mode needs only cwebp + avifenc on PATH. --verify mode additionally needs ssimulacra2 (+ avifdec/dwebp, or ImageMagick). The calibration generator (calibration/) is archival and needs more — see calibration/README.md."
+  "comment": "No RUNTIME npm dependencies (devDependencies are ESLint, for contributors only). The converter's fast (default) mode needs only cwebp + avifenc on PATH. --verify additionally needs ssimulacra2 (+ avifdec/dwebp, or ImageMagick). The calibration generator (calibration/) is archival and needs more — see calibration/README.md.",
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "eslint": "^9.39.4",
+    "globals": "^17.7.0"
+  }
 }

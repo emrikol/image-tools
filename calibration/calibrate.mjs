@@ -153,7 +153,7 @@
 
 import { execFile, spawn } from 'child_process';
 import { mkdirSync, writeFileSync, readFileSync, readdirSync, existsSync, unlinkSync } from 'fs';
-import { join, dirname, basename, resolve } from 'path';
+import { join, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { promisify } from 'util';
 import { createInterface } from 'readline';
@@ -301,6 +301,7 @@ async function measureCVVDP(ref, encoded) {
   });
 }
 
+// eslint-disable-next-line no-unused-vars -- kept for when vmaf is re-enabled (registry entry below)
 async function measureVMAF(ref, encoded) {
   // Uses standalone 'vmaf' binary from libvmaf (brew install libvmaf).
   // Requires y4m input — convert ref + encoded via ffmpeg to temp files.
@@ -682,7 +683,7 @@ function averageCurves(imageResults, metricName) {
 //
 // Pass --overwrite to skip merging and replace the file entirely.
 
-function mergeCurve(existingPath, newCurve, scoreField) {
+function mergeCurve(existingPath, newCurve, _scoreField) {
   if (OVERWRITE || !existsSync(existingPath)) return newCurve;
   try {
     const existing = JSON.parse(readFileSync(existingPath, 'utf8'));

@@ -258,7 +258,7 @@ function makeProgress(total) {
   const times     = [];       // rolling window of per-image ms
 
   return {
-    tick(label) {
+    tick(_label) {
       const now     = Date.now();
       const elapsed = now - start;
       times.push(elapsed / ++completed);

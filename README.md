@@ -101,8 +101,9 @@ node convert.mjs photo.jpg out/
 npx -p github:OWNER/image-tools img-convert photo.jpg out/
 ```
 
-No npm install step — there are no JavaScript dependencies. (The package isn't on the npm
-registry; use the repo directly, or the zero-install [web demo](#).) Everything for *regenerating*
+No npm install needed to *use* it — there are no runtime JavaScript dependencies (the only
+devDependency is ESLint, for contributors). The package isn't on the npm registry; use the repo
+directly, or the zero-install [web demo](#). Everything for *regenerating*
 curves (the Python venv, etc.) lives in [`calibration/`](calibration/) and isn't needed to use the tool.
 
 ## Datasets
