@@ -93,7 +93,7 @@
  *
  * ─── Usage ─────────────────────────────────────────────────────────────────────
  *
- *   node calibrate.mjs \
+ *   node calibration/calibrate.mjs \
  *     --dataset type:image-dir:output-dir [--dataset ...] \
  *     --metrics ssimulacra2,ms_ssim,butteraugli,dssim,xpsnr,lpips,dists,fsim,vif,entropy_diff \
  *     # note: vmaf omitted — saturates for photo/illustration (see metric notes above) \
@@ -117,7 +117,7 @@
  * ─── Examples ──────────────────────────────────────────────────────────────────
  *
  *   # Full run — all useful metrics, step=10 for speed, reuse cache on re-runs
- *   node calibrate.mjs \
+ *   node calibration/calibrate.mjs \
  *     --dataset photo:test-images/kodak:. \
  *     --dataset illustration:test-images/illustrations:. \
  *     --dataset line-art:test-images/line-art:. \
@@ -126,7 +126,7 @@
  *     --step 10 --concurrency 8
  *
  *   # Add a new metric later — encoding cache is reused, only measurement runs
- *   node calibrate.mjs \
+ *   node calibration/calibrate.mjs \
  *     --dataset photo:test-images/kodak:. \
  *     --metrics lpips,dists \
  *     --step 10 --concurrency 8
@@ -138,13 +138,13 @@
  * This lets you fill in the curve progressively without re-running everything:
  *
  *   # Pass 1 — coarse skeleton (Q10,Q20,...,Q100)
- *   node calibrate.mjs --dataset photo:... --metrics ssimulacra2 --step 10 --cache-dir ./cache
+ *   node calibration/calibrate.mjs --dataset photo:... --metrics ssimulacra2 --step 10 --cache-dir ./cache
  *
  *   # Pass 2 — double resolution (adds Q5,Q15,...,Q95)
- *   node calibrate.mjs --dataset photo:... --metrics ssimulacra2 --step 5  --cache-dir ./cache
+ *   node calibration/calibrate.mjs --dataset photo:... --metrics ssimulacra2 --step 5  --cache-dir ./cache
  *
  *   # Pass 3 — fill a specific range at full resolution
- *   node calibrate.mjs --dataset photo:... --metrics ssimulacra2 --step 1  --cache-dir ./cache
+ *   node calibration/calibrate.mjs --dataset photo:... --metrics ssimulacra2 --step 1  --cache-dir ./cache
  *
  * Each pass merges into the existing file. convert.mjs interpolates between
  * whatever points are present — more points = more accurate interpolation.
@@ -200,7 +200,7 @@ const datasetSpecs = getAllArgs('--dataset').map(spec => {
 });
 
 if (datasetSpecs.length === 0) {
-  console.error('Usage: node calibrate.mjs --dataset type:image-dir:output-dir [--dataset ...] [--metrics m1,m2,...] [--step N] [--concurrency N] [--cache-dir DIR]');
+  console.error('Usage: node calibration/calibrate.mjs --dataset type:image-dir:output-dir [--dataset ...] [--metrics m1,m2,...] [--step N] [--concurrency N] [--cache-dir DIR]');
   process.exit(1);
 }
 

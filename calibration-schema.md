@@ -85,10 +85,12 @@ For a given content type and input JPEG quality:
 
 1. Load all available calibration files matching the content type
 2. Interpolate `webp_q` and `avif_q` from each curve
-3. Use `max(webp_q across all curves)` as the WebP quality center
-4. Use `max(avif_q across all curves)` as the AVIF quality center
-5. Fuzz ±`QUALITY_WINDOW` points around each center
-6. Pick the smallest encoding whose SSIMULACRA2 score meets the quality floor
+3. Use `max(webp_q across all curves)` as the calibrated WebP quality (most conservative wins)
+4. Use `max(avif_q across all curves)` as the calibrated AVIF quality
+5. **Fast mode (default):** encode WebP/AVIF at the calibrated quality and ship the smaller
+   (never larger than the source).
+6. **`--verify` mode:** ignore the calibrated quality as anything but a hint and binary-search the
+   lowest quality whose encode clears an absolute SSIMULACRA2 floor vs the source JPEG.
 
 Adding a new calibration file is sufficient — no code changes required.
 Drop `{metric}-calibration-{content_type}.json` into the image-tools directory.

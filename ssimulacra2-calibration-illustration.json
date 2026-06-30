@@ -3,7 +3,7 @@
   "metric": "ssimulacra2",
   "higher_is_better": true,
   "content_type": "illustration",
-  "description": "JPEG→WebP/AVIF quality equivalence for illustration content using ssimulacra2. Step 10, AVIF speed 0.",
+  "description": "JPEG→WebP/AVIF quality equivalence for illustration content using ssimulacra2. Step 1, AVIF speed 0.",
   "generated": "2026-03-12T02:29:23.885Z",
   "images": 25,
   "step": 10,

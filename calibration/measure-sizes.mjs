@@ -53,5 +53,5 @@ for (const [type, dir] of Object.entries(TYPES)) {
   }
 }
 mkdirSync(join(ROOT, 'assets'), { recursive: true });
-writeFileSync(join(ROOT, 'assets', 'savings-data.json'), JSON.stringify(out, null, 1));
+writeFileSync(join(ROOT, 'assets', 'savings-data.json'), JSON.stringify(out, null, 1) + '\n');
 console.log('wrote assets/savings-data.json');
