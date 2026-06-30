@@ -9,16 +9,13 @@ encoders ([jSquash](https://github.com/jamsinclair/jSquash)), and the precompute
 
 It runs **fast mode** (curve-only): detect JPEG quality from the file, auto-classify content type,
 look up the calibrated WebP/AVIF quality, and encode both — shipping the smaller, never larger than
-the source. Two simplifications vs. the CLI, both safe because the result is a *preview* and the
-content-type buttons let you correct a misclassification:
-
-- **Classifier:** the demo uses a lighter in-browser heuristic (saturation + Sobel edge density),
-  not the CLI's more accurate histogram-entropy classifier (whose threshold is tuned to
-  ImageMagick's entropy metric and isn't yet ported to the browser). Use the type buttons to
-  override.
-- **Quality floor / speed:** the CLI's `--verify` SSIMULACRA2 floor isn't in the browser (no
-  `ssimulacra2` WASM), and AVIF runs at a faster speed than the CLI's `--speed 0` — so the demo's
-  savings are a *conservative* preview of what the CLI achieves.
+the source. The classifier is the CLI's **entropy** approach ported to the browser (luminance-
+histogram entropy for photo↔illustration; ~90% on the labeled sets, verified in-browser — see
+`calibration/validate-browser-classifier.mjs` for how the threshold was derived); content-type
+buttons let you override. One simplification vs. the CLI, safe because the result is a *preview*:
+the `--verify` SSIMULACRA2 floor isn't in the browser (no `ssimulacra2` WASM) and AVIF runs at a
+faster speed than the CLI's `--speed 0`, so the demo's savings are a *conservative* preview of what
+the CLI achieves.
 
 ## Run locally
 

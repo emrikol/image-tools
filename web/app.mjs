@@ -320,14 +320,29 @@ async function buildSizeChart() {
 // ─── helpers ───────────────────────────────────────────────────────────────────
 function clamp(q) { return Math.min(100, Math.max(1, Math.round(q ?? 80))); }
 
-// In-browser content-type guess. Computes saturation + a Sobel edge density on a downscaled copy.
-// NOTE: this is the *legacy* heuristic. The CLI's classify.mjs is more accurate (~91%) using
-// histogram entropy as the photo↔illustration discriminator, but its threshold is tuned to
-// ImageMagick's %[entropy] metric, which isn't replicated here yet. Auto-selected; user can
-// override via the type buttons. (Porting the entropy classifier to the browser is tracked.)
+// In-browser content type — the entropy classifier ported from the CLI (classify.mjs).
+// Photo↔illustration is decided by luminance-histogram entropy: photos fill the histogram
+// (continuous tone + sensor noise → high entropy), flat-fill illustrations are peaky (low).
+// Line-art is caught first by near-zero saturation + strong ink edges. ENTROPY_THRESHOLD was
+// validated against the labeled sets at ~92% (calibration/validate-browser-classifier.mjs).
+// It differs from the CLI's 0.70 because that is tuned to ImageMagick's %[entropy] normalization;
+// this is a normalized Rec601 luminance-histogram entropy. Auto-selected; user-overridable.
+const ENTROPY_THRESHOLD = 0.87;
 function classify(imageData) {
   const { data, width, height } = imageData;
-  // sample to ~200px wide for speed
+
+  // Luminance-histogram entropy over all pixels (photo ↔ illustration).
+  const hist = new Array(256).fill(0);
+  const total = data.length / 4;
+  for (let i = 0; i < data.length; i += 4) {
+    const L = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+    hist[Math.min(255, Math.round(L))]++;
+  }
+  let H = 0;
+  for (const c of hist) if (c) { const p = c / total; H -= p * Math.log2(p); }
+  const entropy = H / 8;   // normalize by log2(256)
+
+  // Saturation + Sobel edge density on a ~200px sample (line-art).
   const step = Math.max(1, Math.floor(width / 200));
   let satSum = 0, n = 0;
   const lum = []; const cols = Math.ceil(width / step), rows = Math.ceil(height / step);
@@ -341,7 +356,6 @@ function classify(imageData) {
     }
   }
   const satMean = satSum / n;
-  // Sobel edge density: fraction of sampled pixels with strong gradient.
   let edges = 0, cnt = 0;
   const at = (cx, cy) => lum[cy * cols + cx];
   for (let cy = 1; cy < rows - 1; cy++) {
@@ -355,8 +369,7 @@ function classify(imageData) {
     }
   }
   const edge = cnt ? edges / cnt : 0;
-  // thresholds tuned for this sobel metric (looser than classify.mjs's canny scale)
-  if (satMean < 0.08 && edge > 0.10) return 'line-art';
-  if (edge < 0.06 && satMean < 0.45) return 'illustration';
-  return 'photo';
+
+  if (satMean < 0.08 && edge > 0.10) return 'line-art';        // near-grayscale + strong ink edges
+  return entropy < ENTROPY_THRESHOLD ? 'illustration' : 'photo';
 }
