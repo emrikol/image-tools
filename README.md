@@ -39,6 +39,25 @@ guarantee: it binary-searches the lowest quality whose encode clears an absolute
 [SSIMULACRA2](https://github.com/cloudinary/ssimulacra2) floor vs the source JPEG — accurate and
 classification-independent, at the cost of needing `ssimulacra2` and more time.
 
+## The data, in one picture
+
+![Calibrated WebP/AVIF quality vs JPEG quality, per content type](assets/curves.png)
+
+Each colored line is one content type. It answers: *to match a JPEG at quality X, what WebP (or
+AVIF) quality do you actually need?* The dashed line is 1:1 — where you'd land if the quality
+numbers were interchangeable. **They aren't**, and that's the whole point:
+
+- **Read across at JPEG q80:** a **photo** needs **AVIF q60** to match, an **illustration** only
+  **q42**, **line-art** ~**q48**. Same input quality → wildly different output settings.
+- **Photos sit highest** (closest to the diagonal) because their fine texture is the hardest thing
+  for a codec to preserve — they need more quality. **Flat-fill illustration and line-art sit
+  lower** — they compress to the same perceived quality at a much lower setting.
+- A single hand-picked "quality 75" rule is one horizontal slice through this — it over-compresses
+  one type and bloats another. These curves pick the right value per image automatically.
+
+(Curves shown are SSIMULACRA2-matched, full 1–100 resolution. Regenerate the figure with
+`calibration/venv/bin/python calibration/plot-curves.py`.)
+
 ## Requirements
 
 The converter is deliberately light. Dependencies scale with what you do:
