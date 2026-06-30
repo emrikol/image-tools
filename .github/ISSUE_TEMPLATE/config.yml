@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: ⚠️ Issues are disabled
+    url: https://github.com/emrikol/image-tools#support-policy
+    about: This project is provided as-is with no support. Please read the Support Policy in the README.

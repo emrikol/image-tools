@@ -237,7 +237,32 @@ This is a research toolkit. Current rough edges:
 See [`CLAUDE.md`](CLAUDE.md) for the full as-built notes and gotchas, and
 [`blog-post.md`](blog-post.md) for the methodology write-up.
 
+## Support Policy
+
+**This project is shared as-is, with no support.**
+
+- ✅ Use, modify, and redistribute it freely under the [GPL-3.0 license](LICENSE)
+- ❌ **No support, bug fixes, or feature requests** accepted
+- ❌ **Issues are disabled** — please don't open issues or contact the maintainer for help
+- ❌ **Pull requests are accepted only from collaborators**; PRs from anyone else are closed automatically
+- 💡 **Want it to do something else? Fork it** — that's what the license is for
+
+### Why this policy?
+
+image-tools is a personal research project, published for reference and reuse — not a supported
+product. The calibration data is tied to specific encoder builds, and the toolchain
+(`cwebp` / `avifenc` / `ssimulacra2` plus the PyTorch metrics) varies by platform, so supporting
+every environment and use case is out of scope.
+
+**If it works for you: great. If not: fork it and adapt it to your needs.**
+
+### For forkers
+
+You're free to fork and redistribute under the GPL-3.0 license. For modified, redistributed versions,
+please use a **different project name** to avoid confusion; no endorsement by the original
+maintainer is implied.
+
 ## License
 
-Calibration data is intended for release under CC0 (see `blog-post.md`). No license file is
-present yet for the code.
+[GPL-3.0](LICENSE). The calibration JSONs (the shipped data) are covered by the
+same license.

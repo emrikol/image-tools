@@ -1,0 +1,43 @@
+name: Close non-collaborator PRs
+
+# image-tools accepts pull requests only from collaborators. Anyone else's PR is commented
+# on and closed automatically — please fork instead (see the Support Policy in the README).
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  gatekeep:
+    # Allow only the owner / explicit collaborators (and dependabot); close everyone else.
+    if: ${{ !contains(fromJson('["OWNER","COLLABORATOR"]'), github.event.pull_request.author_association)
+            && github.actor != 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment and close
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request.number;
+            const { owner, repo } = context.repo;
+            const assoc = context.payload.pull_request.author_association;
+            const body = [
+              'Thanks for your interest! **image-tools** is published as-is under the GPL-3.0 license.',
+              '',
+              '**It is not a supported project, and Issues are disabled.** Pull requests are accepted',
+              'only from collaborators explicitly added to this repository.',
+              '',
+              'If you are not a collaborator, please **fork this project** and continue under the GPL-3.0',
+              'license. To avoid confusion, please use a different project name for redistributed,',
+              'modified versions.',
+              '',
+              'See the [Support Policy](https://github.com/emrikol/image-tools#support-policy) for details.',
+              '',
+              `_Your association with this repo: **${assoc}**._`,
+            ].join('\n');
+            await github.rest.issues.createComment({ owner, repo, issue_number: pr, body });
+            await github.rest.pulls.update({ owner, repo, pull_number: pr, state: 'closed' });
