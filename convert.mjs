@@ -11,14 +11,14 @@
  * Modes:
  *   (default)              FAST: encode straight at the calibrated quality from the frozen
  *                          curves. Needs only cwebp + avifenc (no ssimulacra2, no ImageMagick).
- *   --verify               Fuzz encoder parameters and enforce a per-image SSIMULACRA2 floor,
- *                          picking the smallest candidate that passes. Needs ssimulacra2 +
- *                          avifdec/dwebp (or ImageMagick) to decode candidates for scoring.
+ *   --verify               Binary-search the lowest quality whose encode clears an absolute
+ *                          SSIMULACRA2 floor vs the source JPEG (classification-independent).
+ *                          Needs ssimulacra2 + avifdec/dwebp (or ImageMagick) to score.
  *
  * Options:
  *   --calibration <path>   Path to calibration.json (default: same dir as script)
- *   --quality-window <n>   [--verify] ± quality points to fuzz around calibrated value (default: 5)
- *   --ssim-tolerance <n>   [--verify] allow SSIMULACRA2 to drop this much below baseline (default: 1.0)
+ *   --floor <n>            [--verify] absolute SSIMULACRA2 floor vs the source JPEG (default: 80;
+ *                          higher = stricter fidelity / larger files)
  *   --keep-both            Output both WebP and AVIF even if one wins
  *   --ssim-only            Use only the ssimulacra2 curve; ignore the other metric curves
  *   --report               Print full results table
@@ -50,7 +50,7 @@ function hasFlag(flag) { return args.includes(flag); }
 
 // Collect named-flag values so we can exclude them from positional args
 const namedFlagValues = new Set(
-  ['--calibration', '--quality-window', '--ssim-tolerance', '--type']
+  ['--calibration', '--quality-window', '--ssim-tolerance', '--floor', '--type']
     .map(f => { const i = args.indexOf(f); return i !== -1 ? args[i + 1] : null; })
     .filter(Boolean)
 );
@@ -58,8 +58,12 @@ const positional = args.filter(a => !a.startsWith('--') && !namedFlagValues.has(
 
 const INPUT          = positional[0] ?? null;
 const OUTPUT_DIR     = positional[1] ?? dirname(INPUT || '.');
-const QUALITY_WINDOW = parseInt(getArg('--quality-window', '5'));
-const SSIM_TOLERANCE = parseFloat(getArg('--ssim-tolerance', '1.0'));
+const QUALITY_WINDOW = parseInt(getArg('--quality-window', '5'));  // (legacy; unused by the floor search)
+// Absolute SSIMULACRA2 floor vs the source JPEG for --verify (content-independent, so
+// "equivalent quality" means the same thing on every image). 80 ≈ high-fidelity reproduction
+// while still compressing well; raise toward 85–88 for stricter fidelity (larger files).
+// --ssim-tolerance is accepted for back-compat but no longer used.
+const FLOOR = parseFloat(getArg('--floor', '80'));
 const KEEP_BOTH       = hasFlag('--keep-both');
 const REPORT          = hasFlag('--report');
 const KEEP_ARTIFACTS  = hasFlag('--keep-image-artifacts');  // preserve tmp dir for reuse
@@ -71,7 +75,7 @@ const CONTACT_SHEET = hasFlag('--contact-sheet') || hasFlag('--compare');  // vi
 const VERIFY = hasFlag('--verify');  // fuzz + enforce a per-image SSIMULACRA2 floor (default: fast curve-only)
 
 if (!INPUT || !existsSync(INPUT)) {
-  console.error('Usage: node convert.mjs <input.jpg> [output-dir] [--verify] [--type auto] [--ssim-only] [--keep-both] [--contact-sheet] [--keep-image-artifacts] [--report]');
+  console.error('Usage: node convert.mjs <input.jpg> [output-dir] [--verify [--floor N]] [--type auto] [--ssim-only] [--keep-both] [--contact-sheet] [--keep-image-artifacts] [--report]');
   process.exit(1);
 }
 
@@ -387,49 +391,64 @@ if (!VERIFY) {
   await encodeAVIF(INPUT, aq, aout);
   avifResults.push({ q: aq, size: fileSize(aout), score: null, out: aout });
 } else {
-  const baselinePath  = join(TMP, `${stem}_baseline.webp`);
-  await encodeWebP(INPUT, clampQ(calibWebP), 50, 60, baselinePath);
-  const baselineScore = await measureQuality(INPUT, baselinePath);
-  if (baselineScore === null) {
-    console.error('Could not measure baseline — is `ssimulacra2` installed? Omit --verify to use fast (curve-only) mode.');
+  // VERIFY — binary-search the lowest quality whose re-encode clears the absolute SSIMULACRA2
+  // floor vs the source JPEG. Classification-independent (the calibrated quality from the curves
+  // is just a hint here; the floor is the guarantee). Score is monotonic in quality, so binary
+  // search finds the smallest passing encode in ~7 steps instead of fuzzing a fixed window.
+  scoreFloor = FLOOR;
+  console.log(`Mode: verify. Absolute SSIMULACRA2 floor vs source JPEG: ${FLOOR.toFixed(1)}\n`);
+
+  async function lowestQualityMeetingFloor(label, encodeAtQ) {
+    process.stdout.write(`Searching ${label} `);
+    let lo = 1, hi = 100, best = null;
+    while (lo <= hi) {
+      const mid = (lo + hi) >> 1;
+      const r = await encodeAtQ(mid);
+      process.stdout.write('.');
+      if (r.score !== null && r.score >= FLOOR) { best = r; hi = mid - 1; }
+      else { lo = mid + 1; }
+    }
+    if (best) { console.log(`  → q${best.q} (score ${best.score.toFixed(2)})`); return { ...best, met: true }; }
+    const r = await encodeAtQ(100);  // floor unreachable — best effort at max quality
+    console.log(`  → floor unreachable; q100 (score ${r.score == null ? 'n/a' : r.score.toFixed(2)})`);
+    return { ...r, met: false };
+  }
+
+  const avif = await lowestQualityMeetingFloor('AVIF', async (q) => {
+    const out = join(TMP, `${stem}_avif_q${q}.avif`);
+    await encodeAVIF(INPUT, q, out);
+    return { q, sns: null, f: null, size: fileSize(out), score: await measureQuality(INPUT, out), out };
+  });
+  if (avif.score === null) {
+    console.error('\nCould not measure encodes — is `ssimulacra2` installed? Omit --verify for fast (curve-only) mode.');
     process.exit(1);
   }
-  scoreFloor = baselineScore - SSIM_TOLERANCE;
-  console.log(`Mode: verify. Baseline score: ${baselineScore.toFixed(2)}  Floor: ${scoreFloor.toFixed(2)}\n`);
+  avifResults.push(avif);
 
-  process.stdout.write('Fuzzing WebP ');
-  const webpQualities = Array.from(
-    { length: QUALITY_WINDOW * 2 + 1 },
-    (_, i) => Math.min(100, Math.max(1, clampQ(calibWebP) - QUALITY_WINDOW + i))
-  ).filter((v, i, a) => a.indexOf(v) === i);
-  for (const q of webpQualities) {
+  const webp = await lowestQualityMeetingFloor('WebP', async (q) => {
+    const out = join(TMP, `${stem}_webp_q${q}_s50_f60.webp`);
+    await encodeWebP(INPUT, q, 50, 60, out);
+    return { q, sns: 50, f: 60, size: fileSize(out), score: await measureQuality(INPUT, out), out };
+  });
+  webpResults.push(webp);
+  if (webp.met) {
+    // At the floor-meeting quality, fuzz spatial-noise-shaping / filter to shrink further.
+    process.stdout.write('Tuning WebP ');
     for (const sns of WEBP_SNS) {
       for (const f of WEBP_FILTER) {
-        const out   = join(TMP, `${stem}_webp_q${q}_s${sns}_f${f}.webp`);
-        await encodeWebP(INPUT, q, sns, f, out);
-        const size  = fileSize(out);
+        const out   = join(TMP, `${stem}_webp_q${webp.q}_s${sns}_f${f}.webp`);
+        await encodeWebP(INPUT, webp.q, sns, f, out);
         const score = await measureQuality(INPUT, out);
-        if (score !== null && score >= scoreFloor) webpResults.push({ q, sns, f, size, score, out });
+        if (score !== null && score >= FLOOR) webpResults.push({ q: webp.q, sns, f, size: fileSize(out), score, out });
         process.stdout.write('.');
       }
     }
+    console.log();
+  }
+  if (!avif.met || !webp.met) {
+    console.log(`\n⚠  Floor ${FLOOR.toFixed(1)} not reachable for ${[!avif.met && 'AVIF', !webp.met && 'WebP'].filter(Boolean).join(' & ')} below q100 — using best effort.`);
   }
   console.log();
-
-  process.stdout.write('Fuzzing AVIF ');
-  const avifQualities = Array.from(
-    { length: QUALITY_WINDOW * 2 + 1 },
-    (_, i) => Math.min(100, Math.max(1, clampQ(calibAVIF) - QUALITY_WINDOW + i))
-  ).filter((v, i, a) => a.indexOf(v) === i);
-  for (const q of avifQualities) {
-    const out   = join(TMP, `${stem}_avif_q${q}.avif`);
-    await encodeAVIF(INPUT, q, out);
-    const size  = fileSize(out);
-    const score = await measureQuality(INPUT, out);
-    if (score !== null && score >= scoreFloor) avifResults.push({ q, size, score, out });
-    process.stdout.write('.');
-  }
-  console.log('\n');
 }
 
 // 6. Pick winners
@@ -459,14 +478,22 @@ if (REPORT) {
   }
 }
 
-// 8. Copy winners to output dir
+// 8. Copy winner to output dir
 const overallWinner = (!bestWebP) ? bestAVIF :
                       (!bestAVIF) ? bestWebP :
                       bestWebP.size <= bestAVIF.size ? bestWebP : bestAVIF;
 
 if (!overallWinner) {
-  console.error('\nNo valid encodings found. Try increasing --quality-window or --ssim-tolerance (score drop budget).');
+  console.error('\nNo valid encodings produced.');
   process.exit(1);
+}
+
+// Never make the file bigger: if the best encoding isn't smaller than the source JPEG, keep
+// the original. (A migration tool must never bloat — surface it honestly instead.)
+if (overallWinner.size >= origSize && !KEEP_BOTH) {
+  console.log(`\n⚠  No encoding beat the source JPEG (${kb(origSize)}) at floor ${FLOOR.toFixed(1)} — keeping the original JPEG.`);
+  console.log(`   (Lower the bar with --floor <n>, or force a write with --keep-both.)`);
+  process.exit(0);
 }
 
 const winnerExt  = overallWinner === bestAVIF ? 'avif' : 'webp';

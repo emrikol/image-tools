@@ -65,12 +65,16 @@ node convert.mjs input.jpg output-dir/ --contact-sheet       # also write a visu
 
 **Two modes.** By default the converter trusts the frozen curves and encodes straight at the
 calibrated quality — fast, and dependency-light (just `cwebp` + `avifenc`). **`--verify`** adds
-the per-image guarantee: it fuzzes encoder parameters and keeps only candidates whose SSIMULACRA2
-score clears a floor derived from the source — at the cost of needing `ssimulacra2` and being
-much slower (AVIF runs at `--speed 0`).
+the per-image guarantee: it **binary-searches the lowest quality whose encode clears an absolute
+SSIMULACRA2 floor vs the source JPEG** (`--floor`, default 80). This is classification-independent
+— the floor means the same thing on every image, so a misclassification can't silently
+under-encode — at the cost of needing `ssimulacra2` and being slower (AVIF at `--speed 0`).
 
-Other flags: `--report` (full candidate table), `--quality-window N` / `--ssim-tolerance N`
-(`--verify` tuning), `--ssim-only` (use only the SSIMULACRA2 curve; `--no-lap` is a deprecated
+Both modes **never bloat**: if no encoding beats the source JPEG at the required quality, the
+original is kept (nothing is written) rather than emitting a larger file.
+
+Other flags: `--floor N` (`--verify` fidelity bar; higher = stricter/larger), `--report` (full
+candidate table), `--ssim-only` (use only the SSIMULACRA2 curve; `--no-lap` is a deprecated
 alias), `--contact-sheet` / `--compare` (write `<stem>-compare.png`: the original JPEG next to the
 WebP and AVIF at full size, captioned with file size + SSIMULACRA2 score, so you can eyeball the
 result).
