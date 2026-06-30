@@ -1,0 +1,617 @@
+{
+  "$schema": "calibration-schema",
+  "metric": "ms_ssim",
+  "higher_is_better": true,
+  "content_type": "illustration",
+  "description": "JPEG→WebP/AVIF quality equivalence for illustration content using ms_ssim. Step 1, AVIF speed 0.",
+  "generated": "2026-06-30T03:45:14.399Z",
+  "images": 25,
+  "step": 1,
+  "data_points": 100,
+  "encoders": {
+    "cwebp": "cwebp -m 6",
+    "avifenc": "avifenc --speed 0"
+  },
+  "curve": [
+    {
+      "jpeg_q": 1,
+      "ms_ssim": 0.8637,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 2,
+      "ms_ssim": 0.8638,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 3,
+      "ms_ssim": 0.8699,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 4,
+      "ms_ssim": 0.8896,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 5,
+      "ms_ssim": 0.9036,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 6,
+      "ms_ssim": 0.9169,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 7,
+      "ms_ssim": 0.9237,
+      "webp_q": 1,
+      "avif_q": 2
+    },
+    {
+      "jpeg_q": 8,
+      "ms_ssim": 0.9307,
+      "webp_q": 1,
+      "avif_q": 2
+    },
+    {
+      "jpeg_q": 9,
+      "ms_ssim": 0.9356,
+      "webp_q": 1,
+      "avif_q": 2
+    },
+    {
+      "jpeg_q": 10,
+      "ms_ssim": 0.9395,
+      "webp_q": 1,
+      "avif_q": 3
+    },
+    {
+      "jpeg_q": 11,
+      "ms_ssim": 0.9434,
+      "webp_q": 2,
+      "avif_q": 3
+    },
+    {
+      "jpeg_q": 12,
+      "ms_ssim": 0.9468,
+      "webp_q": 2,
+      "avif_q": 3
+    },
+    {
+      "jpeg_q": 13,
+      "ms_ssim": 0.9491,
+      "webp_q": 2,
+      "avif_q": 4
+    },
+    {
+      "jpeg_q": 14,
+      "ms_ssim": 0.9517,
+      "webp_q": 3,
+      "avif_q": 4
+    },
+    {
+      "jpeg_q": 15,
+      "ms_ssim": 0.9543,
+      "webp_q": 3,
+      "avif_q": 5
+    },
+    {
+      "jpeg_q": 16,
+      "ms_ssim": 0.9556,
+      "webp_q": 4,
+      "avif_q": 5
+    },
+    {
+      "jpeg_q": 17,
+      "ms_ssim": 0.9573,
+      "webp_q": 5,
+      "avif_q": 5
+    },
+    {
+      "jpeg_q": 18,
+      "ms_ssim": 0.9592,
+      "webp_q": 6,
+      "avif_q": 6
+    },
+    {
+      "jpeg_q": 19,
+      "ms_ssim": 0.9602,
+      "webp_q": 6,
+      "avif_q": 6
+    },
+    {
+      "jpeg_q": 20,
+      "ms_ssim": 0.9617,
+      "webp_q": 7,
+      "avif_q": 6
+    },
+    {
+      "jpeg_q": 21,
+      "ms_ssim": 0.9626,
+      "webp_q": 8,
+      "avif_q": 7
+    },
+    {
+      "jpeg_q": 22,
+      "ms_ssim": 0.9634,
+      "webp_q": 8,
+      "avif_q": 7
+    },
+    {
+      "jpeg_q": 23,
+      "ms_ssim": 0.9643,
+      "webp_q": 9,
+      "avif_q": 7
+    },
+    {
+      "jpeg_q": 24,
+      "ms_ssim": 0.9654,
+      "webp_q": 10,
+      "avif_q": 8
+    },
+    {
+      "jpeg_q": 25,
+      "ms_ssim": 0.9663,
+      "webp_q": 11,
+      "avif_q": 8
+    },
+    {
+      "jpeg_q": 26,
+      "ms_ssim": 0.9669,
+      "webp_q": 11,
+      "avif_q": 8
+    },
+    {
+      "jpeg_q": 27,
+      "ms_ssim": 0.9677,
+      "webp_q": 12,
+      "avif_q": 9
+    },
+    {
+      "jpeg_q": 28,
+      "ms_ssim": 0.9683,
+      "webp_q": 13,
+      "avif_q": 9
+    },
+    {
+      "jpeg_q": 29,
+      "ms_ssim": 0.9689,
+      "webp_q": 14,
+      "avif_q": 9
+    },
+    {
+      "jpeg_q": 30,
+      "ms_ssim": 0.9693,
+      "webp_q": 14,
+      "avif_q": 9
+    },
+    {
+      "jpeg_q": 31,
+      "ms_ssim": 0.9701,
+      "webp_q": 15,
+      "avif_q": 9
+    },
+    {
+      "jpeg_q": 32,
+      "ms_ssim": 0.9706,
+      "webp_q": 16,
+      "avif_q": 10
+    },
+    {
+      "jpeg_q": 33,
+      "ms_ssim": 0.9712,
+      "webp_q": 17,
+      "avif_q": 10
+    },
+    {
+      "jpeg_q": 34,
+      "ms_ssim": 0.9717,
+      "webp_q": 17,
+      "avif_q": 10
+    },
+    {
+      "jpeg_q": 35,
+      "ms_ssim": 0.972,
+      "webp_q": 18,
+      "avif_q": 11
+    },
+    {
+      "jpeg_q": 36,
+      "ms_ssim": 0.9725,
+      "webp_q": 18,
+      "avif_q": 11
+    },
+    {
+      "jpeg_q": 37,
+      "ms_ssim": 0.9728,
+      "webp_q": 19,
+      "avif_q": 11
+    },
+    {
+      "jpeg_q": 38,
+      "ms_ssim": 0.9734,
+      "webp_q": 20,
+      "avif_q": 11
+    },
+    {
+      "jpeg_q": 39,
+      "ms_ssim": 0.9738,
+      "webp_q": 20,
+      "avif_q": 12
+    },
+    {
+      "jpeg_q": 40,
+      "ms_ssim": 0.974,
+      "webp_q": 21,
+      "avif_q": 12
+    },
+    {
+      "jpeg_q": 41,
+      "ms_ssim": 0.9744,
+      "webp_q": 21,
+      "avif_q": 12
+    },
+    {
+      "jpeg_q": 42,
+      "ms_ssim": 0.9746,
+      "webp_q": 22,
+      "avif_q": 12
+    },
+    {
+      "jpeg_q": 43,
+      "ms_ssim": 0.975,
+      "webp_q": 22,
+      "avif_q": 12
+    },
+    {
+      "jpeg_q": 44,
+      "ms_ssim": 0.9755,
+      "webp_q": 23,
+      "avif_q": 13
+    },
+    {
+      "jpeg_q": 45,
+      "ms_ssim": 0.9756,
+      "webp_q": 23,
+      "avif_q": 13
+    },
+    {
+      "jpeg_q": 46,
+      "ms_ssim": 0.9759,
+      "webp_q": 24,
+      "avif_q": 13
+    },
+    {
+      "jpeg_q": 47,
+      "ms_ssim": 0.9761,
+      "webp_q": 25,
+      "avif_q": 13
+    },
+    {
+      "jpeg_q": 48,
+      "ms_ssim": 0.9763,
+      "webp_q": 25,
+      "avif_q": 13
+    },
+    {
+      "jpeg_q": 49,
+      "ms_ssim": 0.9766,
+      "webp_q": 25,
+      "avif_q": 13
+    },
+    {
+      "jpeg_q": 50,
+      "ms_ssim": 0.9768,
+      "webp_q": 26,
+      "avif_q": 14
+    },
+    {
+      "jpeg_q": 51,
+      "ms_ssim": 0.9769,
+      "webp_q": 26,
+      "avif_q": 14
+    },
+    {
+      "jpeg_q": 52,
+      "ms_ssim": 0.9774,
+      "webp_q": 27,
+      "avif_q": 14
+    },
+    {
+      "jpeg_q": 53,
+      "ms_ssim": 0.9775,
+      "webp_q": 28,
+      "avif_q": 14
+    },
+    {
+      "jpeg_q": 54,
+      "ms_ssim": 0.9778,
+      "webp_q": 28,
+      "avif_q": 14
+    },
+    {
+      "jpeg_q": 55,
+      "ms_ssim": 0.9782,
+      "webp_q": 29,
+      "avif_q": 15
+    },
+    {
+      "jpeg_q": 56,
+      "ms_ssim": 0.9784,
+      "webp_q": 30,
+      "avif_q": 15
+    },
+    {
+      "jpeg_q": 57,
+      "ms_ssim": 0.9787,
+      "webp_q": 31,
+      "avif_q": 15
+    },
+    {
+      "jpeg_q": 58,
+      "ms_ssim": 0.9791,
+      "webp_q": 31,
+      "avif_q": 16
+    },
+    {
+      "jpeg_q": 59,
+      "ms_ssim": 0.9793,
+      "webp_q": 32,
+      "avif_q": 16
+    },
+    {
+      "jpeg_q": 60,
+      "ms_ssim": 0.9796,
+      "webp_q": 33,
+      "avif_q": 16
+    },
+    {
+      "jpeg_q": 61,
+      "ms_ssim": 0.9799,
+      "webp_q": 34,
+      "avif_q": 16
+    },
+    {
+      "jpeg_q": 62,
+      "ms_ssim": 0.9801,
+      "webp_q": 34,
+      "avif_q": 16
+    },
+    {
+      "jpeg_q": 63,
+      "ms_ssim": 0.9804,
+      "webp_q": 35,
+      "avif_q": 17
+    },
+    {
+      "jpeg_q": 64,
+      "ms_ssim": 0.9806,
+      "webp_q": 36,
+      "avif_q": 17
+    },
+    {
+      "jpeg_q": 65,
+      "ms_ssim": 0.981,
+      "webp_q": 37,
+      "avif_q": 17
+    },
+    {
+      "jpeg_q": 66,
+      "ms_ssim": 0.9813,
+      "webp_q": 38,
+      "avif_q": 18
+    },
+    {
+      "jpeg_q": 67,
+      "ms_ssim": 0.9815,
+      "webp_q": 39,
+      "avif_q": 18
+    },
+    {
+      "jpeg_q": 68,
+      "ms_ssim": 0.9818,
+      "webp_q": 40,
+      "avif_q": 18
+    },
+    {
+      "jpeg_q": 69,
+      "ms_ssim": 0.9821,
+      "webp_q": 41,
+      "avif_q": 18
+    },
+    {
+      "jpeg_q": 70,
+      "ms_ssim": 0.9826,
+      "webp_q": 43,
+      "avif_q": 19
+    },
+    {
+      "jpeg_q": 71,
+      "ms_ssim": 0.983,
+      "webp_q": 45,
+      "avif_q": 19
+    },
+    {
+      "jpeg_q": 72,
+      "ms_ssim": 0.9832,
+      "webp_q": 46,
+      "avif_q": 20
+    },
+    {
+      "jpeg_q": 73,
+      "ms_ssim": 0.9834,
+      "webp_q": 47,
+      "avif_q": 20
+    },
+    {
+      "jpeg_q": 74,
+      "ms_ssim": 0.9839,
+      "webp_q": 49,
+      "avif_q": 20
+    },
+    {
+      "jpeg_q": 75,
+      "ms_ssim": 0.9841,
+      "webp_q": 50,
+      "avif_q": 21
+    },
+    {
+      "jpeg_q": 76,
+      "ms_ssim": 0.9845,
+      "webp_q": 53,
+      "avif_q": 21
+    },
+    {
+      "jpeg_q": 77,
+      "ms_ssim": 0.9849,
+      "webp_q": 54,
+      "avif_q": 22
+    },
+    {
+      "jpeg_q": 78,
+      "ms_ssim": 0.9852,
+      "webp_q": 56,
+      "avif_q": 22
+    },
+    {
+      "jpeg_q": 79,
+      "ms_ssim": 0.9856,
+      "webp_q": 58,
+      "avif_q": 23
+    },
+    {
+      "jpeg_q": 80,
+      "ms_ssim": 0.986,
+      "webp_q": 60,
+      "avif_q": 24
+    },
+    {
+      "jpeg_q": 81,
+      "ms_ssim": 0.9863,
+      "webp_q": 62,
+      "avif_q": 24
+    },
+    {
+      "jpeg_q": 82,
+      "ms_ssim": 0.9867,
+      "webp_q": 64,
+      "avif_q": 25
+    },
+    {
+      "jpeg_q": 83,
+      "ms_ssim": 0.987,
+      "webp_q": 66,
+      "avif_q": 26
+    },
+    {
+      "jpeg_q": 84,
+      "ms_ssim": 0.9874,
+      "webp_q": 69,
+      "avif_q": 26
+    },
+    {
+      "jpeg_q": 85,
+      "ms_ssim": 0.9879,
+      "webp_q": 71,
+      "avif_q": 27
+    },
+    {
+      "jpeg_q": 86,
+      "ms_ssim": 0.9883,
+      "webp_q": 74,
+      "avif_q": 28
+    },
+    {
+      "jpeg_q": 87,
+      "ms_ssim": 0.9887,
+      "webp_q": 76,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 88,
+      "ms_ssim": 0.989,
+      "webp_q": 78,
+      "avif_q": 30
+    },
+    {
+      "jpeg_q": 89,
+      "ms_ssim": 0.9894,
+      "webp_q": 80,
+      "avif_q": 31
+    },
+    {
+      "jpeg_q": 90,
+      "ms_ssim": 0.997,
+      "webp_q": 100,
+      "avif_q": 56
+    },
+    {
+      "jpeg_q": 91,
+      "ms_ssim": 0.9973,
+      "webp_q": 100,
+      "avif_q": 59
+    },
+    {
+      "jpeg_q": 92,
+      "ms_ssim": 0.9976,
+      "webp_q": 100,
+      "avif_q": 61
+    },
+    {
+      "jpeg_q": 93,
+      "ms_ssim": 0.9979,
+      "webp_q": 100,
+      "avif_q": 64
+    },
+    {
+      "jpeg_q": 94,
+      "ms_ssim": 0.9982,
+      "webp_q": 100,
+      "avif_q": 67
+    },
+    {
+      "jpeg_q": 95,
+      "ms_ssim": 0.9985,
+      "webp_q": 100,
+      "avif_q": 71
+    },
+    {
+      "jpeg_q": 96,
+      "ms_ssim": 0.9988,
+      "webp_q": 100,
+      "avif_q": 76
+    },
+    {
+      "jpeg_q": 97,
+      "ms_ssim": 0.9991,
+      "webp_q": 100,
+      "avif_q": 82
+    },
+    {
+      "jpeg_q": 98,
+      "ms_ssim": 0.9993,
+      "webp_q": 100,
+      "avif_q": 88
+    },
+    {
+      "jpeg_q": 99,
+      "ms_ssim": 0.9996,
+      "webp_q": 100,
+      "avif_q": 94
+    },
+    {
+      "jpeg_q": 100,
+      "ms_ssim": 0.9997,
+      "webp_q": 100,
+      "avif_q": 98
+    }
+  ]
+}

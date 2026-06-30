@@ -1,0 +1,617 @@
+{
+  "$schema": "calibration-schema",
+  "metric": "dssim",
+  "higher_is_better": false,
+  "content_type": "illustration",
+  "description": "JPEG→WebP/AVIF quality equivalence for illustration content using dssim. Step 1, AVIF speed 0.",
+  "generated": "2026-06-30T03:27:36.345Z",
+  "images": 25,
+  "step": 1,
+  "data_points": 100,
+  "encoders": {
+    "cwebp": "cwebp -m 6",
+    "avifenc": "avifenc --speed 0"
+  },
+  "curve": [
+    {
+      "jpeg_q": 1,
+      "dssim": 0.0706,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 2,
+      "dssim": 0.0706,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 3,
+      "dssim": 0.0654,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 4,
+      "dssim": 0.0498,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 5,
+      "dssim": 0.0383,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 6,
+      "dssim": 0.0298,
+      "webp_q": 1,
+      "avif_q": 2
+    },
+    {
+      "jpeg_q": 7,
+      "dssim": 0.0256,
+      "webp_q": 1,
+      "avif_q": 3
+    },
+    {
+      "jpeg_q": 8,
+      "dssim": 0.0219,
+      "webp_q": 1,
+      "avif_q": 4
+    },
+    {
+      "jpeg_q": 9,
+      "dssim": 0.0188,
+      "webp_q": 1,
+      "avif_q": 5
+    },
+    {
+      "jpeg_q": 10,
+      "dssim": 0.0169,
+      "webp_q": 1,
+      "avif_q": 5
+    },
+    {
+      "jpeg_q": 11,
+      "dssim": 0.0151,
+      "webp_q": 2,
+      "avif_q": 6
+    },
+    {
+      "jpeg_q": 12,
+      "dssim": 0.0135,
+      "webp_q": 2,
+      "avif_q": 7
+    },
+    {
+      "jpeg_q": 13,
+      "dssim": 0.0125,
+      "webp_q": 3,
+      "avif_q": 8
+    },
+    {
+      "jpeg_q": 14,
+      "dssim": 0.0114,
+      "webp_q": 4,
+      "avif_q": 9
+    },
+    {
+      "jpeg_q": 15,
+      "dssim": 0.0103,
+      "webp_q": 5,
+      "avif_q": 10
+    },
+    {
+      "jpeg_q": 16,
+      "dssim": 0.0098,
+      "webp_q": 6,
+      "avif_q": 11
+    },
+    {
+      "jpeg_q": 17,
+      "dssim": 0.0092,
+      "webp_q": 7,
+      "avif_q": 12
+    },
+    {
+      "jpeg_q": 18,
+      "dssim": 0.0086,
+      "webp_q": 8,
+      "avif_q": 12
+    },
+    {
+      "jpeg_q": 19,
+      "dssim": 0.0082,
+      "webp_q": 9,
+      "avif_q": 13
+    },
+    {
+      "jpeg_q": 20,
+      "dssim": 0.0076,
+      "webp_q": 10,
+      "avif_q": 14
+    },
+    {
+      "jpeg_q": 21,
+      "dssim": 0.0073,
+      "webp_q": 11,
+      "avif_q": 15
+    },
+    {
+      "jpeg_q": 22,
+      "dssim": 0.007,
+      "webp_q": 12,
+      "avif_q": 15
+    },
+    {
+      "jpeg_q": 23,
+      "dssim": 0.0067,
+      "webp_q": 13,
+      "avif_q": 16
+    },
+    {
+      "jpeg_q": 24,
+      "dssim": 0.0064,
+      "webp_q": 14,
+      "avif_q": 16
+    },
+    {
+      "jpeg_q": 25,
+      "dssim": 0.0062,
+      "webp_q": 15,
+      "avif_q": 17
+    },
+    {
+      "jpeg_q": 26,
+      "dssim": 0.006,
+      "webp_q": 16,
+      "avif_q": 18
+    },
+    {
+      "jpeg_q": 27,
+      "dssim": 0.0057,
+      "webp_q": 17,
+      "avif_q": 18
+    },
+    {
+      "jpeg_q": 28,
+      "dssim": 0.0055,
+      "webp_q": 18,
+      "avif_q": 19
+    },
+    {
+      "jpeg_q": 29,
+      "dssim": 0.0053,
+      "webp_q": 19,
+      "avif_q": 19
+    },
+    {
+      "jpeg_q": 30,
+      "dssim": 0.0052,
+      "webp_q": 20,
+      "avif_q": 20
+    },
+    {
+      "jpeg_q": 31,
+      "dssim": 0.005,
+      "webp_q": 21,
+      "avif_q": 20
+    },
+    {
+      "jpeg_q": 32,
+      "dssim": 0.0048,
+      "webp_q": 22,
+      "avif_q": 21
+    },
+    {
+      "jpeg_q": 33,
+      "dssim": 0.0046,
+      "webp_q": 23,
+      "avif_q": 22
+    },
+    {
+      "jpeg_q": 34,
+      "dssim": 0.0045,
+      "webp_q": 24,
+      "avif_q": 22
+    },
+    {
+      "jpeg_q": 35,
+      "dssim": 0.0044,
+      "webp_q": 25,
+      "avif_q": 22
+    },
+    {
+      "jpeg_q": 36,
+      "dssim": 0.0043,
+      "webp_q": 25,
+      "avif_q": 23
+    },
+    {
+      "jpeg_q": 37,
+      "dssim": 0.0042,
+      "webp_q": 26,
+      "avif_q": 23
+    },
+    {
+      "jpeg_q": 38,
+      "dssim": 0.004,
+      "webp_q": 27,
+      "avif_q": 24
+    },
+    {
+      "jpeg_q": 39,
+      "dssim": 0.004,
+      "webp_q": 28,
+      "avif_q": 24
+    },
+    {
+      "jpeg_q": 40,
+      "dssim": 0.0039,
+      "webp_q": 29,
+      "avif_q": 24
+    },
+    {
+      "jpeg_q": 41,
+      "dssim": 0.0037,
+      "webp_q": 30,
+      "avif_q": 25
+    },
+    {
+      "jpeg_q": 42,
+      "dssim": 0.0037,
+      "webp_q": 31,
+      "avif_q": 25
+    },
+    {
+      "jpeg_q": 43,
+      "dssim": 0.0036,
+      "webp_q": 31,
+      "avif_q": 25
+    },
+    {
+      "jpeg_q": 44,
+      "dssim": 0.0035,
+      "webp_q": 33,
+      "avif_q": 26
+    },
+    {
+      "jpeg_q": 45,
+      "dssim": 0.0035,
+      "webp_q": 33,
+      "avif_q": 26
+    },
+    {
+      "jpeg_q": 46,
+      "dssim": 0.0034,
+      "webp_q": 34,
+      "avif_q": 26
+    },
+    {
+      "jpeg_q": 47,
+      "dssim": 0.0033,
+      "webp_q": 35,
+      "avif_q": 27
+    },
+    {
+      "jpeg_q": 48,
+      "dssim": 0.0033,
+      "webp_q": 35,
+      "avif_q": 27
+    },
+    {
+      "jpeg_q": 49,
+      "dssim": 0.0032,
+      "webp_q": 36,
+      "avif_q": 27
+    },
+    {
+      "jpeg_q": 50,
+      "dssim": 0.0032,
+      "webp_q": 36,
+      "avif_q": 27
+    },
+    {
+      "jpeg_q": 51,
+      "dssim": 0.0032,
+      "webp_q": 36,
+      "avif_q": 27
+    },
+    {
+      "jpeg_q": 52,
+      "dssim": 0.003,
+      "webp_q": 38,
+      "avif_q": 28
+    },
+    {
+      "jpeg_q": 53,
+      "dssim": 0.003,
+      "webp_q": 39,
+      "avif_q": 28
+    },
+    {
+      "jpeg_q": 54,
+      "dssim": 0.0029,
+      "webp_q": 39,
+      "avif_q": 28
+    },
+    {
+      "jpeg_q": 55,
+      "dssim": 0.0029,
+      "webp_q": 41,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 56,
+      "dssim": 0.0028,
+      "webp_q": 41,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 57,
+      "dssim": 0.0028,
+      "webp_q": 42,
+      "avif_q": 30
+    },
+    {
+      "jpeg_q": 58,
+      "dssim": 0.0027,
+      "webp_q": 44,
+      "avif_q": 30
+    },
+    {
+      "jpeg_q": 59,
+      "dssim": 0.0026,
+      "webp_q": 44,
+      "avif_q": 30
+    },
+    {
+      "jpeg_q": 60,
+      "dssim": 0.0026,
+      "webp_q": 45,
+      "avif_q": 30
+    },
+    {
+      "jpeg_q": 61,
+      "dssim": 0.0025,
+      "webp_q": 47,
+      "avif_q": 31
+    },
+    {
+      "jpeg_q": 62,
+      "dssim": 0.0025,
+      "webp_q": 48,
+      "avif_q": 31
+    },
+    {
+      "jpeg_q": 63,
+      "dssim": 0.0024,
+      "webp_q": 48,
+      "avif_q": 32
+    },
+    {
+      "jpeg_q": 64,
+      "dssim": 0.0024,
+      "webp_q": 49,
+      "avif_q": 32
+    },
+    {
+      "jpeg_q": 65,
+      "dssim": 0.0023,
+      "webp_q": 51,
+      "avif_q": 33
+    },
+    {
+      "jpeg_q": 66,
+      "dssim": 0.0023,
+      "webp_q": 52,
+      "avif_q": 33
+    },
+    {
+      "jpeg_q": 67,
+      "dssim": 0.0022,
+      "webp_q": 53,
+      "avif_q": 34
+    },
+    {
+      "jpeg_q": 68,
+      "dssim": 0.0021,
+      "webp_q": 55,
+      "avif_q": 34
+    },
+    {
+      "jpeg_q": 69,
+      "dssim": 0.0021,
+      "webp_q": 57,
+      "avif_q": 34
+    },
+    {
+      "jpeg_q": 70,
+      "dssim": 0.002,
+      "webp_q": 59,
+      "avif_q": 35
+    },
+    {
+      "jpeg_q": 71,
+      "dssim": 0.0019,
+      "webp_q": 60,
+      "avif_q": 36
+    },
+    {
+      "jpeg_q": 72,
+      "dssim": 0.0019,
+      "webp_q": 62,
+      "avif_q": 36
+    },
+    {
+      "jpeg_q": 73,
+      "dssim": 0.0018,
+      "webp_q": 63,
+      "avif_q": 37
+    },
+    {
+      "jpeg_q": 74,
+      "dssim": 0.0017,
+      "webp_q": 65,
+      "avif_q": 38
+    },
+    {
+      "jpeg_q": 75,
+      "dssim": 0.0017,
+      "webp_q": 66,
+      "avif_q": 38
+    },
+    {
+      "jpeg_q": 76,
+      "dssim": 0.0016,
+      "webp_q": 68,
+      "avif_q": 40
+    },
+    {
+      "jpeg_q": 77,
+      "dssim": 0.0015,
+      "webp_q": 70,
+      "avif_q": 40
+    },
+    {
+      "jpeg_q": 78,
+      "dssim": 0.0015,
+      "webp_q": 72,
+      "avif_q": 41
+    },
+    {
+      "jpeg_q": 79,
+      "dssim": 0.0014,
+      "webp_q": 73,
+      "avif_q": 42
+    },
+    {
+      "jpeg_q": 80,
+      "dssim": 0.0013,
+      "webp_q": 75,
+      "avif_q": 43
+    },
+    {
+      "jpeg_q": 81,
+      "dssim": 0.0013,
+      "webp_q": 77,
+      "avif_q": 43
+    },
+    {
+      "jpeg_q": 82,
+      "dssim": 0.0012,
+      "webp_q": 78,
+      "avif_q": 44
+    },
+    {
+      "jpeg_q": 83,
+      "dssim": 0.0012,
+      "webp_q": 80,
+      "avif_q": 45
+    },
+    {
+      "jpeg_q": 84,
+      "dssim": 0.0011,
+      "webp_q": 81,
+      "avif_q": 46
+    },
+    {
+      "jpeg_q": 85,
+      "dssim": 0.001,
+      "webp_q": 82,
+      "avif_q": 47
+    },
+    {
+      "jpeg_q": 86,
+      "dssim": 0.001,
+      "webp_q": 83,
+      "avif_q": 48
+    },
+    {
+      "jpeg_q": 87,
+      "dssim": 0.0009,
+      "webp_q": 84,
+      "avif_q": 49
+    },
+    {
+      "jpeg_q": 88,
+      "dssim": 0.0009,
+      "webp_q": 86,
+      "avif_q": 50
+    },
+    {
+      "jpeg_q": 89,
+      "dssim": 0.0008,
+      "webp_q": 87,
+      "avif_q": 51
+    },
+    {
+      "jpeg_q": 90,
+      "dssim": 0.0003,
+      "webp_q": 98,
+      "avif_q": 68
+    },
+    {
+      "jpeg_q": 91,
+      "dssim": 0.0003,
+      "webp_q": 99,
+      "avif_q": 71
+    },
+    {
+      "jpeg_q": 92,
+      "dssim": 0.0003,
+      "webp_q": 100,
+      "avif_q": 73
+    },
+    {
+      "jpeg_q": 93,
+      "dssim": 0.0002,
+      "webp_q": 100,
+      "avif_q": 76
+    },
+    {
+      "jpeg_q": 94,
+      "dssim": 0.0002,
+      "webp_q": 100,
+      "avif_q": 80
+    },
+    {
+      "jpeg_q": 95,
+      "dssim": 0.0001,
+      "webp_q": 100,
+      "avif_q": 83
+    },
+    {
+      "jpeg_q": 96,
+      "dssim": 0.0001,
+      "webp_q": 100,
+      "avif_q": 87
+    },
+    {
+      "jpeg_q": 97,
+      "dssim": 0.0001,
+      "webp_q": 100,
+      "avif_q": 90
+    },
+    {
+      "jpeg_q": 98,
+      "dssim": 0.0001,
+      "webp_q": 100,
+      "avif_q": 94
+    },
+    {
+      "jpeg_q": 99,
+      "dssim": 0,
+      "webp_q": 100,
+      "avif_q": 97
+    },
+    {
+      "jpeg_q": 100,
+      "dssim": 0,
+      "webp_q": 100,
+      "avif_q": 99
+    }
+  ]
+}

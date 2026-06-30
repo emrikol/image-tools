@@ -1,0 +1,617 @@
+{
+  "$schema": "calibration-schema",
+  "metric": "ssimulacra2",
+  "higher_is_better": true,
+  "content_type": "illustration",
+  "description": "JPEG→WebP/AVIF quality equivalence for illustration content using ssimulacra2. Step 10, AVIF speed 0.",
+  "generated": "2026-03-12T02:29:23.885Z",
+  "images": 25,
+  "step": 10,
+  "data_points": 100,
+  "encoders": {
+    "cwebp": "cwebp -m 6",
+    "avifenc": "avifenc --speed 0"
+  },
+  "curve": [
+    {
+      "jpeg_q": 1,
+      "score": -41.9745,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 2,
+      "score": -41.96,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 3,
+      "score": -39.54,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 4,
+      "score": -28.95,
+      "webp_q": 1,
+      "avif_q": 1.08
+    },
+    {
+      "jpeg_q": 5,
+      "score": -17.82,
+      "webp_q": 1,
+      "avif_q": 1.36
+    },
+    {
+      "jpeg_q": 6,
+      "score": -6.87,
+      "webp_q": 1,
+      "avif_q": 1.84
+    },
+    {
+      "jpeg_q": 7,
+      "score": 0.91,
+      "webp_q": 1,
+      "avif_q": 2.72
+    },
+    {
+      "jpeg_q": 8,
+      "score": 7.71,
+      "webp_q": 1,
+      "avif_q": 3.56
+    },
+    {
+      "jpeg_q": 9,
+      "score": 14.31,
+      "webp_q": 1.2,
+      "avif_q": 4.64
+    },
+    {
+      "jpeg_q": 10,
+      "score": 18.5994,
+      "webp_q": 2,
+      "avif_q": 6
+    },
+    {
+      "jpeg_q": 11,
+      "score": 22.2,
+      "webp_q": 1.68,
+      "avif_q": 6.52
+    },
+    {
+      "jpeg_q": 12,
+      "score": 26.71,
+      "webp_q": 2.44,
+      "avif_q": 8
+    },
+    {
+      "jpeg_q": 13,
+      "score": 29.95,
+      "webp_q": 3.6,
+      "avif_q": 8.88
+    },
+    {
+      "jpeg_q": 14,
+      "score": 32.78,
+      "webp_q": 4.68,
+      "avif_q": 9.88
+    },
+    {
+      "jpeg_q": 15,
+      "score": 36.21,
+      "webp_q": 6.12,
+      "avif_q": 11.32
+    },
+    {
+      "jpeg_q": 16,
+      "score": 38.26,
+      "webp_q": 7.48,
+      "avif_q": 12.16
+    },
+    {
+      "jpeg_q": 17,
+      "score": 40.04,
+      "webp_q": 8.48,
+      "avif_q": 13.04
+    },
+    {
+      "jpeg_q": 18,
+      "score": 41.61,
+      "webp_q": 9.44,
+      "avif_q": 13.56
+    },
+    {
+      "jpeg_q": 19,
+      "score": 43.3,
+      "webp_q": 10.4,
+      "avif_q": 14.64
+    },
+    {
+      "jpeg_q": 20,
+      "score": 45.3062,
+      "webp_q": 12,
+      "avif_q": 15
+    },
+    {
+      "jpeg_q": 21,
+      "score": 46.22,
+      "webp_q": 12.92,
+      "avif_q": 16.2
+    },
+    {
+      "jpeg_q": 22,
+      "score": 47.35,
+      "webp_q": 13.76,
+      "avif_q": 16.6
+    },
+    {
+      "jpeg_q": 23,
+      "score": 48.72,
+      "webp_q": 15.16,
+      "avif_q": 17.52
+    },
+    {
+      "jpeg_q": 24,
+      "score": 49.61,
+      "webp_q": 16,
+      "avif_q": 18.08
+    },
+    {
+      "jpeg_q": 25,
+      "score": 50.86,
+      "webp_q": 17.48,
+      "avif_q": 18.92
+    },
+    {
+      "jpeg_q": 26,
+      "score": 51.51,
+      "webp_q": 18.2,
+      "avif_q": 19.32
+    },
+    {
+      "jpeg_q": 27,
+      "score": 52.42,
+      "webp_q": 19.08,
+      "avif_q": 19.8
+    },
+    {
+      "jpeg_q": 28,
+      "score": 53.34,
+      "webp_q": 20.36,
+      "avif_q": 20.56
+    },
+    {
+      "jpeg_q": 29,
+      "score": 53.88,
+      "webp_q": 21.2,
+      "avif_q": 20.96
+    },
+    {
+      "jpeg_q": 30,
+      "score": 54.509,
+      "webp_q": 22,
+      "avif_q": 21
+    },
+    {
+      "jpeg_q": 31,
+      "score": 55.25,
+      "webp_q": 23.16,
+      "avif_q": 22
+    },
+    {
+      "jpeg_q": 32,
+      "score": 55.78,
+      "webp_q": 23.92,
+      "avif_q": 22.2
+    },
+    {
+      "jpeg_q": 33,
+      "score": 56.89,
+      "webp_q": 25.32,
+      "avif_q": 23.04
+    },
+    {
+      "jpeg_q": 34,
+      "score": 57.51,
+      "webp_q": 26.2,
+      "avif_q": 23.48
+    },
+    {
+      "jpeg_q": 35,
+      "score": 57.8,
+      "webp_q": 27,
+      "avif_q": 23.56
+    },
+    {
+      "jpeg_q": 36,
+      "score": 58.41,
+      "webp_q": 28.2,
+      "avif_q": 23.96
+    },
+    {
+      "jpeg_q": 37,
+      "score": 58.72,
+      "webp_q": 28.56,
+      "avif_q": 24.36
+    },
+    {
+      "jpeg_q": 38,
+      "score": 59.47,
+      "webp_q": 29.8,
+      "avif_q": 25.32
+    },
+    {
+      "jpeg_q": 39,
+      "score": 59.75,
+      "webp_q": 30.4,
+      "avif_q": 25.6
+    },
+    {
+      "jpeg_q": 40,
+      "score": 60.0707,
+      "webp_q": 31,
+      "avif_q": 25
+    },
+    {
+      "jpeg_q": 41,
+      "score": 60.66,
+      "webp_q": 31.84,
+      "avif_q": 26.2
+    },
+    {
+      "jpeg_q": 42,
+      "score": 60.96,
+      "webp_q": 32.52,
+      "avif_q": 26.36
+    },
+    {
+      "jpeg_q": 43,
+      "score": 61.2,
+      "webp_q": 33.24,
+      "avif_q": 26.8
+    },
+    {
+      "jpeg_q": 44,
+      "score": 61.99,
+      "webp_q": 35,
+      "avif_q": 27.32
+    },
+    {
+      "jpeg_q": 45,
+      "score": 62.2,
+      "webp_q": 35.48,
+      "avif_q": 27.52
+    },
+    {
+      "jpeg_q": 46,
+      "score": 62.47,
+      "webp_q": 35.6,
+      "avif_q": 27.64
+    },
+    {
+      "jpeg_q": 47,
+      "score": 62.64,
+      "webp_q": 35.84,
+      "avif_q": 27.88
+    },
+    {
+      "jpeg_q": 48,
+      "score": 62.85,
+      "webp_q": 36.16,
+      "avif_q": 28.12
+    },
+    {
+      "jpeg_q": 49,
+      "score": 63.06,
+      "webp_q": 37.04,
+      "avif_q": 28.04
+    },
+    {
+      "jpeg_q": 50,
+      "score": 63.2203,
+      "webp_q": 37,
+      "avif_q": 28
+    },
+    {
+      "jpeg_q": 51,
+      "score": 63.39,
+      "webp_q": 37.96,
+      "avif_q": 28.44
+    },
+    {
+      "jpeg_q": 52,
+      "score": 64.19,
+      "webp_q": 40.08,
+      "avif_q": 29.32
+    },
+    {
+      "jpeg_q": 53,
+      "score": 64.41,
+      "webp_q": 40.4,
+      "avif_q": 29.44
+    },
+    {
+      "jpeg_q": 54,
+      "score": 64.59,
+      "webp_q": 40.72,
+      "avif_q": 29.64
+    },
+    {
+      "jpeg_q": 55,
+      "score": 65.02,
+      "webp_q": 41.96,
+      "avif_q": 29.76
+    },
+    {
+      "jpeg_q": 56,
+      "score": 65.27,
+      "webp_q": 42.92,
+      "avif_q": 30.2
+    },
+    {
+      "jpeg_q": 57,
+      "score": 65.61,
+      "webp_q": 43.72,
+      "avif_q": 30.56
+    },
+    {
+      "jpeg_q": 58,
+      "score": 66.12,
+      "webp_q": 45.64,
+      "avif_q": 31.32
+    },
+    {
+      "jpeg_q": 59,
+      "score": 66.3,
+      "webp_q": 45.64,
+      "avif_q": 31.36
+    },
+    {
+      "jpeg_q": 60,
+      "score": 66.545,
+      "webp_q": 46,
+      "avif_q": 31
+    },
+    {
+      "jpeg_q": 61,
+      "score": 66.95,
+      "webp_q": 47.6,
+      "avif_q": 32.12
+    },
+    {
+      "jpeg_q": 62,
+      "score": 67.2,
+      "webp_q": 48.8,
+      "avif_q": 32.36
+    },
+    {
+      "jpeg_q": 63,
+      "score": 67.48,
+      "webp_q": 49.16,
+      "avif_q": 32.76
+    },
+    {
+      "jpeg_q": 64,
+      "score": 67.6,
+      "webp_q": 49.36,
+      "avif_q": 32.92
+    },
+    {
+      "jpeg_q": 65,
+      "score": 68.08,
+      "webp_q": 51.04,
+      "avif_q": 33.16
+    },
+    {
+      "jpeg_q": 66,
+      "score": 68.42,
+      "webp_q": 52.68,
+      "avif_q": 33.8
+    },
+    {
+      "jpeg_q": 67,
+      "score": 69.02,
+      "webp_q": 54.6,
+      "avif_q": 34.4
+    },
+    {
+      "jpeg_q": 68,
+      "score": 69.37,
+      "webp_q": 55.64,
+      "avif_q": 34.92
+    },
+    {
+      "jpeg_q": 69,
+      "score": 69.7,
+      "webp_q": 56.72,
+      "avif_q": 35.16
+    },
+    {
+      "jpeg_q": 70,
+      "score": 70.1803,
+      "webp_q": 58,
+      "avif_q": 36
+    },
+    {
+      "jpeg_q": 71,
+      "score": 70.6,
+      "webp_q": 60.16,
+      "avif_q": 36.44
+    },
+    {
+      "jpeg_q": 72,
+      "score": 70.88,
+      "webp_q": 61.28,
+      "avif_q": 36.8
+    },
+    {
+      "jpeg_q": 73,
+      "score": 71.3,
+      "webp_q": 62.88,
+      "avif_q": 37.2
+    },
+    {
+      "jpeg_q": 74,
+      "score": 72,
+      "webp_q": 65.28,
+      "avif_q": 38.36
+    },
+    {
+      "jpeg_q": 75,
+      "score": 72.22,
+      "webp_q": 66.2,
+      "avif_q": 38.68
+    },
+    {
+      "jpeg_q": 76,
+      "score": 73,
+      "webp_q": 69.72,
+      "avif_q": 39.76
+    },
+    {
+      "jpeg_q": 77,
+      "score": 73.39,
+      "webp_q": 71.2,
+      "avif_q": 40.48
+    },
+    {
+      "jpeg_q": 78,
+      "score": 73.82,
+      "webp_q": 72.68,
+      "avif_q": 40.84
+    },
+    {
+      "jpeg_q": 79,
+      "score": 74.18,
+      "webp_q": 74.12,
+      "avif_q": 41.68
+    },
+    {
+      "jpeg_q": 80,
+      "score": 74.6729,
+      "webp_q": 75,
+      "avif_q": 42
+    },
+    {
+      "jpeg_q": 81,
+      "score": 75.16,
+      "webp_q": 77.72,
+      "avif_q": 43.2
+    },
+    {
+      "jpeg_q": 82,
+      "score": 75.67,
+      "webp_q": 79,
+      "avif_q": 43.8
+    },
+    {
+      "jpeg_q": 83,
+      "score": 76.16,
+      "webp_q": 80.04,
+      "avif_q": 44.44
+    },
+    {
+      "jpeg_q": 84,
+      "score": 76.65,
+      "webp_q": 81.64,
+      "avif_q": 45.52
+    },
+    {
+      "jpeg_q": 85,
+      "score": 77.19,
+      "webp_q": 82.92,
+      "avif_q": 46.36
+    },
+    {
+      "jpeg_q": 86,
+      "score": 77.74,
+      "webp_q": 84.2,
+      "avif_q": 47.16
+    },
+    {
+      "jpeg_q": 87,
+      "score": 78.21,
+      "webp_q": 85.64,
+      "avif_q": 48.2
+    },
+    {
+      "jpeg_q": 88,
+      "score": 78.77,
+      "webp_q": 86.84,
+      "avif_q": 48.96
+    },
+    {
+      "jpeg_q": 89,
+      "score": 79.26,
+      "webp_q": 88.12,
+      "avif_q": 49.76
+    },
+    {
+      "jpeg_q": 90,
+      "score": 86.8385,
+      "webp_q": 100,
+      "avif_q": 68
+    },
+    {
+      "jpeg_q": 91,
+      "score": 87.61,
+      "webp_q": 98,
+      "avif_q": 70.64
+    },
+    {
+      "jpeg_q": 92,
+      "score": 88.29,
+      "webp_q": 98,
+      "avif_q": 73.24
+    },
+    {
+      "jpeg_q": 93,
+      "score": 89.02,
+      "webp_q": null,
+      "avif_q": 76.44
+    },
+    {
+      "jpeg_q": 94,
+      "score": 89.79,
+      "webp_q": null,
+      "avif_q": 79.8
+    },
+    {
+      "jpeg_q": 95,
+      "score": 90.53,
+      "webp_q": null,
+      "avif_q": 83.36
+    },
+    {
+      "jpeg_q": 96,
+      "score": 91.36,
+      "webp_q": null,
+      "avif_q": 87.44
+    },
+    {
+      "jpeg_q": 97,
+      "score": 92.07,
+      "webp_q": null,
+      "avif_q": 91.28
+    },
+    {
+      "jpeg_q": 98,
+      "score": 92.72,
+      "webp_q": null,
+      "avif_q": 95
+    },
+    {
+      "jpeg_q": 99,
+      "score": 93.26,
+      "webp_q": null,
+      "avif_q": 98.4
+    },
+    {
+      "jpeg_q": 100,
+      "score": 93.502,
+      "webp_q": 100,
+      "avif_q": 99
+    }
+  ]
+}

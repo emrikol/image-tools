@@ -1,0 +1,617 @@
+{
+  "$schema": "calibration-schema",
+  "metric": "vif",
+  "higher_is_better": true,
+  "content_type": "photo",
+  "description": "JPEG→WebP/AVIF quality equivalence for photo content using vif. Step 1, AVIF speed 0.",
+  "generated": "2026-06-30T07:31:00.807Z",
+  "images": 24,
+  "step": 1,
+  "data_points": 100,
+  "encoders": {
+    "cwebp": "cwebp -m 6",
+    "avifenc": "avifenc --speed 0"
+  },
+  "curve": [
+    {
+      "jpeg_q": 1,
+      "vif": 0.1375,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 2,
+      "vif": 0.1376,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 3,
+      "vif": 0.15,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 4,
+      "vif": 0.1792,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 5,
+      "vif": 0.2058,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 6,
+      "vif": 0.2318,
+      "webp_q": 1,
+      "avif_q": 2
+    },
+    {
+      "jpeg_q": 7,
+      "vif": 0.2508,
+      "webp_q": 1,
+      "avif_q": 3
+    },
+    {
+      "jpeg_q": 8,
+      "vif": 0.2718,
+      "webp_q": 1,
+      "avif_q": 4
+    },
+    {
+      "jpeg_q": 9,
+      "vif": 0.288,
+      "webp_q": 1,
+      "avif_q": 6
+    },
+    {
+      "jpeg_q": 10,
+      "vif": 0.3048,
+      "webp_q": 1,
+      "avif_q": 7
+    },
+    {
+      "jpeg_q": 11,
+      "vif": 0.3186,
+      "webp_q": 1,
+      "avif_q": 9
+    },
+    {
+      "jpeg_q": 12,
+      "vif": 0.332,
+      "webp_q": 1,
+      "avif_q": 10
+    },
+    {
+      "jpeg_q": 13,
+      "vif": 0.3448,
+      "webp_q": 2,
+      "avif_q": 12
+    },
+    {
+      "jpeg_q": 14,
+      "vif": 0.3561,
+      "webp_q": 2,
+      "avif_q": 14
+    },
+    {
+      "jpeg_q": 15,
+      "vif": 0.3661,
+      "webp_q": 3,
+      "avif_q": 15
+    },
+    {
+      "jpeg_q": 16,
+      "vif": 0.3768,
+      "webp_q": 4,
+      "avif_q": 16
+    },
+    {
+      "jpeg_q": 17,
+      "vif": 0.3857,
+      "webp_q": 5,
+      "avif_q": 18
+    },
+    {
+      "jpeg_q": 18,
+      "vif": 0.3953,
+      "webp_q": 6,
+      "avif_q": 19
+    },
+    {
+      "jpeg_q": 19,
+      "vif": 0.402,
+      "webp_q": 7,
+      "avif_q": 20
+    },
+    {
+      "jpeg_q": 20,
+      "vif": 0.4096,
+      "webp_q": 8,
+      "avif_q": 21
+    },
+    {
+      "jpeg_q": 21,
+      "vif": 0.4169,
+      "webp_q": 9,
+      "avif_q": 22
+    },
+    {
+      "jpeg_q": 22,
+      "vif": 0.4244,
+      "webp_q": 10,
+      "avif_q": 23
+    },
+    {
+      "jpeg_q": 23,
+      "vif": 0.4302,
+      "webp_q": 12,
+      "avif_q": 24
+    },
+    {
+      "jpeg_q": 24,
+      "vif": 0.4366,
+      "webp_q": 13,
+      "avif_q": 25
+    },
+    {
+      "jpeg_q": 25,
+      "vif": 0.4419,
+      "webp_q": 14,
+      "avif_q": 26
+    },
+    {
+      "jpeg_q": 26,
+      "vif": 0.4472,
+      "webp_q": 15,
+      "avif_q": 27
+    },
+    {
+      "jpeg_q": 27,
+      "vif": 0.453,
+      "webp_q": 17,
+      "avif_q": 27
+    },
+    {
+      "jpeg_q": 28,
+      "vif": 0.4588,
+      "webp_q": 18,
+      "avif_q": 28
+    },
+    {
+      "jpeg_q": 29,
+      "vif": 0.4622,
+      "webp_q": 19,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 30,
+      "vif": 0.4671,
+      "webp_q": 20,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 31,
+      "vif": 0.4713,
+      "webp_q": 21,
+      "avif_q": 30
+    },
+    {
+      "jpeg_q": 32,
+      "vif": 0.476,
+      "webp_q": 23,
+      "avif_q": 30
+    },
+    {
+      "jpeg_q": 33,
+      "vif": 0.4809,
+      "webp_q": 24,
+      "avif_q": 31
+    },
+    {
+      "jpeg_q": 34,
+      "vif": 0.4831,
+      "webp_q": 25,
+      "avif_q": 31
+    },
+    {
+      "jpeg_q": 35,
+      "vif": 0.4881,
+      "webp_q": 26,
+      "avif_q": 32
+    },
+    {
+      "jpeg_q": 36,
+      "vif": 0.4927,
+      "webp_q": 27,
+      "avif_q": 33
+    },
+    {
+      "jpeg_q": 37,
+      "vif": 0.4946,
+      "webp_q": 28,
+      "avif_q": 33
+    },
+    {
+      "jpeg_q": 38,
+      "vif": 0.4995,
+      "webp_q": 29,
+      "avif_q": 34
+    },
+    {
+      "jpeg_q": 39,
+      "vif": 0.5029,
+      "webp_q": 30,
+      "avif_q": 34
+    },
+    {
+      "jpeg_q": 40,
+      "vif": 0.5044,
+      "webp_q": 31,
+      "avif_q": 34
+    },
+    {
+      "jpeg_q": 41,
+      "vif": 0.5094,
+      "webp_q": 33,
+      "avif_q": 35
+    },
+    {
+      "jpeg_q": 42,
+      "vif": 0.5116,
+      "webp_q": 33,
+      "avif_q": 35
+    },
+    {
+      "jpeg_q": 43,
+      "vif": 0.5141,
+      "webp_q": 34,
+      "avif_q": 36
+    },
+    {
+      "jpeg_q": 44,
+      "vif": 0.5182,
+      "webp_q": 36,
+      "avif_q": 36
+    },
+    {
+      "jpeg_q": 45,
+      "vif": 0.5203,
+      "webp_q": 36,
+      "avif_q": 36
+    },
+    {
+      "jpeg_q": 46,
+      "vif": 0.5243,
+      "webp_q": 37,
+      "avif_q": 37
+    },
+    {
+      "jpeg_q": 47,
+      "vif": 0.5259,
+      "webp_q": 38,
+      "avif_q": 37
+    },
+    {
+      "jpeg_q": 48,
+      "vif": 0.5284,
+      "webp_q": 39,
+      "avif_q": 37
+    },
+    {
+      "jpeg_q": 49,
+      "vif": 0.5325,
+      "webp_q": 40,
+      "avif_q": 38
+    },
+    {
+      "jpeg_q": 50,
+      "vif": 0.5337,
+      "webp_q": 41,
+      "avif_q": 38
+    },
+    {
+      "jpeg_q": 51,
+      "vif": 0.5348,
+      "webp_q": 41,
+      "avif_q": 38
+    },
+    {
+      "jpeg_q": 52,
+      "vif": 0.5389,
+      "webp_q": 43,
+      "avif_q": 39
+    },
+    {
+      "jpeg_q": 53,
+      "vif": 0.5415,
+      "webp_q": 44,
+      "avif_q": 39
+    },
+    {
+      "jpeg_q": 54,
+      "vif": 0.5435,
+      "webp_q": 44,
+      "avif_q": 39
+    },
+    {
+      "jpeg_q": 55,
+      "vif": 0.5462,
+      "webp_q": 46,
+      "avif_q": 40
+    },
+    {
+      "jpeg_q": 56,
+      "vif": 0.5491,
+      "webp_q": 47,
+      "avif_q": 40
+    },
+    {
+      "jpeg_q": 57,
+      "vif": 0.5523,
+      "webp_q": 48,
+      "avif_q": 40
+    },
+    {
+      "jpeg_q": 58,
+      "vif": 0.5558,
+      "webp_q": 49,
+      "avif_q": 41
+    },
+    {
+      "jpeg_q": 59,
+      "vif": 0.5579,
+      "webp_q": 50,
+      "avif_q": 41
+    },
+    {
+      "jpeg_q": 60,
+      "vif": 0.5604,
+      "webp_q": 51,
+      "avif_q": 41
+    },
+    {
+      "jpeg_q": 61,
+      "vif": 0.5644,
+      "webp_q": 53,
+      "avif_q": 42
+    },
+    {
+      "jpeg_q": 62,
+      "vif": 0.5671,
+      "webp_q": 53,
+      "avif_q": 42
+    },
+    {
+      "jpeg_q": 63,
+      "vif": 0.5705,
+      "webp_q": 55,
+      "avif_q": 43
+    },
+    {
+      "jpeg_q": 64,
+      "vif": 0.5729,
+      "webp_q": 56,
+      "avif_q": 43
+    },
+    {
+      "jpeg_q": 65,
+      "vif": 0.5772,
+      "webp_q": 57,
+      "avif_q": 44
+    },
+    {
+      "jpeg_q": 66,
+      "vif": 0.5804,
+      "webp_q": 59,
+      "avif_q": 44
+    },
+    {
+      "jpeg_q": 67,
+      "vif": 0.5836,
+      "webp_q": 60,
+      "avif_q": 44
+    },
+    {
+      "jpeg_q": 68,
+      "vif": 0.5879,
+      "webp_q": 61,
+      "avif_q": 45
+    },
+    {
+      "jpeg_q": 69,
+      "vif": 0.5912,
+      "webp_q": 63,
+      "avif_q": 45
+    },
+    {
+      "jpeg_q": 70,
+      "vif": 0.5959,
+      "webp_q": 64,
+      "avif_q": 46
+    },
+    {
+      "jpeg_q": 71,
+      "vif": 0.6004,
+      "webp_q": 66,
+      "avif_q": 46
+    },
+    {
+      "jpeg_q": 72,
+      "vif": 0.6039,
+      "webp_q": 67,
+      "avif_q": 47
+    },
+    {
+      "jpeg_q": 73,
+      "vif": 0.6078,
+      "webp_q": 68,
+      "avif_q": 47
+    },
+    {
+      "jpeg_q": 74,
+      "vif": 0.6141,
+      "webp_q": 70,
+      "avif_q": 48
+    },
+    {
+      "jpeg_q": 75,
+      "vif": 0.6166,
+      "webp_q": 71,
+      "avif_q": 48
+    },
+    {
+      "jpeg_q": 76,
+      "vif": 0.6218,
+      "webp_q": 72,
+      "avif_q": 49
+    },
+    {
+      "jpeg_q": 77,
+      "vif": 0.6286,
+      "webp_q": 74,
+      "avif_q": 50
+    },
+    {
+      "jpeg_q": 78,
+      "vif": 0.6335,
+      "webp_q": 75,
+      "avif_q": 51
+    },
+    {
+      "jpeg_q": 79,
+      "vif": 0.6384,
+      "webp_q": 75,
+      "avif_q": 51
+    },
+    {
+      "jpeg_q": 80,
+      "vif": 0.6448,
+      "webp_q": 77,
+      "avif_q": 52
+    },
+    {
+      "jpeg_q": 81,
+      "vif": 0.6523,
+      "webp_q": 78,
+      "avif_q": 53
+    },
+    {
+      "jpeg_q": 82,
+      "vif": 0.6585,
+      "webp_q": 78,
+      "avif_q": 54
+    },
+    {
+      "jpeg_q": 83,
+      "vif": 0.6661,
+      "webp_q": 79,
+      "avif_q": 55
+    },
+    {
+      "jpeg_q": 84,
+      "vif": 0.674,
+      "webp_q": 80,
+      "avif_q": 56
+    },
+    {
+      "jpeg_q": 85,
+      "vif": 0.6819,
+      "webp_q": 81,
+      "avif_q": 57
+    },
+    {
+      "jpeg_q": 86,
+      "vif": 0.6921,
+      "webp_q": 82,
+      "avif_q": 58
+    },
+    {
+      "jpeg_q": 87,
+      "vif": 0.7008,
+      "webp_q": 83,
+      "avif_q": 59
+    },
+    {
+      "jpeg_q": 88,
+      "vif": 0.7124,
+      "webp_q": 84,
+      "avif_q": 61
+    },
+    {
+      "jpeg_q": 89,
+      "vif": 0.7234,
+      "webp_q": 85,
+      "avif_q": 63
+    },
+    {
+      "jpeg_q": 90,
+      "vif": 0.7369,
+      "webp_q": 86,
+      "avif_q": 65
+    },
+    {
+      "jpeg_q": 91,
+      "vif": 0.7549,
+      "webp_q": 87,
+      "avif_q": 68
+    },
+    {
+      "jpeg_q": 92,
+      "vif": 0.7714,
+      "webp_q": 89,
+      "avif_q": 71
+    },
+    {
+      "jpeg_q": 93,
+      "vif": 0.7902,
+      "webp_q": 90,
+      "avif_q": 74
+    },
+    {
+      "jpeg_q": 94,
+      "vif": 0.8123,
+      "webp_q": 91,
+      "avif_q": 77
+    },
+    {
+      "jpeg_q": 95,
+      "vif": 0.8357,
+      "webp_q": 93,
+      "avif_q": 81
+    },
+    {
+      "jpeg_q": 96,
+      "vif": 0.865,
+      "webp_q": 94,
+      "avif_q": 84
+    },
+    {
+      "jpeg_q": 97,
+      "vif": 0.8958,
+      "webp_q": 96,
+      "avif_q": 88
+    },
+    {
+      "jpeg_q": 98,
+      "vif": 0.9302,
+      "webp_q": 99,
+      "avif_q": 92
+    },
+    {
+      "jpeg_q": 99,
+      "vif": 0.963,
+      "webp_q": 100,
+      "avif_q": 97
+    },
+    {
+      "jpeg_q": 100,
+      "vif": 0.9768,
+      "webp_q": 100,
+      "avif_q": 98
+    }
+  ]
+}

@@ -1,0 +1,617 @@
+{
+  "$schema": "calibration-schema",
+  "metric": "entropy_diff",
+  "higher_is_better": false,
+  "content_type": "illustration",
+  "description": "JPEG→WebP/AVIF quality equivalence for illustration content using entropy_diff. Step 1, AVIF speed 0.",
+  "generated": "2026-06-30T07:33:35.001Z",
+  "images": 25,
+  "step": 1,
+  "data_points": 100,
+  "encoders": {
+    "cwebp": "cwebp -m 6",
+    "avifenc": "avifenc --speed 0"
+  },
+  "curve": [
+    {
+      "jpeg_q": 1,
+      "entropy_diff": 0.4891,
+      "webp_q": 1,
+      "avif_q": 2
+    },
+    {
+      "jpeg_q": 2,
+      "entropy_diff": 0.4887,
+      "webp_q": 1,
+      "avif_q": 2
+    },
+    {
+      "jpeg_q": 3,
+      "entropy_diff": 0.463,
+      "webp_q": 1,
+      "avif_q": 2
+    },
+    {
+      "jpeg_q": 4,
+      "entropy_diff": 0.3999,
+      "webp_q": 1,
+      "avif_q": 3
+    },
+    {
+      "jpeg_q": 5,
+      "entropy_diff": 0.3638,
+      "webp_q": 2,
+      "avif_q": 3
+    },
+    {
+      "jpeg_q": 6,
+      "entropy_diff": 0.3362,
+      "webp_q": 3,
+      "avif_q": 5
+    },
+    {
+      "jpeg_q": 7,
+      "entropy_diff": 0.2983,
+      "webp_q": 5,
+      "avif_q": 6
+    },
+    {
+      "jpeg_q": 8,
+      "entropy_diff": 0.2787,
+      "webp_q": 6,
+      "avif_q": 7
+    },
+    {
+      "jpeg_q": 9,
+      "entropy_diff": 0.264,
+      "webp_q": 6,
+      "avif_q": 8
+    },
+    {
+      "jpeg_q": 10,
+      "entropy_diff": 0.2524,
+      "webp_q": 7,
+      "avif_q": 9
+    },
+    {
+      "jpeg_q": 11,
+      "entropy_diff": 0.2428,
+      "webp_q": 8,
+      "avif_q": 10
+    },
+    {
+      "jpeg_q": 12,
+      "entropy_diff": 0.2216,
+      "webp_q": 9,
+      "avif_q": 11
+    },
+    {
+      "jpeg_q": 13,
+      "entropy_diff": 0.2172,
+      "webp_q": 10,
+      "avif_q": 12
+    },
+    {
+      "jpeg_q": 14,
+      "entropy_diff": 0.2123,
+      "webp_q": 11,
+      "avif_q": 12
+    },
+    {
+      "jpeg_q": 15,
+      "entropy_diff": 0.2066,
+      "webp_q": 11,
+      "avif_q": 12
+    },
+    {
+      "jpeg_q": 16,
+      "entropy_diff": 0.1975,
+      "webp_q": 12,
+      "avif_q": 14
+    },
+    {
+      "jpeg_q": 17,
+      "entropy_diff": 0.1947,
+      "webp_q": 14,
+      "avif_q": 16
+    },
+    {
+      "jpeg_q": 18,
+      "entropy_diff": 0.1878,
+      "webp_q": 16,
+      "avif_q": 16
+    },
+    {
+      "jpeg_q": 19,
+      "entropy_diff": 0.1835,
+      "webp_q": 17,
+      "avif_q": 17
+    },
+    {
+      "jpeg_q": 20,
+      "entropy_diff": 0.1754,
+      "webp_q": 19,
+      "avif_q": 18
+    },
+    {
+      "jpeg_q": 21,
+      "entropy_diff": 0.1712,
+      "webp_q": 20,
+      "avif_q": 19
+    },
+    {
+      "jpeg_q": 22,
+      "entropy_diff": 0.1665,
+      "webp_q": 21,
+      "avif_q": 19
+    },
+    {
+      "jpeg_q": 23,
+      "entropy_diff": 0.1651,
+      "webp_q": 22,
+      "avif_q": 20
+    },
+    {
+      "jpeg_q": 24,
+      "entropy_diff": 0.1599,
+      "webp_q": 23,
+      "avif_q": 21
+    },
+    {
+      "jpeg_q": 25,
+      "entropy_diff": 0.1547,
+      "webp_q": 25,
+      "avif_q": 22
+    },
+    {
+      "jpeg_q": 26,
+      "entropy_diff": 0.1519,
+      "webp_q": 26,
+      "avif_q": 22
+    },
+    {
+      "jpeg_q": 27,
+      "entropy_diff": 0.1536,
+      "webp_q": 25,
+      "avif_q": 22
+    },
+    {
+      "jpeg_q": 28,
+      "entropy_diff": 0.1473,
+      "webp_q": 26,
+      "avif_q": 23
+    },
+    {
+      "jpeg_q": 29,
+      "entropy_diff": 0.1448,
+      "webp_q": 27,
+      "avif_q": 23
+    },
+    {
+      "jpeg_q": 30,
+      "entropy_diff": 0.1447,
+      "webp_q": 27,
+      "avif_q": 24
+    },
+    {
+      "jpeg_q": 31,
+      "entropy_diff": 0.1424,
+      "webp_q": 28,
+      "avif_q": 24
+    },
+    {
+      "jpeg_q": 32,
+      "entropy_diff": 0.1425,
+      "webp_q": 28,
+      "avif_q": 24
+    },
+    {
+      "jpeg_q": 33,
+      "entropy_diff": 0.1352,
+      "webp_q": 30,
+      "avif_q": 25
+    },
+    {
+      "jpeg_q": 34,
+      "entropy_diff": 0.1337,
+      "webp_q": 31,
+      "avif_q": 25
+    },
+    {
+      "jpeg_q": 35,
+      "entropy_diff": 0.1338,
+      "webp_q": 31,
+      "avif_q": 26
+    },
+    {
+      "jpeg_q": 36,
+      "entropy_diff": 0.1323,
+      "webp_q": 32,
+      "avif_q": 26
+    },
+    {
+      "jpeg_q": 37,
+      "entropy_diff": 0.1313,
+      "webp_q": 32,
+      "avif_q": 26
+    },
+    {
+      "jpeg_q": 38,
+      "entropy_diff": 0.1264,
+      "webp_q": 33,
+      "avif_q": 27
+    },
+    {
+      "jpeg_q": 39,
+      "entropy_diff": 0.1262,
+      "webp_q": 34,
+      "avif_q": 28
+    },
+    {
+      "jpeg_q": 40,
+      "entropy_diff": 0.1249,
+      "webp_q": 35,
+      "avif_q": 28
+    },
+    {
+      "jpeg_q": 41,
+      "entropy_diff": 0.1219,
+      "webp_q": 35,
+      "avif_q": 28
+    },
+    {
+      "jpeg_q": 42,
+      "entropy_diff": 0.1219,
+      "webp_q": 35,
+      "avif_q": 28
+    },
+    {
+      "jpeg_q": 43,
+      "entropy_diff": 0.1206,
+      "webp_q": 35,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 44,
+      "entropy_diff": 0.1192,
+      "webp_q": 37,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 45,
+      "entropy_diff": 0.1183,
+      "webp_q": 37,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 46,
+      "entropy_diff": 0.1185,
+      "webp_q": 37,
+      "avif_q": 30
+    },
+    {
+      "jpeg_q": 47,
+      "entropy_diff": 0.1179,
+      "webp_q": 37,
+      "avif_q": 30
+    },
+    {
+      "jpeg_q": 48,
+      "entropy_diff": 0.1169,
+      "webp_q": 37,
+      "avif_q": 30
+    },
+    {
+      "jpeg_q": 49,
+      "entropy_diff": 0.1262,
+      "webp_q": 37,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 50,
+      "entropy_diff": 0.1257,
+      "webp_q": 37,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 51,
+      "entropy_diff": 0.125,
+      "webp_q": 37,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 52,
+      "entropy_diff": 0.1098,
+      "webp_q": 41,
+      "avif_q": 32
+    },
+    {
+      "jpeg_q": 53,
+      "entropy_diff": 0.1085,
+      "webp_q": 41,
+      "avif_q": 32
+    },
+    {
+      "jpeg_q": 54,
+      "entropy_diff": 0.1075,
+      "webp_q": 42,
+      "avif_q": 32
+    },
+    {
+      "jpeg_q": 55,
+      "entropy_diff": 0.1069,
+      "webp_q": 42,
+      "avif_q": 33
+    },
+    {
+      "jpeg_q": 56,
+      "entropy_diff": 0.1055,
+      "webp_q": 43,
+      "avif_q": 33
+    },
+    {
+      "jpeg_q": 57,
+      "entropy_diff": 0.1042,
+      "webp_q": 44,
+      "avif_q": 33
+    },
+    {
+      "jpeg_q": 58,
+      "entropy_diff": 0.1029,
+      "webp_q": 45,
+      "avif_q": 34
+    },
+    {
+      "jpeg_q": 59,
+      "entropy_diff": 0.1016,
+      "webp_q": 46,
+      "avif_q": 34
+    },
+    {
+      "jpeg_q": 60,
+      "entropy_diff": 0.1006,
+      "webp_q": 46,
+      "avif_q": 34
+    },
+    {
+      "jpeg_q": 61,
+      "entropy_diff": 0.0979,
+      "webp_q": 47,
+      "avif_q": 35
+    },
+    {
+      "jpeg_q": 62,
+      "entropy_diff": 0.097,
+      "webp_q": 47,
+      "avif_q": 35
+    },
+    {
+      "jpeg_q": 63,
+      "entropy_diff": 0.0952,
+      "webp_q": 48,
+      "avif_q": 36
+    },
+    {
+      "jpeg_q": 64,
+      "entropy_diff": 0.0937,
+      "webp_q": 48,
+      "avif_q": 36
+    },
+    {
+      "jpeg_q": 65,
+      "entropy_diff": 0.0932,
+      "webp_q": 50,
+      "avif_q": 37
+    },
+    {
+      "jpeg_q": 66,
+      "entropy_diff": 0.0919,
+      "webp_q": 51,
+      "avif_q": 38
+    },
+    {
+      "jpeg_q": 67,
+      "entropy_diff": 0.0898,
+      "webp_q": 52,
+      "avif_q": 38
+    },
+    {
+      "jpeg_q": 68,
+      "entropy_diff": 0.0869,
+      "webp_q": 53,
+      "avif_q": 39
+    },
+    {
+      "jpeg_q": 69,
+      "entropy_diff": 0.0857,
+      "webp_q": 54,
+      "avif_q": 39
+    },
+    {
+      "jpeg_q": 70,
+      "entropy_diff": 0.0837,
+      "webp_q": 55,
+      "avif_q": 40
+    },
+    {
+      "jpeg_q": 71,
+      "entropy_diff": 0.0809,
+      "webp_q": 56,
+      "avif_q": 41
+    },
+    {
+      "jpeg_q": 72,
+      "entropy_diff": 0.0794,
+      "webp_q": 57,
+      "avif_q": 41
+    },
+    {
+      "jpeg_q": 73,
+      "entropy_diff": 0.0778,
+      "webp_q": 58,
+      "avif_q": 42
+    },
+    {
+      "jpeg_q": 74,
+      "entropy_diff": 0.0738,
+      "webp_q": 60,
+      "avif_q": 43
+    },
+    {
+      "jpeg_q": 75,
+      "entropy_diff": 0.073,
+      "webp_q": 61,
+      "avif_q": 44
+    },
+    {
+      "jpeg_q": 76,
+      "entropy_diff": 0.0699,
+      "webp_q": 62,
+      "avif_q": 45
+    },
+    {
+      "jpeg_q": 77,
+      "entropy_diff": 0.0673,
+      "webp_q": 64,
+      "avif_q": 45
+    },
+    {
+      "jpeg_q": 78,
+      "entropy_diff": 0.0645,
+      "webp_q": 66,
+      "avif_q": 47
+    },
+    {
+      "jpeg_q": 79,
+      "entropy_diff": 0.0626,
+      "webp_q": 67,
+      "avif_q": 47
+    },
+    {
+      "jpeg_q": 80,
+      "entropy_diff": 0.0605,
+      "webp_q": 68,
+      "avif_q": 48
+    },
+    {
+      "jpeg_q": 81,
+      "entropy_diff": 0.0574,
+      "webp_q": 70,
+      "avif_q": 49
+    },
+    {
+      "jpeg_q": 82,
+      "entropy_diff": 0.0556,
+      "webp_q": 71,
+      "avif_q": 50
+    },
+    {
+      "jpeg_q": 83,
+      "entropy_diff": 0.0527,
+      "webp_q": 73,
+      "avif_q": 52
+    },
+    {
+      "jpeg_q": 84,
+      "entropy_diff": 0.0509,
+      "webp_q": 75,
+      "avif_q": 52
+    },
+    {
+      "jpeg_q": 85,
+      "entropy_diff": 0.0488,
+      "webp_q": 77,
+      "avif_q": 53
+    },
+    {
+      "jpeg_q": 86,
+      "entropy_diff": 0.0461,
+      "webp_q": 79,
+      "avif_q": 55
+    },
+    {
+      "jpeg_q": 87,
+      "entropy_diff": 0.0439,
+      "webp_q": 80,
+      "avif_q": 56
+    },
+    {
+      "jpeg_q": 88,
+      "entropy_diff": 0.0416,
+      "webp_q": 82,
+      "avif_q": 57
+    },
+    {
+      "jpeg_q": 89,
+      "entropy_diff": 0.0392,
+      "webp_q": 84,
+      "avif_q": 58
+    },
+    {
+      "jpeg_q": 90,
+      "entropy_diff": 0.0307,
+      "webp_q": 90,
+      "avif_q": 64
+    },
+    {
+      "jpeg_q": 91,
+      "entropy_diff": 0.0272,
+      "webp_q": 92,
+      "avif_q": 67
+    },
+    {
+      "jpeg_q": 92,
+      "entropy_diff": 0.0246,
+      "webp_q": 94,
+      "avif_q": 69
+    },
+    {
+      "jpeg_q": 93,
+      "entropy_diff": 0.0216,
+      "webp_q": 95,
+      "avif_q": 71
+    },
+    {
+      "jpeg_q": 94,
+      "entropy_diff": 0.0184,
+      "webp_q": 96,
+      "avif_q": 74
+    },
+    {
+      "jpeg_q": 95,
+      "entropy_diff": 0.0152,
+      "webp_q": 98,
+      "avif_q": 77
+    },
+    {
+      "jpeg_q": 96,
+      "entropy_diff": 0.0121,
+      "webp_q": 99,
+      "avif_q": 82
+    },
+    {
+      "jpeg_q": 97,
+      "entropy_diff": 0.0099,
+      "webp_q": 100,
+      "avif_q": 86
+    },
+    {
+      "jpeg_q": 98,
+      "entropy_diff": 0.0091,
+      "webp_q": 100,
+      "avif_q": 90
+    },
+    {
+      "jpeg_q": 99,
+      "entropy_diff": 0.0075,
+      "webp_q": 100,
+      "avif_q": 94
+    },
+    {
+      "jpeg_q": 100,
+      "entropy_diff": 0.0055,
+      "webp_q": 100,
+      "avif_q": 97
+    }
+  ]
+}

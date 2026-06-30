@@ -1,0 +1,617 @@
+{
+  "$schema": "calibration-schema",
+  "metric": "dists",
+  "higher_is_better": false,
+  "content_type": "photo",
+  "description": "JPEG→WebP/AVIF quality equivalence for photo content using dists. Step 1, AVIF speed 0.",
+  "generated": "2026-06-30T07:16:46.002Z",
+  "images": 24,
+  "step": 1,
+  "data_points": 100,
+  "encoders": {
+    "cwebp": "cwebp -m 6",
+    "avifenc": "avifenc --speed 0"
+  },
+  "curve": [
+    {
+      "jpeg_q": 1,
+      "dists": 0.4161,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 2,
+      "dists": 0.416,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 3,
+      "dists": 0.3964,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 4,
+      "dists": 0.366,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 5,
+      "dists": 0.3412,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 6,
+      "dists": 0.3179,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 7,
+      "dists": 0.3019,
+      "webp_q": 1,
+      "avif_q": 2
+    },
+    {
+      "jpeg_q": 8,
+      "dists": 0.2852,
+      "webp_q": 1,
+      "avif_q": 3
+    },
+    {
+      "jpeg_q": 9,
+      "dists": 0.2709,
+      "webp_q": 1,
+      "avif_q": 3
+    },
+    {
+      "jpeg_q": 10,
+      "dists": 0.2586,
+      "webp_q": 1,
+      "avif_q": 4
+    },
+    {
+      "jpeg_q": 11,
+      "dists": 0.2466,
+      "webp_q": 2,
+      "avif_q": 6
+    },
+    {
+      "jpeg_q": 12,
+      "dists": 0.2357,
+      "webp_q": 2,
+      "avif_q": 8
+    },
+    {
+      "jpeg_q": 13,
+      "dists": 0.2266,
+      "webp_q": 3,
+      "avif_q": 9
+    },
+    {
+      "jpeg_q": 14,
+      "dists": 0.2174,
+      "webp_q": 4,
+      "avif_q": 11
+    },
+    {
+      "jpeg_q": 15,
+      "dists": 0.2085,
+      "webp_q": 5,
+      "avif_q": 13
+    },
+    {
+      "jpeg_q": 16,
+      "dists": 0.2002,
+      "webp_q": 6,
+      "avif_q": 15
+    },
+    {
+      "jpeg_q": 17,
+      "dists": 0.1921,
+      "webp_q": 9,
+      "avif_q": 16
+    },
+    {
+      "jpeg_q": 18,
+      "dists": 0.1859,
+      "webp_q": 11,
+      "avif_q": 18
+    },
+    {
+      "jpeg_q": 19,
+      "dists": 0.1811,
+      "webp_q": 12,
+      "avif_q": 19
+    },
+    {
+      "jpeg_q": 20,
+      "dists": 0.1756,
+      "webp_q": 14,
+      "avif_q": 21
+    },
+    {
+      "jpeg_q": 21,
+      "dists": 0.1706,
+      "webp_q": 16,
+      "avif_q": 21
+    },
+    {
+      "jpeg_q": 22,
+      "dists": 0.1662,
+      "webp_q": 17,
+      "avif_q": 23
+    },
+    {
+      "jpeg_q": 23,
+      "dists": 0.1625,
+      "webp_q": 19,
+      "avif_q": 24
+    },
+    {
+      "jpeg_q": 24,
+      "dists": 0.1578,
+      "webp_q": 21,
+      "avif_q": 25
+    },
+    {
+      "jpeg_q": 25,
+      "dists": 0.154,
+      "webp_q": 22,
+      "avif_q": 26
+    },
+    {
+      "jpeg_q": 26,
+      "dists": 0.1517,
+      "webp_q": 23,
+      "avif_q": 27
+    },
+    {
+      "jpeg_q": 27,
+      "dists": 0.1469,
+      "webp_q": 25,
+      "avif_q": 28
+    },
+    {
+      "jpeg_q": 28,
+      "dists": 0.1431,
+      "webp_q": 28,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 29,
+      "dists": 0.1408,
+      "webp_q": 29,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 30,
+      "dists": 0.1378,
+      "webp_q": 30,
+      "avif_q": 30
+    },
+    {
+      "jpeg_q": 31,
+      "dists": 0.1352,
+      "webp_q": 32,
+      "avif_q": 31
+    },
+    {
+      "jpeg_q": 32,
+      "dists": 0.1329,
+      "webp_q": 32,
+      "avif_q": 31
+    },
+    {
+      "jpeg_q": 33,
+      "dists": 0.1301,
+      "webp_q": 34,
+      "avif_q": 32
+    },
+    {
+      "jpeg_q": 34,
+      "dists": 0.1283,
+      "webp_q": 35,
+      "avif_q": 33
+    },
+    {
+      "jpeg_q": 35,
+      "dists": 0.1255,
+      "webp_q": 37,
+      "avif_q": 34
+    },
+    {
+      "jpeg_q": 36,
+      "dists": 0.123,
+      "webp_q": 38,
+      "avif_q": 34
+    },
+    {
+      "jpeg_q": 37,
+      "dists": 0.1221,
+      "webp_q": 38,
+      "avif_q": 35
+    },
+    {
+      "jpeg_q": 38,
+      "dists": 0.12,
+      "webp_q": 40,
+      "avif_q": 35
+    },
+    {
+      "jpeg_q": 39,
+      "dists": 0.1184,
+      "webp_q": 40,
+      "avif_q": 35
+    },
+    {
+      "jpeg_q": 40,
+      "dists": 0.1173,
+      "webp_q": 41,
+      "avif_q": 36
+    },
+    {
+      "jpeg_q": 41,
+      "dists": 0.1147,
+      "webp_q": 43,
+      "avif_q": 37
+    },
+    {
+      "jpeg_q": 42,
+      "dists": 0.1137,
+      "webp_q": 43,
+      "avif_q": 37
+    },
+    {
+      "jpeg_q": 43,
+      "dists": 0.1125,
+      "webp_q": 44,
+      "avif_q": 37
+    },
+    {
+      "jpeg_q": 44,
+      "dists": 0.1098,
+      "webp_q": 46,
+      "avif_q": 38
+    },
+    {
+      "jpeg_q": 45,
+      "dists": 0.1088,
+      "webp_q": 47,
+      "avif_q": 39
+    },
+    {
+      "jpeg_q": 46,
+      "dists": 0.1075,
+      "webp_q": 48,
+      "avif_q": 39
+    },
+    {
+      "jpeg_q": 47,
+      "dists": 0.1066,
+      "webp_q": 49,
+      "avif_q": 39
+    },
+    {
+      "jpeg_q": 48,
+      "dists": 0.1057,
+      "webp_q": 49,
+      "avif_q": 39
+    },
+    {
+      "jpeg_q": 49,
+      "dists": 0.1031,
+      "webp_q": 52,
+      "avif_q": 40
+    },
+    {
+      "jpeg_q": 50,
+      "dists": 0.1025,
+      "webp_q": 52,
+      "avif_q": 41
+    },
+    {
+      "jpeg_q": 51,
+      "dists": 0.1017,
+      "webp_q": 52,
+      "avif_q": 41
+    },
+    {
+      "jpeg_q": 52,
+      "dists": 0.0999,
+      "webp_q": 54,
+      "avif_q": 41
+    },
+    {
+      "jpeg_q": 53,
+      "dists": 0.0989,
+      "webp_q": 55,
+      "avif_q": 42
+    },
+    {
+      "jpeg_q": 54,
+      "dists": 0.0978,
+      "webp_q": 56,
+      "avif_q": 42
+    },
+    {
+      "jpeg_q": 55,
+      "dists": 0.0967,
+      "webp_q": 57,
+      "avif_q": 43
+    },
+    {
+      "jpeg_q": 56,
+      "dists": 0.0956,
+      "webp_q": 58,
+      "avif_q": 43
+    },
+    {
+      "jpeg_q": 57,
+      "dists": 0.0944,
+      "webp_q": 59,
+      "avif_q": 43
+    },
+    {
+      "jpeg_q": 58,
+      "dists": 0.0928,
+      "webp_q": 60,
+      "avif_q": 44
+    },
+    {
+      "jpeg_q": 59,
+      "dists": 0.092,
+      "webp_q": 61,
+      "avif_q": 44
+    },
+    {
+      "jpeg_q": 60,
+      "dists": 0.091,
+      "webp_q": 61,
+      "avif_q": 45
+    },
+    {
+      "jpeg_q": 61,
+      "dists": 0.0896,
+      "webp_q": 63,
+      "avif_q": 45
+    },
+    {
+      "jpeg_q": 62,
+      "dists": 0.0884,
+      "webp_q": 63,
+      "avif_q": 45
+    },
+    {
+      "jpeg_q": 63,
+      "dists": 0.0873,
+      "webp_q": 64,
+      "avif_q": 46
+    },
+    {
+      "jpeg_q": 64,
+      "dists": 0.0856,
+      "webp_q": 66,
+      "avif_q": 47
+    },
+    {
+      "jpeg_q": 65,
+      "dists": 0.084,
+      "webp_q": 67,
+      "avif_q": 47
+    },
+    {
+      "jpeg_q": 66,
+      "dists": 0.0825,
+      "webp_q": 69,
+      "avif_q": 48
+    },
+    {
+      "jpeg_q": 67,
+      "dists": 0.0809,
+      "webp_q": 70,
+      "avif_q": 48
+    },
+    {
+      "jpeg_q": 68,
+      "dists": 0.0797,
+      "webp_q": 70,
+      "avif_q": 49
+    },
+    {
+      "jpeg_q": 69,
+      "dists": 0.0786,
+      "webp_q": 71,
+      "avif_q": 49
+    },
+    {
+      "jpeg_q": 70,
+      "dists": 0.0764,
+      "webp_q": 72,
+      "avif_q": 50
+    },
+    {
+      "jpeg_q": 71,
+      "dists": 0.0751,
+      "webp_q": 73,
+      "avif_q": 50
+    },
+    {
+      "jpeg_q": 72,
+      "dists": 0.0739,
+      "webp_q": 74,
+      "avif_q": 51
+    },
+    {
+      "jpeg_q": 73,
+      "dists": 0.0723,
+      "webp_q": 74,
+      "avif_q": 52
+    },
+    {
+      "jpeg_q": 74,
+      "dists": 0.0706,
+      "webp_q": 75,
+      "avif_q": 52
+    },
+    {
+      "jpeg_q": 75,
+      "dists": 0.0698,
+      "webp_q": 76,
+      "avif_q": 53
+    },
+    {
+      "jpeg_q": 76,
+      "dists": 0.0677,
+      "webp_q": 77,
+      "avif_q": 54
+    },
+    {
+      "jpeg_q": 77,
+      "dists": 0.065,
+      "webp_q": 78,
+      "avif_q": 55
+    },
+    {
+      "jpeg_q": 78,
+      "dists": 0.0632,
+      "webp_q": 79,
+      "avif_q": 56
+    },
+    {
+      "jpeg_q": 79,
+      "dists": 0.0616,
+      "webp_q": 80,
+      "avif_q": 57
+    },
+    {
+      "jpeg_q": 80,
+      "dists": 0.0598,
+      "webp_q": 80,
+      "avif_q": 58
+    },
+    {
+      "jpeg_q": 81,
+      "dists": 0.0574,
+      "webp_q": 81,
+      "avif_q": 59
+    },
+    {
+      "jpeg_q": 82,
+      "dists": 0.0553,
+      "webp_q": 82,
+      "avif_q": 60
+    },
+    {
+      "jpeg_q": 83,
+      "dists": 0.0528,
+      "webp_q": 83,
+      "avif_q": 61
+    },
+    {
+      "jpeg_q": 84,
+      "dists": 0.0505,
+      "webp_q": 84,
+      "avif_q": 62
+    },
+    {
+      "jpeg_q": 85,
+      "dists": 0.0478,
+      "webp_q": 85,
+      "avif_q": 64
+    },
+    {
+      "jpeg_q": 86,
+      "dists": 0.0455,
+      "webp_q": 85,
+      "avif_q": 65
+    },
+    {
+      "jpeg_q": 87,
+      "dists": 0.0439,
+      "webp_q": 86,
+      "avif_q": 66
+    },
+    {
+      "jpeg_q": 88,
+      "dists": 0.0406,
+      "webp_q": 87,
+      "avif_q": 68
+    },
+    {
+      "jpeg_q": 89,
+      "dists": 0.0384,
+      "webp_q": 88,
+      "avif_q": 69
+    },
+    {
+      "jpeg_q": 90,
+      "dists": 0.0229,
+      "webp_q": 93,
+      "avif_q": 79
+    },
+    {
+      "jpeg_q": 91,
+      "dists": 0.0197,
+      "webp_q": 94,
+      "avif_q": 81
+    },
+    {
+      "jpeg_q": 92,
+      "dists": 0.0172,
+      "webp_q": 95,
+      "avif_q": 82
+    },
+    {
+      "jpeg_q": 93,
+      "dists": 0.0147,
+      "webp_q": 96,
+      "avif_q": 84
+    },
+    {
+      "jpeg_q": 94,
+      "dists": 0.0118,
+      "webp_q": 98,
+      "avif_q": 86
+    },
+    {
+      "jpeg_q": 95,
+      "dists": 0.0095,
+      "webp_q": 99,
+      "avif_q": 88
+    },
+    {
+      "jpeg_q": 96,
+      "dists": 0.0067,
+      "webp_q": 100,
+      "avif_q": 90
+    },
+    {
+      "jpeg_q": 97,
+      "dists": 0.0046,
+      "webp_q": 100,
+      "avif_q": 91
+    },
+    {
+      "jpeg_q": 98,
+      "dists": 0.0032,
+      "webp_q": 100,
+      "avif_q": 93
+    },
+    {
+      "jpeg_q": 99,
+      "dists": 0.0023,
+      "webp_q": 100,
+      "avif_q": 96
+    },
+    {
+      "jpeg_q": 100,
+      "dists": 0.0016,
+      "webp_q": 100,
+      "avif_q": 98
+    }
+  ]
+}

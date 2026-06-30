@@ -1,0 +1,31 @@
+{
+  "name": "image-tools",
+  "version": "0.1.0",
+  "description": "Content-aware JPEG → WebP/AVIF conversion: classify image content type, look up calibrated perceptual-quality equivalents, fuzz encoder parameters, and ship the smallest file that meets the quality floor.",
+  "type": "module",
+  "license": "GPL-3.0-or-later",
+  "engines": {
+    "node": ">=18.14.0"
+  },
+  "bin": {
+    "img-classify": "./classify.mjs",
+    "img-convert": "./convert.mjs",
+    "img-calibrate": "./calibrate.mjs"
+  },
+  "scripts": {
+    "classify": "node classify.mjs",
+    "convert": "node convert.mjs",
+    "calibrate": "node calibrate.mjs"
+  },
+  "keywords": [
+    "image-compression",
+    "avif",
+    "webp",
+    "jpeg",
+    "ssimulacra2",
+    "perceptual-quality",
+    "image-optimization"
+  ],
+  "dependencies": {},
+  "comment": "No npm dependencies. Requires external CLI tools on PATH (ImageMagick 7, cwebp, avifenc, ssimulacra2) and — for calibration only — a Python venv (see requirements.txt) plus dssim/ffmpeg/butteraugli_main. See README."
+}

@@ -1,0 +1,617 @@
+{
+  "$schema": "calibration-schema",
+  "metric": "butteraugli",
+  "higher_is_better": false,
+  "content_type": "line-art",
+  "description": "JPEG→WebP/AVIF quality equivalence for line-art content using butteraugli. Step 1, AVIF speed 0.",
+  "generated": "2026-06-30T03:24:33.874Z",
+  "images": 19,
+  "step": 1,
+  "data_points": 100,
+  "encoders": {
+    "cwebp": "cwebp -m 6",
+    "avifenc": "avifenc --speed 0"
+  },
+  "curve": [
+    {
+      "jpeg_q": 1,
+      "butteraugli_dist": 24.8099,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 2,
+      "butteraugli_dist": 24.8061,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 3,
+      "butteraugli_dist": 20.7905,
+      "webp_q": 1,
+      "avif_q": 2
+    },
+    {
+      "jpeg_q": 4,
+      "butteraugli_dist": 16.5488,
+      "webp_q": 1,
+      "avif_q": 4
+    },
+    {
+      "jpeg_q": 5,
+      "butteraugli_dist": 13.3777,
+      "webp_q": 1,
+      "avif_q": 7
+    },
+    {
+      "jpeg_q": 6,
+      "butteraugli_dist": 12.203,
+      "webp_q": 1,
+      "avif_q": 9
+    },
+    {
+      "jpeg_q": 7,
+      "butteraugli_dist": 11.3051,
+      "webp_q": 1,
+      "avif_q": 10
+    },
+    {
+      "jpeg_q": 8,
+      "butteraugli_dist": 9.6366,
+      "webp_q": 2,
+      "avif_q": 14
+    },
+    {
+      "jpeg_q": 9,
+      "butteraugli_dist": 8.7937,
+      "webp_q": 3,
+      "avif_q": 16
+    },
+    {
+      "jpeg_q": 10,
+      "butteraugli_dist": 8.6388,
+      "webp_q": 3,
+      "avif_q": 16
+    },
+    {
+      "jpeg_q": 11,
+      "butteraugli_dist": 8.2874,
+      "webp_q": 4,
+      "avif_q": 17
+    },
+    {
+      "jpeg_q": 12,
+      "butteraugli_dist": 7.5875,
+      "webp_q": 5,
+      "avif_q": 20
+    },
+    {
+      "jpeg_q": 13,
+      "butteraugli_dist": 7.2292,
+      "webp_q": 7,
+      "avif_q": 21
+    },
+    {
+      "jpeg_q": 14,
+      "butteraugli_dist": 6.9432,
+      "webp_q": 7,
+      "avif_q": 22
+    },
+    {
+      "jpeg_q": 15,
+      "butteraugli_dist": 6.9168,
+      "webp_q": 8,
+      "avif_q": 22
+    },
+    {
+      "jpeg_q": 16,
+      "butteraugli_dist": 6.4843,
+      "webp_q": 10,
+      "avif_q": 24
+    },
+    {
+      "jpeg_q": 17,
+      "butteraugli_dist": 6.237,
+      "webp_q": 11,
+      "avif_q": 26
+    },
+    {
+      "jpeg_q": 18,
+      "butteraugli_dist": 6.1247,
+      "webp_q": 11,
+      "avif_q": 26
+    },
+    {
+      "jpeg_q": 19,
+      "butteraugli_dist": 5.7866,
+      "webp_q": 13,
+      "avif_q": 27
+    },
+    {
+      "jpeg_q": 20,
+      "butteraugli_dist": 5.6795,
+      "webp_q": 14,
+      "avif_q": 28
+    },
+    {
+      "jpeg_q": 21,
+      "butteraugli_dist": 5.6714,
+      "webp_q": 15,
+      "avif_q": 28
+    },
+    {
+      "jpeg_q": 22,
+      "butteraugli_dist": 5.4743,
+      "webp_q": 16,
+      "avif_q": 28
+    },
+    {
+      "jpeg_q": 23,
+      "butteraugli_dist": 5.5288,
+      "webp_q": 16,
+      "avif_q": 28
+    },
+    {
+      "jpeg_q": 24,
+      "butteraugli_dist": 5.5025,
+      "webp_q": 17,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 25,
+      "butteraugli_dist": 5.4618,
+      "webp_q": 17,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 26,
+      "butteraugli_dist": 5.3981,
+      "webp_q": 17,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 27,
+      "butteraugli_dist": 5.3104,
+      "webp_q": 19,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 28,
+      "butteraugli_dist": 5.043,
+      "webp_q": 21,
+      "avif_q": 30
+    },
+    {
+      "jpeg_q": 29,
+      "butteraugli_dist": 5.0243,
+      "webp_q": 21,
+      "avif_q": 30
+    },
+    {
+      "jpeg_q": 30,
+      "butteraugli_dist": 4.9673,
+      "webp_q": 21,
+      "avif_q": 31
+    },
+    {
+      "jpeg_q": 31,
+      "butteraugli_dist": 4.985,
+      "webp_q": 21,
+      "avif_q": 31
+    },
+    {
+      "jpeg_q": 32,
+      "butteraugli_dist": 4.7985,
+      "webp_q": 22,
+      "avif_q": 31
+    },
+    {
+      "jpeg_q": 33,
+      "butteraugli_dist": 4.763,
+      "webp_q": 23,
+      "avif_q": 32
+    },
+    {
+      "jpeg_q": 34,
+      "butteraugli_dist": 4.8391,
+      "webp_q": 22,
+      "avif_q": 31
+    },
+    {
+      "jpeg_q": 35,
+      "butteraugli_dist": 4.6821,
+      "webp_q": 23,
+      "avif_q": 32
+    },
+    {
+      "jpeg_q": 36,
+      "butteraugli_dist": 4.4589,
+      "webp_q": 25,
+      "avif_q": 33
+    },
+    {
+      "jpeg_q": 37,
+      "butteraugli_dist": 4.5495,
+      "webp_q": 25,
+      "avif_q": 33
+    },
+    {
+      "jpeg_q": 38,
+      "butteraugli_dist": 4.3597,
+      "webp_q": 27,
+      "avif_q": 34
+    },
+    {
+      "jpeg_q": 39,
+      "butteraugli_dist": 4.3635,
+      "webp_q": 27,
+      "avif_q": 34
+    },
+    {
+      "jpeg_q": 40,
+      "butteraugli_dist": 4.3344,
+      "webp_q": 27,
+      "avif_q": 34
+    },
+    {
+      "jpeg_q": 41,
+      "butteraugli_dist": 4.3303,
+      "webp_q": 27,
+      "avif_q": 35
+    },
+    {
+      "jpeg_q": 42,
+      "butteraugli_dist": 4.2763,
+      "webp_q": 27,
+      "avif_q": 35
+    },
+    {
+      "jpeg_q": 43,
+      "butteraugli_dist": 4.1497,
+      "webp_q": 29,
+      "avif_q": 36
+    },
+    {
+      "jpeg_q": 44,
+      "butteraugli_dist": 4.0568,
+      "webp_q": 30,
+      "avif_q": 37
+    },
+    {
+      "jpeg_q": 45,
+      "butteraugli_dist": 4.0396,
+      "webp_q": 30,
+      "avif_q": 37
+    },
+    {
+      "jpeg_q": 46,
+      "butteraugli_dist": 4.0482,
+      "webp_q": 31,
+      "avif_q": 37
+    },
+    {
+      "jpeg_q": 47,
+      "butteraugli_dist": 3.9937,
+      "webp_q": 31,
+      "avif_q": 37
+    },
+    {
+      "jpeg_q": 48,
+      "butteraugli_dist": 3.952,
+      "webp_q": 32,
+      "avif_q": 37
+    },
+    {
+      "jpeg_q": 49,
+      "butteraugli_dist": 3.9259,
+      "webp_q": 33,
+      "avif_q": 38
+    },
+    {
+      "jpeg_q": 50,
+      "butteraugli_dist": 3.8682,
+      "webp_q": 34,
+      "avif_q": 38
+    },
+    {
+      "jpeg_q": 51,
+      "butteraugli_dist": 3.8536,
+      "webp_q": 35,
+      "avif_q": 38
+    },
+    {
+      "jpeg_q": 52,
+      "butteraugli_dist": 3.7846,
+      "webp_q": 36,
+      "avif_q": 38
+    },
+    {
+      "jpeg_q": 53,
+      "butteraugli_dist": 3.8358,
+      "webp_q": 34,
+      "avif_q": 38
+    },
+    {
+      "jpeg_q": 54,
+      "butteraugli_dist": 3.7467,
+      "webp_q": 36,
+      "avif_q": 39
+    },
+    {
+      "jpeg_q": 55,
+      "butteraugli_dist": 3.6712,
+      "webp_q": 37,
+      "avif_q": 39
+    },
+    {
+      "jpeg_q": 56,
+      "butteraugli_dist": 3.6261,
+      "webp_q": 39,
+      "avif_q": 40
+    },
+    {
+      "jpeg_q": 57,
+      "butteraugli_dist": 3.546,
+      "webp_q": 41,
+      "avif_q": 41
+    },
+    {
+      "jpeg_q": 58,
+      "butteraugli_dist": 3.5271,
+      "webp_q": 40,
+      "avif_q": 41
+    },
+    {
+      "jpeg_q": 59,
+      "butteraugli_dist": 3.4902,
+      "webp_q": 41,
+      "avif_q": 41
+    },
+    {
+      "jpeg_q": 60,
+      "butteraugli_dist": 3.4791,
+      "webp_q": 40,
+      "avif_q": 41
+    },
+    {
+      "jpeg_q": 61,
+      "butteraugli_dist": 3.491,
+      "webp_q": 40,
+      "avif_q": 41
+    },
+    {
+      "jpeg_q": 62,
+      "butteraugli_dist": 3.4433,
+      "webp_q": 43,
+      "avif_q": 41
+    },
+    {
+      "jpeg_q": 63,
+      "butteraugli_dist": 3.3753,
+      "webp_q": 43,
+      "avif_q": 42
+    },
+    {
+      "jpeg_q": 64,
+      "butteraugli_dist": 3.3266,
+      "webp_q": 44,
+      "avif_q": 42
+    },
+    {
+      "jpeg_q": 65,
+      "butteraugli_dist": 3.2879,
+      "webp_q": 44,
+      "avif_q": 42
+    },
+    {
+      "jpeg_q": 66,
+      "butteraugli_dist": 3.1668,
+      "webp_q": 47,
+      "avif_q": 44
+    },
+    {
+      "jpeg_q": 67,
+      "butteraugli_dist": 3.2229,
+      "webp_q": 47,
+      "avif_q": 43
+    },
+    {
+      "jpeg_q": 68,
+      "butteraugli_dist": 3.1934,
+      "webp_q": 47,
+      "avif_q": 44
+    },
+    {
+      "jpeg_q": 69,
+      "butteraugli_dist": 3.1299,
+      "webp_q": 49,
+      "avif_q": 44
+    },
+    {
+      "jpeg_q": 70,
+      "butteraugli_dist": 3.016,
+      "webp_q": 51,
+      "avif_q": 45
+    },
+    {
+      "jpeg_q": 71,
+      "butteraugli_dist": 2.9192,
+      "webp_q": 54,
+      "avif_q": 46
+    },
+    {
+      "jpeg_q": 72,
+      "butteraugli_dist": 2.8688,
+      "webp_q": 57,
+      "avif_q": 46
+    },
+    {
+      "jpeg_q": 73,
+      "butteraugli_dist": 2.9111,
+      "webp_q": 56,
+      "avif_q": 46
+    },
+    {
+      "jpeg_q": 74,
+      "butteraugli_dist": 2.8821,
+      "webp_q": 56,
+      "avif_q": 46
+    },
+    {
+      "jpeg_q": 75,
+      "butteraugli_dist": 2.8668,
+      "webp_q": 56,
+      "avif_q": 46
+    },
+    {
+      "jpeg_q": 76,
+      "butteraugli_dist": 2.7406,
+      "webp_q": 59,
+      "avif_q": 47
+    },
+    {
+      "jpeg_q": 77,
+      "butteraugli_dist": 2.6989,
+      "webp_q": 61,
+      "avif_q": 47
+    },
+    {
+      "jpeg_q": 78,
+      "butteraugli_dist": 2.5393,
+      "webp_q": 64,
+      "avif_q": 50
+    },
+    {
+      "jpeg_q": 79,
+      "butteraugli_dist": 2.5036,
+      "webp_q": 65,
+      "avif_q": 50
+    },
+    {
+      "jpeg_q": 80,
+      "butteraugli_dist": 2.4253,
+      "webp_q": 67,
+      "avif_q": 51
+    },
+    {
+      "jpeg_q": 81,
+      "butteraugli_dist": 2.3634,
+      "webp_q": 70,
+      "avif_q": 51
+    },
+    {
+      "jpeg_q": 82,
+      "butteraugli_dist": 2.3377,
+      "webp_q": 70,
+      "avif_q": 52
+    },
+    {
+      "jpeg_q": 83,
+      "butteraugli_dist": 2.2601,
+      "webp_q": 72,
+      "avif_q": 53
+    },
+    {
+      "jpeg_q": 84,
+      "butteraugli_dist": 2.1631,
+      "webp_q": 74,
+      "avif_q": 54
+    },
+    {
+      "jpeg_q": 85,
+      "butteraugli_dist": 2.0826,
+      "webp_q": 77,
+      "avif_q": 55
+    },
+    {
+      "jpeg_q": 86,
+      "butteraugli_dist": 2.0063,
+      "webp_q": 77,
+      "avif_q": 56
+    },
+    {
+      "jpeg_q": 87,
+      "butteraugli_dist": 1.9319,
+      "webp_q": 80,
+      "avif_q": 57
+    },
+    {
+      "jpeg_q": 88,
+      "butteraugli_dist": 1.8216,
+      "webp_q": 82,
+      "avif_q": 60
+    },
+    {
+      "jpeg_q": 89,
+      "butteraugli_dist": 1.7504,
+      "webp_q": 83,
+      "avif_q": 61
+    },
+    {
+      "jpeg_q": 90,
+      "butteraugli_dist": 1.6125,
+      "webp_q": 85,
+      "avif_q": 63
+    },
+    {
+      "jpeg_q": 91,
+      "butteraugli_dist": 1.5357,
+      "webp_q": 86,
+      "avif_q": 65
+    },
+    {
+      "jpeg_q": 92,
+      "butteraugli_dist": 1.402,
+      "webp_q": 87,
+      "avif_q": 69
+    },
+    {
+      "jpeg_q": 93,
+      "butteraugli_dist": 1.2584,
+      "webp_q": 89,
+      "avif_q": 73
+    },
+    {
+      "jpeg_q": 94,
+      "butteraugli_dist": 1.1576,
+      "webp_q": 91,
+      "avif_q": 76
+    },
+    {
+      "jpeg_q": 95,
+      "butteraugli_dist": 1.052,
+      "webp_q": 92,
+      "avif_q": 79
+    },
+    {
+      "jpeg_q": 96,
+      "butteraugli_dist": 0.8721,
+      "webp_q": 96,
+      "avif_q": 84
+    },
+    {
+      "jpeg_q": 97,
+      "butteraugli_dist": 0.7215,
+      "webp_q": 97,
+      "avif_q": 88
+    },
+    {
+      "jpeg_q": 98,
+      "butteraugli_dist": 0.56,
+      "webp_q": 99,
+      "avif_q": 92
+    },
+    {
+      "jpeg_q": 99,
+      "butteraugli_dist": 0.4004,
+      "webp_q": 100,
+      "avif_q": 96
+    },
+    {
+      "jpeg_q": 100,
+      "butteraugli_dist": 0.3529,
+      "webp_q": 100,
+      "avif_q": 97
+    }
+  ]
+}

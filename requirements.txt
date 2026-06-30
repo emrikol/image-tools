@@ -1,0 +1,25 @@
+# Python dependencies for the PyTorch-based calibration metrics
+# (ms_ssim, lpips, dists, fsim, vif, entropy_diff via measure_perceptual.py).
+#
+# Only needed to RUN calibrate.mjs with those metrics — not needed to use
+# convert.mjs / classify.mjs, which require no Python.
+#
+# Setup (from repo root):
+#   python3 -m venv venv
+#   # install torch/torchvision from the CPU wheel index FIRST:
+#   venv/bin/pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+#   venv/bin/pip install -r requirements.txt
+
+torch
+torchvision
+lpips
+DISTS-pytorch
+piq
+numpy
+scipy
+pillow
+
+# Installed in the original environment but NOT imported by measure_perceptual.py
+# (kept here only for reference; safe to omit):
+#   cvvdp
+#   IQA-pytorch

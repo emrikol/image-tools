@@ -1,0 +1,617 @@
+{
+  "$schema": "calibration-schema",
+  "metric": "xpsnr",
+  "higher_is_better": true,
+  "content_type": "illustration",
+  "description": "JPEG→WebP/AVIF quality equivalence for illustration content using xpsnr. Step 1, AVIF speed 0.",
+  "generated": "2026-06-30T03:28:43.493Z",
+  "images": 25,
+  "step": 1,
+  "data_points": 100,
+  "encoders": {
+    "cwebp": "cwebp -m 6",
+    "avifenc": "avifenc --speed 0"
+  },
+  "curve": [
+    {
+      "jpeg_q": 1,
+      "xpsnr_db": 29.1779,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 2,
+      "xpsnr_db": 29.1814,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 3,
+      "xpsnr_db": 29.6219,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 4,
+      "xpsnr_db": 30.6614,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 5,
+      "xpsnr_db": 31.1795,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 6,
+      "xpsnr_db": 32.6449,
+      "webp_q": 1,
+      "avif_q": 3
+    },
+    {
+      "jpeg_q": 7,
+      "xpsnr_db": 33.2792,
+      "webp_q": 1,
+      "avif_q": 4
+    },
+    {
+      "jpeg_q": 8,
+      "xpsnr_db": 33.8049,
+      "webp_q": 1,
+      "avif_q": 5
+    },
+    {
+      "jpeg_q": 9,
+      "xpsnr_db": 34.0152,
+      "webp_q": 1,
+      "avif_q": 6
+    },
+    {
+      "jpeg_q": 10,
+      "xpsnr_db": 34.5971,
+      "webp_q": 1,
+      "avif_q": 7
+    },
+    {
+      "jpeg_q": 11,
+      "xpsnr_db": 34.9146,
+      "webp_q": 1,
+      "avif_q": 8
+    },
+    {
+      "jpeg_q": 12,
+      "xpsnr_db": 35.3405,
+      "webp_q": 1,
+      "avif_q": 9
+    },
+    {
+      "jpeg_q": 13,
+      "xpsnr_db": 35.5928,
+      "webp_q": 1,
+      "avif_q": 10
+    },
+    {
+      "jpeg_q": 14,
+      "xpsnr_db": 35.8138,
+      "webp_q": 1,
+      "avif_q": 11
+    },
+    {
+      "jpeg_q": 15,
+      "xpsnr_db": 36.1501,
+      "webp_q": 2,
+      "avif_q": 12
+    },
+    {
+      "jpeg_q": 16,
+      "xpsnr_db": 36.3557,
+      "webp_q": 2,
+      "avif_q": 13
+    },
+    {
+      "jpeg_q": 17,
+      "xpsnr_db": 36.6195,
+      "webp_q": 3,
+      "avif_q": 14
+    },
+    {
+      "jpeg_q": 18,
+      "xpsnr_db": 36.774,
+      "webp_q": 3,
+      "avif_q": 15
+    },
+    {
+      "jpeg_q": 19,
+      "xpsnr_db": 37.0038,
+      "webp_q": 4,
+      "avif_q": 15
+    },
+    {
+      "jpeg_q": 20,
+      "xpsnr_db": 37.2317,
+      "webp_q": 4,
+      "avif_q": 16
+    },
+    {
+      "jpeg_q": 21,
+      "xpsnr_db": 37.4433,
+      "webp_q": 5,
+      "avif_q": 17
+    },
+    {
+      "jpeg_q": 22,
+      "xpsnr_db": 37.4878,
+      "webp_q": 5,
+      "avif_q": 17
+    },
+    {
+      "jpeg_q": 23,
+      "xpsnr_db": 37.6233,
+      "webp_q": 6,
+      "avif_q": 18
+    },
+    {
+      "jpeg_q": 24,
+      "xpsnr_db": 37.9583,
+      "webp_q": 7,
+      "avif_q": 19
+    },
+    {
+      "jpeg_q": 25,
+      "xpsnr_db": 38.112,
+      "webp_q": 8,
+      "avif_q": 20
+    },
+    {
+      "jpeg_q": 26,
+      "xpsnr_db": 38.2073,
+      "webp_q": 8,
+      "avif_q": 20
+    },
+    {
+      "jpeg_q": 27,
+      "xpsnr_db": 38.3511,
+      "webp_q": 9,
+      "avif_q": 21
+    },
+    {
+      "jpeg_q": 28,
+      "xpsnr_db": 38.4885,
+      "webp_q": 9,
+      "avif_q": 21
+    },
+    {
+      "jpeg_q": 29,
+      "xpsnr_db": 38.5959,
+      "webp_q": 10,
+      "avif_q": 22
+    },
+    {
+      "jpeg_q": 30,
+      "xpsnr_db": 38.7942,
+      "webp_q": 11,
+      "avif_q": 23
+    },
+    {
+      "jpeg_q": 31,
+      "xpsnr_db": 38.8318,
+      "webp_q": 11,
+      "avif_q": 23
+    },
+    {
+      "jpeg_q": 32,
+      "xpsnr_db": 39.06,
+      "webp_q": 12,
+      "avif_q": 24
+    },
+    {
+      "jpeg_q": 33,
+      "xpsnr_db": 39.0843,
+      "webp_q": 13,
+      "avif_q": 24
+    },
+    {
+      "jpeg_q": 34,
+      "xpsnr_db": 39.172,
+      "webp_q": 13,
+      "avif_q": 24
+    },
+    {
+      "jpeg_q": 35,
+      "xpsnr_db": 39.2994,
+      "webp_q": 14,
+      "avif_q": 25
+    },
+    {
+      "jpeg_q": 36,
+      "xpsnr_db": 39.4065,
+      "webp_q": 14,
+      "avif_q": 25
+    },
+    {
+      "jpeg_q": 37,
+      "xpsnr_db": 39.4798,
+      "webp_q": 15,
+      "avif_q": 25
+    },
+    {
+      "jpeg_q": 38,
+      "xpsnr_db": 39.6137,
+      "webp_q": 16,
+      "avif_q": 26
+    },
+    {
+      "jpeg_q": 39,
+      "xpsnr_db": 39.8094,
+      "webp_q": 17,
+      "avif_q": 26
+    },
+    {
+      "jpeg_q": 40,
+      "xpsnr_db": 39.8787,
+      "webp_q": 17,
+      "avif_q": 27
+    },
+    {
+      "jpeg_q": 41,
+      "xpsnr_db": 39.9231,
+      "webp_q": 18,
+      "avif_q": 27
+    },
+    {
+      "jpeg_q": 42,
+      "xpsnr_db": 39.9766,
+      "webp_q": 18,
+      "avif_q": 27
+    },
+    {
+      "jpeg_q": 43,
+      "xpsnr_db": 40.0638,
+      "webp_q": 18,
+      "avif_q": 27
+    },
+    {
+      "jpeg_q": 44,
+      "xpsnr_db": 40.1621,
+      "webp_q": 19,
+      "avif_q": 28
+    },
+    {
+      "jpeg_q": 45,
+      "xpsnr_db": 40.2222,
+      "webp_q": 19,
+      "avif_q": 28
+    },
+    {
+      "jpeg_q": 46,
+      "xpsnr_db": 40.4684,
+      "webp_q": 21,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 47,
+      "xpsnr_db": 40.541,
+      "webp_q": 22,
+      "avif_q": 29
+    },
+    {
+      "jpeg_q": 48,
+      "xpsnr_db": 40.6086,
+      "webp_q": 22,
+      "avif_q": 30
+    },
+    {
+      "jpeg_q": 49,
+      "xpsnr_db": 40.6277,
+      "webp_q": 22,
+      "avif_q": 30
+    },
+    {
+      "jpeg_q": 50,
+      "xpsnr_db": 40.6868,
+      "webp_q": 23,
+      "avif_q": 30
+    },
+    {
+      "jpeg_q": 51,
+      "xpsnr_db": 40.7545,
+      "webp_q": 23,
+      "avif_q": 30
+    },
+    {
+      "jpeg_q": 52,
+      "xpsnr_db": 40.8537,
+      "webp_q": 24,
+      "avif_q": 31
+    },
+    {
+      "jpeg_q": 53,
+      "xpsnr_db": 40.9304,
+      "webp_q": 24,
+      "avif_q": 31
+    },
+    {
+      "jpeg_q": 54,
+      "xpsnr_db": 41.0167,
+      "webp_q": 25,
+      "avif_q": 31
+    },
+    {
+      "jpeg_q": 55,
+      "xpsnr_db": 41.1274,
+      "webp_q": 26,
+      "avif_q": 31
+    },
+    {
+      "jpeg_q": 56,
+      "xpsnr_db": 41.2225,
+      "webp_q": 26,
+      "avif_q": 32
+    },
+    {
+      "jpeg_q": 57,
+      "xpsnr_db": 41.3132,
+      "webp_q": 27,
+      "avif_q": 32
+    },
+    {
+      "jpeg_q": 58,
+      "xpsnr_db": 41.5057,
+      "webp_q": 28,
+      "avif_q": 33
+    },
+    {
+      "jpeg_q": 59,
+      "xpsnr_db": 41.5953,
+      "webp_q": 29,
+      "avif_q": 34
+    },
+    {
+      "jpeg_q": 60,
+      "xpsnr_db": 41.6927,
+      "webp_q": 29,
+      "avif_q": 34
+    },
+    {
+      "jpeg_q": 61,
+      "xpsnr_db": 41.8087,
+      "webp_q": 31,
+      "avif_q": 34
+    },
+    {
+      "jpeg_q": 62,
+      "xpsnr_db": 41.9103,
+      "webp_q": 31,
+      "avif_q": 35
+    },
+    {
+      "jpeg_q": 63,
+      "xpsnr_db": 42.0366,
+      "webp_q": 32,
+      "avif_q": 35
+    },
+    {
+      "jpeg_q": 64,
+      "xpsnr_db": 42.1402,
+      "webp_q": 33,
+      "avif_q": 35
+    },
+    {
+      "jpeg_q": 65,
+      "xpsnr_db": 42.1851,
+      "webp_q": 33,
+      "avif_q": 36
+    },
+    {
+      "jpeg_q": 66,
+      "xpsnr_db": 42.3167,
+      "webp_q": 34,
+      "avif_q": 36
+    },
+    {
+      "jpeg_q": 67,
+      "xpsnr_db": 42.4438,
+      "webp_q": 35,
+      "avif_q": 37
+    },
+    {
+      "jpeg_q": 68,
+      "xpsnr_db": 42.691,
+      "webp_q": 37,
+      "avif_q": 38
+    },
+    {
+      "jpeg_q": 69,
+      "xpsnr_db": 42.8258,
+      "webp_q": 38,
+      "avif_q": 38
+    },
+    {
+      "jpeg_q": 70,
+      "xpsnr_db": 42.9915,
+      "webp_q": 40,
+      "avif_q": 39
+    },
+    {
+      "jpeg_q": 71,
+      "xpsnr_db": 43.1694,
+      "webp_q": 41,
+      "avif_q": 39
+    },
+    {
+      "jpeg_q": 72,
+      "xpsnr_db": 43.3223,
+      "webp_q": 42,
+      "avif_q": 40
+    },
+    {
+      "jpeg_q": 73,
+      "xpsnr_db": 43.4826,
+      "webp_q": 44,
+      "avif_q": 40
+    },
+    {
+      "jpeg_q": 74,
+      "xpsnr_db": 43.73,
+      "webp_q": 46,
+      "avif_q": 42
+    },
+    {
+      "jpeg_q": 75,
+      "xpsnr_db": 43.8658,
+      "webp_q": 47,
+      "avif_q": 42
+    },
+    {
+      "jpeg_q": 76,
+      "xpsnr_db": 44.1045,
+      "webp_q": 50,
+      "avif_q": 43
+    },
+    {
+      "jpeg_q": 77,
+      "xpsnr_db": 44.3374,
+      "webp_q": 52,
+      "avif_q": 44
+    },
+    {
+      "jpeg_q": 78,
+      "xpsnr_db": 44.5632,
+      "webp_q": 54,
+      "avif_q": 45
+    },
+    {
+      "jpeg_q": 79,
+      "xpsnr_db": 44.7768,
+      "webp_q": 56,
+      "avif_q": 46
+    },
+    {
+      "jpeg_q": 80,
+      "xpsnr_db": 45.0391,
+      "webp_q": 59,
+      "avif_q": 47
+    },
+    {
+      "jpeg_q": 81,
+      "xpsnr_db": 45.3393,
+      "webp_q": 62,
+      "avif_q": 48
+    },
+    {
+      "jpeg_q": 82,
+      "xpsnr_db": 45.6117,
+      "webp_q": 65,
+      "avif_q": 49
+    },
+    {
+      "jpeg_q": 83,
+      "xpsnr_db": 45.917,
+      "webp_q": 68,
+      "avif_q": 50
+    },
+    {
+      "jpeg_q": 84,
+      "xpsnr_db": 46.2341,
+      "webp_q": 70,
+      "avif_q": 51
+    },
+    {
+      "jpeg_q": 85,
+      "xpsnr_db": 46.5687,
+      "webp_q": 73,
+      "avif_q": 52
+    },
+    {
+      "jpeg_q": 86,
+      "xpsnr_db": 46.9742,
+      "webp_q": 75,
+      "avif_q": 54
+    },
+    {
+      "jpeg_q": 87,
+      "xpsnr_db": 47.3556,
+      "webp_q": 76,
+      "avif_q": 55
+    },
+    {
+      "jpeg_q": 88,
+      "xpsnr_db": 47.8394,
+      "webp_q": 78,
+      "avif_q": 57
+    },
+    {
+      "jpeg_q": 89,
+      "xpsnr_db": 48.3143,
+      "webp_q": 80,
+      "avif_q": 59
+    },
+    {
+      "jpeg_q": 90,
+      "xpsnr_db": 48.8783,
+      "webp_q": 82,
+      "avif_q": 61
+    },
+    {
+      "jpeg_q": 91,
+      "xpsnr_db": 49.6045,
+      "webp_q": 84,
+      "avif_q": 64
+    },
+    {
+      "jpeg_q": 92,
+      "xpsnr_db": 50.3508,
+      "webp_q": 86,
+      "avif_q": 67
+    },
+    {
+      "jpeg_q": 93,
+      "xpsnr_db": 51.1791,
+      "webp_q": 88,
+      "avif_q": 71
+    },
+    {
+      "jpeg_q": 94,
+      "xpsnr_db": 52.2029,
+      "webp_q": 90,
+      "avif_q": 75
+    },
+    {
+      "jpeg_q": 95,
+      "xpsnr_db": 53.3454,
+      "webp_q": 91,
+      "avif_q": 80
+    },
+    {
+      "jpeg_q": 96,
+      "xpsnr_db": 54.8826,
+      "webp_q": 94,
+      "avif_q": 84
+    },
+    {
+      "jpeg_q": 97,
+      "xpsnr_db": 56.7433,
+      "webp_q": 96,
+      "avif_q": 89
+    },
+    {
+      "jpeg_q": 98,
+      "xpsnr_db": 59.3554,
+      "webp_q": 99,
+      "avif_q": 93
+    },
+    {
+      "jpeg_q": 99,
+      "xpsnr_db": 63.4128,
+      "webp_q": 100,
+      "avif_q": 97
+    },
+    {
+      "jpeg_q": 100,
+      "xpsnr_db": 66.8367,
+      "webp_q": 100,
+      "avif_q": 99
+    }
+  ]
+}

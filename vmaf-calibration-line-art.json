@@ -1,0 +1,83 @@
+{
+  "$schema": "calibration-schema",
+  "metric": "vmaf",
+  "higher_is_better": true,
+  "content_type": "line-art",
+  "description": "JPEG→WebP/AVIF quality equivalence for line-art content using vmaf. Step 10, AVIF speed 0.",
+  "generated": "2026-03-12T02:36:27.559Z",
+  "images": 19,
+  "step": 10,
+  "data_points": 11,
+  "encoders": {
+    "cwebp": "cwebp -m 6",
+    "avifenc": "avifenc --speed 0"
+  },
+  "curve": [
+    {
+      "jpeg_q": 1,
+      "vmaf": 49.5571,
+      "webp_q": 1,
+      "avif_q": 1
+    },
+    {
+      "jpeg_q": 10,
+      "vmaf": 81.8021,
+      "webp_q": 28,
+      "avif_q": 12
+    },
+    {
+      "jpeg_q": 20,
+      "vmaf": 89.2769,
+      "webp_q": 44,
+      "avif_q": 19
+    },
+    {
+      "jpeg_q": 30,
+      "vmaf": 91.9163,
+      "webp_q": 49,
+      "avif_q": 23
+    },
+    {
+      "jpeg_q": 40,
+      "vmaf": 93.333,
+      "webp_q": 55,
+      "avif_q": 26
+    },
+    {
+      "jpeg_q": 50,
+      "vmaf": 94.12,
+      "webp_q": 59,
+      "avif_q": 28
+    },
+    {
+      "jpeg_q": 60,
+      "vmaf": 94.8171,
+      "webp_q": 63,
+      "avif_q": 30
+    },
+    {
+      "jpeg_q": 70,
+      "vmaf": 95.4374,
+      "webp_q": 68,
+      "avif_q": 32
+    },
+    {
+      "jpeg_q": 80,
+      "vmaf": 96.7693,
+      "webp_q": 80,
+      "avif_q": 41
+    },
+    {
+      "jpeg_q": 90,
+      "vmaf": 97.8046,
+      "webp_q": 92,
+      "avif_q": 55
+    },
+    {
+      "jpeg_q": 100,
+      "vmaf": 98.3711,
+      "webp_q": 100,
+      "avif_q": 70
+    }
+  ]
+}
