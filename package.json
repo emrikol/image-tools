@@ -11,11 +11,18 @@
     "img-classify": "./classify.mjs",
     "img-convert": "./convert.mjs"
   },
+  "files": [
+    "convert.mjs",
+    "classify.mjs",
+    "lib/",
+    "*-calibration-*.json"
+  ],
   "scripts": {
     "test": "node --test \"test/*.test.mjs\"",
     "classify": "node classify.mjs",
     "convert": "node convert.mjs",
-    "calibrate": "node calibration/calibrate.mjs"
+    "calibrate": "node calibration/calibrate.mjs",
+    "prepublishOnly": "npm test"
   },
   "keywords": [
     "image-compression",
