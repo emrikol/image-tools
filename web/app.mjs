@@ -184,8 +184,11 @@ function setSlider(p) {
 // ─── helpers ───────────────────────────────────────────────────────────────────
 function clamp(q) { return Math.min(100, Math.max(1, Math.round(q ?? 80))); }
 
-// In-browser content-type guess. Computes saturation + a Sobel edge density on a downscaled
-// copy, mirroring classify.mjs's rule structure. Auto-selected, but the user can override.
+// In-browser content-type guess. Computes saturation + a Sobel edge density on a downscaled copy.
+// NOTE: this is the *legacy* heuristic. The CLI's classify.mjs is more accurate (~91%) using
+// histogram entropy as the photo↔illustration discriminator, but its threshold is tuned to
+// ImageMagick's %[entropy] metric, which isn't replicated here yet. Auto-selected; user can
+// override via the type buttons. (Porting the entropy classifier to the browser is tracked.)
 function classify(imageData) {
   const { data, width, height } = imageData;
   // sample to ~200px wide for speed
