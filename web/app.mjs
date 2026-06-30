@@ -34,11 +34,20 @@ drop.addEventListener('drop', (ev) => { const f = ev.dataTransfer.files[0]; if (
 drop.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') fileInput.click(); });
 $('again').addEventListener('click', reset);
 
+// "Try a sample image" — load a bundled license-clean JPEG and run it through the pipeline.
+$('sample').addEventListener('click', async () => {
+  try {
+    setStatus('Loading sample…');
+    const blob = await (await fetch('./sample.jpg')).blob();
+    handleFile(new File([blob], 'sample.jpg', { type: 'image/jpeg' }));
+  } catch { setStatus('Could not load the sample image.', true); }
+});
+
 document.querySelectorAll('.seg-btn').forEach(btn =>
   btn.addEventListener('click', () => { if (state && btn.dataset.type !== state.type) { setType(btn.dataset.type); encodeAndRender(); } }));
 
 function reset() {
-  state = null; $('result').hidden = true; drop.hidden = false; setStatus(''); fileInput.value = '';
+  state = null; $('result').hidden = true; drop.hidden = false; $('sample').hidden = false; setStatus(''); fileInput.value = '';
 }
 
 // ─── pipeline ─────────────────────────────────────────────────────────────────
@@ -66,7 +75,7 @@ async function handleFile(file) {
     state = { name: file.name, imageData, srcBytes, srcBlobUrl: URL.createObjectURL(file),
               fullW: bmp.width, fullH: bmp.height, w, h, jpegQ, type, results: {} };
 
-    drop.hidden = true; $('result').hidden = false;
+    drop.hidden = true; $('sample').hidden = true; $('result').hidden = false;
     $('m-name').textContent = file.name;
     $('m-dims').textContent = `${bmp.width}×${bmp.height}${scale < 1 ? ` · preview ${w}×${h}` : ''}`;
     $('m-q').textContent = `JPEG q${jpegQ}`;

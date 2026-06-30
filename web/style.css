@@ -58,6 +58,12 @@ main.wrap { padding: 24px 0 8px; flex: 1; }
 .drop-main { font-size: 1.15rem; font-weight: 600; }
 .drop-sub { color: var(--muted); font-size: .9rem; }
 
+.sample {
+  display: block; margin: 14px auto 0; font: inherit; font-size: .92rem; color: var(--accent-2);
+  background: none; border: 0; cursor: pointer; padding: 6px 8px;
+}
+.sample:hover { text-decoration: underline; }
+
 .status { text-align: center; color: var(--muted); margin: 16px 0; font-variant-numeric: tabular-nums; }
 .status.err { color: var(--warn); }
 
