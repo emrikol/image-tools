@@ -48,10 +48,10 @@ panel(a1, "webp_q", "→ equivalent WebP quality")
 panel(a2, "avif_q", "→ equivalent AVIF quality")
 a1.set_ylabel("quality needed to match", color=FG, fontsize=11)
 leg = a2.legend(facecolor="#161b22", edgecolor=GRID, labelcolor=FG, fontsize=10, loc="lower right")
-fig.suptitle("Same JPEG quality → different WebP/AVIF settings, by content type",
-             color=FG, fontsize=16, fontweight="bold", y=0.98)
-fig.text(0.5, 0.005, "Lower line = compresses more easily. Photos sit highest (hardest to match); "
-         "flat-fill illustration & line-art sit lower. Metric: SSIMULACRA2.",
+fig.suptitle("The same JPEG quality means a different WebP/AVIF setting for each kind of image",
+             color=FG, fontsize=15, fontweight="bold", y=0.98)
+fig.text(0.5, 0.005, "Lower line = shrinks more easily. Photos sit highest; flat artwork and "
+         "line-art sit lower. (Quality matched so the images look the same to the eye.)",
          ha="center", color="#9aa7b4", fontsize=10)
 fig.tight_layout(rect=[0, 0.03, 1, 0.95])
 

@@ -39,6 +39,21 @@ guarantee: it binary-searches the lowest quality whose encode clears an absolute
 [SSIMULACRA2](https://github.com/cloudinary/ssimulacra2) floor vs the source JPEG — accurate and
 classification-independent, at the cost of needing `ssimulacra2` and more time.
 
+## How much smaller will my files get?
+
+![How much smaller WebP/AVIF are than JPEG at the same quality, by content type](assets/savings.png)
+
+At the **same visual quality** — the images look identical, the files are just lighter — switching
+JPEG → **AVIF** typically saves:
+
+- **Photos: ~30–50% smaller**
+- **Line-art: ~55–60% smaller**
+- **Illustrations / flat artwork: ~60–65% smaller**
+
+WebP saves less (and struggles on very-high-quality flat artwork), which is exactly why the
+converter encodes **both** and keeps whichever comes out smaller. Flatter images shrink the most;
+photos the least — same reason the right quality setting differs by content type:
+
 ## The data, in one picture
 
 ![Calibrated WebP/AVIF quality vs JPEG quality, per content type](assets/curves.png)
