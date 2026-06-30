@@ -124,10 +124,8 @@ This is a research toolkit, not a polished release. Current rough edges:
   explicit `--type` for best accuracy.
 - **`vmaf` is calibrated for line-art only** and is otherwise disabled (it saturates at high
   quality and distorts the max-across-curves logic).
-- **`laplacian-curves.json` is preliminary** (a single-image spot test) and is not currently
-  consumed by the converter.
-- Datasets are small (24 photo / 25 illustration / 19 line-art). The `DIV2K` set is staged for a
-  larger future run but not yet wired in.
+- Datasets are small (24 photo / 25 illustration / 19 line-art) and are not bundled (see
+  [Datasets](#datasets)).
 
 See [`CLAUDE.md`](CLAUDE.md) for the full as-built notes and gotchas, and
 [`blog-post.md`](blog-post.md) for the methodology write-up.

@@ -13,13 +13,14 @@
  *   --quality-window <n>   ± quality points to fuzz around calibrated value (default: 5)
  *   --ssim-tolerance <n>   Allow SSIMULACRA2 score to drop this much below baseline (default: 1.0)
  *   --keep-both            Output both WebP and AVIF even if one wins
+ *   --ssim-only            Use only the ssimulacra2 curve; ignore the other metric curves
  *   --report               Print full results table
  *   --contact-sheet        Write <stem>-compare.png: original JPEG vs best WebP vs best
  *                          AVIF at full size, captioned with size + SSIMULACRA2 score
  */
 
 import { execFile }                             from 'child_process';
-import { mkdirSync, writeFileSync, readFileSync, readdirSync, existsSync, unlinkSync } from 'fs';
+import { mkdirSync, writeFileSync, readFileSync, readdirSync, existsSync, unlinkSync, rmSync } from 'fs';
 import { join, dirname, basename, extname }     from 'path';
 import { tmpdir }                               from 'os';
 import { promisify }                            from 'util';
@@ -56,11 +57,13 @@ const KEEP_BOTH       = hasFlag('--keep-both');
 const REPORT          = hasFlag('--report');
 const KEEP_ARTIFACTS  = hasFlag('--keep-image-artifacts');  // preserve tmp dir for reuse
 const TYPE_OVERRIDE   = getArg('--type', 'auto');  // auto|photo|illustration|line-art|mixed|pixel-art
-const NO_LAP = hasFlag('--no-lap');  // disable Laplacian calibration
+// Use only the ssimulacra2 curve, ignoring the other metric curves. (--no-lap is the
+// old, misleading name — kept as a deprecated alias.)
+const SSIM_ONLY = hasFlag('--ssim-only') || hasFlag('--no-lap');
 const CONTACT_SHEET = hasFlag('--contact-sheet') || hasFlag('--compare');  // visual JPEG/WebP/AVIF comparison PNG
 
 if (!INPUT || !existsSync(INPUT)) {
-  console.error('Usage: node convert.mjs <input.jpg> [output-dir] [--type auto] [--no-lap] [--keep-both] [--contact-sheet] [--keep-image-artifacts] [--report]');
+  console.error('Usage: node convert.mjs <input.jpg> [output-dir] [--type auto] [--ssim-only] [--keep-both] [--contact-sheet] [--keep-image-artifacts] [--report]');
   process.exit(1);
 }
 
@@ -79,7 +82,7 @@ function loadCalibrations(type) {
     type = 'photo';
   }
 
-  if (NO_LAP) {
+  if (SSIM_ONLY) {
     // Only load the primary SSIMULACRA2 curve; skip all others
     const ssimPath = join(__dirname, `ssimulacra2-calibration-${type}.json`);
     const fallback  = join(__dirname, `ssimulacra2-calibration-photo.json`);
@@ -147,6 +150,12 @@ const AVIF_SPEED   = 0;                          // slowest = best compression
 const TMP = join(tmpdir(), 'convert-' + randomBytes(4).toString('hex'));
 mkdirSync(TMP, { recursive: true });
 if (KEEP_ARTIFACTS) console.log(`Artifacts dir: ${TMP}`);
+
+// Clean up the temp working dir on any exit (normal, error, or early exit),
+// unless --keep-image-artifacts was requested. Runs synchronously in the exit hook.
+process.on('exit', () => {
+  if (!KEEP_ARTIFACTS) { try { rmSync(TMP, { recursive: true, force: true }); } catch {} }
+});
 
 async function exec(cmd, args) {
   try {
@@ -456,5 +465,5 @@ if (CONTACT_SHEET) await buildContactSheet();
 
 if (KEEP_ARTIFACTS) {
   console.log(`\nArtifacts preserved at: ${TMP}`);
-  console.log(`  ${readdirSync(TMP).length} files — reuse with a different curve set by pointing --output-dir here`);
+  console.log(`  ${readdirSync(TMP).length} files (encoded candidates + comparison sheet)`);
 }

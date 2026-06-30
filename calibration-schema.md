@@ -67,39 +67,14 @@ Current files:
 
 ---
 
-### `laplacian_ratio`
+### Other metrics
 
-Laplacian variance ratio: `encoded_laplacian / reference_laplacian`. Measures how much
-high-frequency energy (texture, grain, fine detail) is preserved relative to the reference.
-Ratio ≥ 1.0 means no texture loss; ratio < 0.90 indicates perceptible grain/texture loss.
-
-Calibration: find the WebP/AVIF quality at which the Laplacian ratio matches the ratio
-the JPEG achieves at each quality level. This ensures the encoded image preserves the
-same texture density as the JPEG, not just the same perceptual score.
-
-**Note:** `Q=100` cap in `webp_q` means the WebP codec cannot match JPEG's Laplacian
-ratio at that quality level — WebP inherently smooths high-frequency content more than
-JPEG at equivalent quality settings.
-
-**Note:** Line-art images cause Laplacian overflow (near-binary B&W images produce
-extremely large Laplacian values). Use `laplacian-calibration-mixed.json` as the fallback.
-
-Additional curve fields: `lap_ratio` (the ratio the JPEG achieved at `jpeg_q`)
-
-Best for: grain-sensitive photographs, textured artwork, content where smoothing is
-unacceptable.
-
-Current files:
-
-- `laplacian-calibration-photo.json` — derived from 10-point spot test (kodim01)
-- `laplacian-calibration-illustration.json` — derived from 10-point spot test
-- `laplacian-calibration-mixed.json` — fallback for line-art and unknown types
-
-**⚠ Preliminary data:** The Laplacian calibration files are currently derived from a
-10-point spot test on a single reference image per type. A proper calibration
-(`calibrate-laplacian.mjs`) should binary-search Laplacian equivalents across the full
-dataset, same as the SSIMULACRA2 calibration. The current files are suitable for testing
-but should not be considered final.
+The remaining metrics — `butteraugli`, `dssim`, `xpsnr`, `ms_ssim`, `lpips`, `dists`,
+`fsim`, `vif`, `entropy_diff` (and `vmaf`, line-art only) — share the same schema. Each
+records its own value field (e.g. `butteraugli_dist`, `lpips`, `xpsnr_db`) alongside
+`webp_q` / `avif_q`, and its direction is given by `higher_is_better`. All are calibrated
+at step 1 (1–100) except `vmaf`, which is intentionally limited to a coarse line-art curve.
+See `calibrate.mjs`'s metric registry for how each score is computed.
 
 ---
 
