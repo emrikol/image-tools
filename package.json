@@ -16,7 +16,7 @@
     "convert.mjs",
     "classify.mjs",
     "lib/",
-    "*-calibration-*.json"
+    "curves/"
   ],
   "scripts": {
     "test": "node --test test/*.test.mjs",

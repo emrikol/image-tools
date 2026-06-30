@@ -39,17 +39,17 @@ if (process.argv[1]?.endsWith('check-encoders.mjs')) {
   for (const [k, val] of Object.entries(v)) console.log(`  ${k.padEnd(12)} ${val ?? '(not found)'}`);
 
   if (process.argv.includes('--stamp')) {
-    const files = readdirSync(ROOT).filter(f => /-calibration-.*\.json$/.test(f));
+    const files = readdirSync(join(ROOT, 'curves')).filter(f => /-calibration-.*\.json$/.test(f));
     let n = 0;
     for (const f of files) {
-      const d = JSON.parse(readFileSync(join(ROOT, f), 'utf8'));
+      const d = JSON.parse(readFileSync(join(ROOT, 'curves', f), 'utf8'));
       // Curves regenerated on/after the 2026-06-30 step-1 densification use the current toolchain;
       // the older ssimulacra2 curves predate it (earlier libavif/aom, not precisely recorded).
       d.toolchain = (d.generated && d.generated >= '2026-06-30')
         ? { ...v, stamped: 'current' }
         : { note: 'generated 2026-03-12 with an earlier libavif/aom (pre-3.14); versions not recorded' };
       const { curve, ...rest } = d;
-      writeFileSync(join(ROOT, f), JSON.stringify({ ...rest, toolchain: d.toolchain, curve }, null, 2) + '\n');
+      writeFileSync(join(ROOT, 'curves', f), JSON.stringify({ ...rest, toolchain: d.toolchain, curve }, null, 2) + '\n');
       n++;
     }
     console.log(`\nStamped toolchain into ${n} calibration files.`);

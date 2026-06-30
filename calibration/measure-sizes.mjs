@@ -31,7 +31,7 @@ async function runPool(tasks, n) {
 
 const out = {};
 for (const [type, dir] of Object.entries(TYPES)) {
-  const curve = JSON.parse(readFileSync(join(ROOT, `ssimulacra2-calibration-${type}.json`), 'utf8')).curve;
+  const curve = JSON.parse(readFileSync(join(ROOT, 'curves', `ssimulacra2-calibration-${type}.json`), 'utf8')).curve;
   const imgs = readdirSync(join(ROOT, dir)).filter(f => /\.png$/i.test(f)).map(f => join(ROOT, dir, f));
   out[type] = [];
   for (const q of QUALS) {

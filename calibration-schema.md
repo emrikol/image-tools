@@ -93,4 +93,4 @@ For a given content type and input JPEG quality:
    lowest quality whose encode clears an absolute SSIMULACRA2 floor vs the source JPEG.
 
 Adding a new calibration file is sufficient — no code changes required.
-Drop `{metric}-calibration-{content_type}.json` into the image-tools directory.
+Drop `{metric}-calibration-{content_type}.json` into the `curves/` directory.

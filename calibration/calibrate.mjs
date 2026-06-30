@@ -118,16 +118,16 @@
  *
  *   # Full run — all useful metrics, step=10 for speed, reuse cache on re-runs
  *   node calibration/calibrate.mjs \
- *     --dataset photo:test-images/kodak:. \
- *     --dataset illustration:test-images/illustrations:. \
- *     --dataset line-art:test-images/line-art:. \
+ *     --dataset photo:test-images/kodak:curves \
+ *     --dataset illustration:test-images/illustrations:curves \
+ *     --dataset line-art:test-images/line-art:curves \
  *     --metrics ssimulacra2,ms_ssim,butteraugli,dssim,xpsnr,lpips,dists,fsim,vif,entropy_diff \
  *     # note: vmaf omitted — saturates for photo/illustration (see metric notes above) \
  *     --step 10 --concurrency 8
  *
  *   # Add a new metric later — encoding cache is reused, only measurement runs
  *   node calibration/calibrate.mjs \
- *     --dataset photo:test-images/kodak:. \
+ *     --dataset photo:test-images/kodak:curves \
  *     --metrics lpips,dists \
  *     --step 10 --concurrency 8
  *

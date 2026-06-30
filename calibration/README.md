@@ -1,7 +1,7 @@
 # calibration/ — how the shipped curves were generated
 
 **You do not need anything in this directory to use the converter.** The calibration curves
-it produces are already generated and committed at the repo root (`*-calibration-*.json`).
+it produces are already generated and committed in [`../curves/`](../curves) (`*-calibration-*.json`).
 `convert.mjs` / `classify.mjs` read those directly and require none of the heavy tooling here.
 
 This directory is kept for **transparency and reproducibility** — it's the pipeline that

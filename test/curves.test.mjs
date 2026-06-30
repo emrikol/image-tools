@@ -27,12 +27,13 @@ test('interpolate sorts an out-of-order curve before interpolating', () => {
 });
 
 // ── shipped calibration data integrity ──
-const calibFiles = readdirSync(ROOT).filter(f => /-calibration-.*\.json$/.test(f));
+const CURVES = join(ROOT, 'curves');
+const calibFiles = readdirSync(CURVES).filter(f => /-calibration-.*\.json$/.test(f));
 
 test('every shipped calibration file is well-formed', () => {
   assert.ok(calibFiles.length >= 30, `expected the calibration set, found ${calibFiles.length}`);
   for (const f of calibFiles) {
-    const d = JSON.parse(readFileSync(join(ROOT, f), 'utf8'));
+    const d = JSON.parse(readFileSync(join(CURVES, f), 'utf8'));
     assert.equal(d.$schema, 'calibration-schema', `${f}: $schema`);
     assert.ok(typeof d.metric === 'string', `${f}: metric`);
     assert.ok(['photo', 'illustration', 'line-art', 'mixed'].includes(d.content_type), `${f}: content_type`);
@@ -53,7 +54,7 @@ test('curves trend upward with no corruption-sized backward jumps', () => {
   // overall trend to rise. Observed max drop across the real data is ~9.5.
   const maxAllowedDrop = 12;
   for (const f of calibFiles) {
-    const d = JSON.parse(readFileSync(join(ROOT, f), 'utf8'));
+    const d = JSON.parse(readFileSync(join(CURVES, f), 'utf8'));
     for (const field of ['webp_q', 'avif_q']) {
       const vals = d.curve.filter(r => r[field] !== null).map(r => r[field]);
       if (vals.length < 2) continue;
@@ -67,7 +68,7 @@ test('curves trend upward with no corruption-sized backward jumps', () => {
 
 test('every shipped curve records encoder-version provenance', () => {
   for (const f of calibFiles) {
-    const d = JSON.parse(readFileSync(join(ROOT, f), 'utf8'));
+    const d = JSON.parse(readFileSync(join(CURVES, f), 'utf8'));
     assert.ok(d.toolchain && typeof d.toolchain === 'object', `${f}: missing toolchain provenance`);
     // either the recorded encoder versions, or the honest "predates tracking" note
     assert.ok(d.toolchain.note || d.toolchain.cwebp || d.toolchain.avifenc, `${f}: empty toolchain`);
@@ -76,7 +77,7 @@ test('every shipped curve records encoder-version provenance', () => {
 
 test('primary metrics are full 1–100 resolution; vmaf is the documented exception', () => {
   for (const f of calibFiles) {
-    const d = JSON.parse(readFileSync(join(ROOT, f), 'utf8'));
+    const d = JSON.parse(readFileSync(join(CURVES, f), 'utf8'));
     if (d.metric === 'vmaf') assert.ok(d.curve.length >= 2, `${f}: vmaf curve present`);
     else assert.equal(d.curve.length, 100, `${f}: expected 100 points, got ${d.curve.length}`);
   }
