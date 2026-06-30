@@ -87,7 +87,7 @@ The converter is deliberately light. Dependencies scale with what you do:
   (ssimulacra2, butteraugli, dssim, ffmpeg, ImageMagick, a PyTorch venv). **You never need this
   to use the converter** — the curves are already generated and committed.
 
-Node.js (ESM, no npm dependencies). On macOS the encoders are `brew install webp libavif`;
+Node.js ≥ 18.14 (ESM, no runtime npm dependencies). On macOS the encoders are `brew install webp libavif`;
 `ssimulacra2` comes from a libjxl build with devtools enabled (only needed for `--verify`).
 
 ## Setup
@@ -160,13 +160,14 @@ node classify.mjs *.png --batch            # JSON array, progress on stderr
 ### Use it as a library
 
 ```js
+import { writeFileSync } from 'node:fs';
 import { convert } from './lib/convert.mjs';
 
 const r = await convert('photo.jpg', { verify: true, floor: 80 });
 // r.winner === 'avif' | 'webp' | null, r.keptOriginal, r.jpegQ, r.contentType
 if (r.winner && !r.keptOriginal) {
   const best = r[r.winner];                       // { quality, size, score, buffer, ... }
-  fs.writeFileSync(`photo.${r.winner}`, best.buffer);
+  writeFileSync(`photo.${r.winner}`, best.buffer);
 }
 ```
 
