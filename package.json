@@ -19,7 +19,7 @@
     "*-calibration-*.json"
   ],
   "scripts": {
-    "test": "node --test \"test/*.test.mjs\"",
+    "test": "node --test test/*.test.mjs",
     "lint": "eslint .",
     "classify": "node classify.mjs",
     "convert": "node convert.mjs",
