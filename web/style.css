@@ -111,6 +111,16 @@ main.wrap { padding: 24px 0 8px; flex: 1; }
 .cmp-tag-l { left: 10px; } .cmp-tag-r { right: 10px; }
 .compare figcaption { color: var(--muted); font-size: .85rem; text-align: center; margin-top: 10px; }
 
+/* Per-image charts */
+.charts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 22px 0 4px; }
+.chart {
+  margin: 0; background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 14px 16px 10px;
+}
+.chart figcaption { color: var(--muted); font-size: .86rem; margin-bottom: 8px; }
+.chart-svg svg { width: 100%; height: auto; display: block; }
+@media (max-width: 700px) { .charts { grid-template-columns: 1fr; } }
+
 .winner { text-align: center; font-size: 1.05rem; margin: 18px 0 4px; }
 .winner b { color: var(--win); }
 .winner.kept b { color: var(--warn); }

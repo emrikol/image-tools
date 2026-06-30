@@ -66,7 +66,7 @@
         <div class="cmp-stage">
           <img id="cmp-after" alt="converted" />
           <div class="cmp-clip" id="cmp-clip"><img id="cmp-before" alt="original JPEG" /></div>
-          <div class="cmp-handle" id="cmp-handle" role="slider" tabindex="0" aria-label="Comparison slider"></div>
+          <div class="cmp-handle" id="cmp-handle" role="slider" tabindex="0" aria-label="Comparison slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"></div>
           <span class="cmp-tag cmp-tag-l">original JPEG</span>
           <span class="cmp-tag cmp-tag-r" id="cmp-tag-r">converted</span>
         </div>
@@ -74,6 +74,19 @@
       </figure>
 
       <p class="winner" id="winner" hidden></p>
+
+      <!-- Per-image graphs (analogues of the README charts) -->
+      <section class="charts" id="charts" hidden>
+        <figure class="chart">
+          <figcaption id="chart-curve-cap">Where your image lands on the calibration curve</figcaption>
+          <div class="chart-svg" id="chart-curve"></div>
+        </figure>
+        <figure class="chart">
+          <figcaption id="chart-size-cap">Your image: file size vs encoder quality</figcaption>
+          <div class="chart-svg" id="chart-size"></div>
+        </figure>
+      </section>
+
       <button class="again" id="again" hidden>Convert another</button>
     </section>
   </main>

@@ -47,7 +47,9 @@ document.querySelectorAll('.seg-btn').forEach(btn =>
   btn.addEventListener('click', () => { if (state && btn.dataset.type !== state.type) { setType(btn.dataset.type); encodeAndRender(); } }));
 
 function reset() {
-  state = null; $('result').hidden = true; drop.hidden = false; $('sample').hidden = false; setStatus(''); fileInput.value = '';
+  if (state?.srcBlobUrl) URL.revokeObjectURL(state.srcBlobUrl);
+  state = null; $('result').hidden = true; drop.hidden = false; $('sample').hidden = false;
+  $('charts').hidden = true; setStatus(''); fileInput.value = '';
 }
 
 // ─── pipeline ─────────────────────────────────────────────────────────────────
@@ -72,8 +74,9 @@ async function handleFile(file) {
     const imageData = ctx.getImageData(0, 0, w, h);
 
     const type = classify(imageData);
+    if (state?.srcBlobUrl) URL.revokeObjectURL(state.srcBlobUrl);   // free the previous run's URL
     state = { name: file.name, imageData, srcBytes, srcBlobUrl: URL.createObjectURL(file),
-              fullW: bmp.width, fullH: bmp.height, w, h, jpegQ, type, results: {} };
+              fullW: bmp.width, fullH: bmp.height, w, h, jpegQ, type, results: {}, sweep: null };
 
     drop.hidden = true; $('sample').hidden = true; $('result').hidden = false;
     $('m-name').textContent = file.name;
@@ -97,6 +100,7 @@ async function encodeAndRender() {
   const { imageData, jpegQ, type } = state;
   const webpQ = clamp(interpolate(curves[type], jpegQ, 'webp_q'));
   const avifQ = clamp(interpolate(curves[type], jpegQ, 'avif_q'));
+  state.webpQ = webpQ; state.avifQ = avifQ;
 
   // reset card states
   for (const k of ['webp', 'avif']) { $(`s-${k}`).textContent = '…'; $(`d-${k}`).textContent = 'encoding…'; }
@@ -111,6 +115,7 @@ async function encodeAndRender() {
   renderCard('webp', webp); renderCard('avif', avif);
   renderWinner();
   $('again').hidden = false;
+  buildCharts();   // fire-and-forget; renders graph 1 instantly, graph 2 after a quality sweep
 }
 function err(e) { console.error(e); return null; }
 
@@ -165,6 +170,7 @@ function setSlider(p) {
   p = Math.max(0, Math.min(100, p));
   $('cmp-clip').style.width = p + '%';
   $('cmp-handle').style.left = p + '%';
+  $('cmp-handle').setAttribute('aria-valuenow', Math.round(p));
 }
 (function wireSlider() {
   const stage = () => $('compare').querySelector('.cmp-stage');
@@ -180,6 +186,99 @@ function setSlider(p) {
   });
   window.addEventListener('resize', () => { if (!$('compare').hidden) sizeCompare(); });
 })();
+
+// ─── per-image charts (hand-rolled inline SVG — no chart library) ───────────────
+const C_WEBP = '#38bdf8', C_AVIF = '#2dd4bf', C_JPEG = '#f59e0b', C_REF = '#64748b', C_GRID = '#2a3340', C_TXT = '#9aa7b4';
+
+function lineChart({ xMin, xMax, yMin, yMax, series = [], hlines = [], markers = [], xLabel, yLabel, yFmt = (v) => Math.round(v), legend = [], aria = '' }) {
+  const W = 560, H = 300, P = { l: 54, r: 16, t: 28, b: 38 };
+  const x0 = P.l, y0 = H - P.b, x1 = W - P.r, y1 = P.t;
+  const X = (v) => x0 + (v - xMin) / (xMax - xMin) * (x1 - x0);
+  const Y = (v) => y0 - (v - yMin) / (yMax - yMin) * (y0 - y1);
+  const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(aria || xLabel)}">`;
+  for (let i = 0; i <= 4; i++) { const v = yMin + (yMax - yMin) * i / 4, y = Y(v);
+    s += `<line x1="${x0}" y1="${y.toFixed(1)}" x2="${x1}" y2="${y.toFixed(1)}" stroke="${C_GRID}"/>`;
+    s += `<text x="${x0 - 7}" y="${(y + 4).toFixed(1)}" text-anchor="end" fill="${C_TXT}" font-size="11">${esc(yFmt(v))}</text>`; }
+  for (let i = 0; i <= 5; i++) { const v = xMin + (xMax - xMin) * i / 5, x = X(v);
+    s += `<text x="${x.toFixed(1)}" y="${y0 + 18}" text-anchor="middle" fill="${C_TXT}" font-size="11">${Math.round(v)}</text>`; }
+  s += `<text x="${((x0 + x1) / 2).toFixed(0)}" y="${H - 4}" text-anchor="middle" fill="${C_TXT}" font-size="11">${esc(xLabel)}</text>`;
+  s += `<text x="14" y="${((y0 + y1) / 2).toFixed(0)}" text-anchor="middle" fill="${C_TXT}" font-size="11" transform="rotate(-90 14 ${((y0 + y1) / 2).toFixed(0)})">${esc(yLabel)}</text>`;
+  for (const h of hlines) { const y = Y(h.y);
+    s += `<line x1="${x0}" y1="${y.toFixed(1)}" x2="${x1}" y2="${y.toFixed(1)}" stroke="${h.color}" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+    if (h.label) s += `<text x="${x1}" y="${(y - 5).toFixed(1)}" text-anchor="end" fill="${h.color}" font-size="11">${esc(h.label)}</text>`; }
+  for (const ser of series) {
+    const pts = ser.points.filter(p => p[1] != null && isFinite(p[1])).map(([x, y]) => `${X(x).toFixed(1)},${Y(y).toFixed(1)}`).join(' ');
+    if (pts) s += `<polyline points="${pts}" fill="none" stroke="${ser.color}" stroke-width="${ser.dashed ? 1.4 : 2.2}"${ser.dashed ? ' stroke-dasharray="5 5"' : ''}/>`; }
+  for (const m of markers) { const x = X(m.x), y = Y(m.y);
+    s += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4.5" fill="${m.color}" stroke="#0d1117" stroke-width="1.5"/>`;
+    if (m.label) s += `<text x="${(x + 8).toFixed(1)}" y="${(y - 7).toFixed(1)}" fill="${m.color}" font-size="11" font-weight="600">${esc(m.label)}</text>`; }
+  let lx = x0 + 2; for (const l of legend) {
+    s += `<rect x="${lx}" y="${y1 - 18}" width="11" height="11" rx="2" fill="${l.color}"/>`;
+    s += `<text x="${lx + 15}" y="${y1 - 9}" fill="#e6edf3" font-size="11">${esc(l.label)}</text>`;
+    lx += 15 + l.label.length * 6.4 + 14; }
+  return s + `</svg>`;
+}
+
+function buildCharts() { $('charts').hidden = false; buildCurveChart(); buildSizeChart(); }
+
+// Graph 1 — calibration curve for the detected type, with this image's point marked.
+function buildCurveChart() {
+  const curve = curves[state.type] || [];
+  const { jpegQ, webpQ, avifQ, type } = state;
+  $('chart-curve-cap').textContent = `Where your image lands on the ${type} calibration curve`;
+  $('chart-curve').innerHTML = lineChart({
+    xMin: 0, xMax: 100, yMin: 0, yMax: 100,
+    xLabel: 'source JPEG quality', yLabel: 'matched WebP / AVIF quality',
+    aria: `Calibration curve for ${type}; your image is JPEG quality ${jpegQ}`,
+    series: [
+      { points: [[0, 0], [100, 100]], color: C_REF, dashed: true },        // 1:1 reference
+      { points: curve.map(p => [p.jpeg_q, p.webp_q]), color: C_WEBP },
+      { points: curve.map(p => [p.jpeg_q, p.avif_q]), color: C_AVIF },
+      { points: [[jpegQ, 0], [jpegQ, 100]], color: C_REF, dashed: true },   // your JPEG quality
+    ],
+    markers: [
+      { x: jpegQ, y: webpQ, color: C_WEBP, label: `WebP q${webpQ}` },
+      { x: jpegQ, y: avifQ, color: C_AVIF, label: `AVIF q${avifQ}` },
+    ],
+    legend: [{ color: C_WEBP, label: 'WebP' }, { color: C_AVIF, label: 'AVIF' }, { color: C_REF, label: '1:1' }],
+  });
+}
+
+// Graph 2 — encode this image across a quality sweep; size vs quality, JPEG baseline + chosen point.
+const SWEEP = [20, 30, 40, 50, 60, 70, 80, 90, 95];
+async function buildSizeChart() {
+  const cap = $('chart-size-cap');
+  if (!state.sweep) {                          // cache the sweep so a type toggle doesn't re-encode
+    const webp = [], avif = []; let done = 0;
+    for (const q of SWEEP) {
+      const [w, a] = await Promise.all([
+        encodeWebp(state.imageData, { quality: q }).then(b => b.byteLength).catch(() => null),
+        encodeAvif(state.imageData, { quality: q, speed: AVIF_SPEED }).then(b => b.byteLength).catch(() => null),
+      ]);
+      if (w != null) webp.push([q, w / 1024]);
+      if (a != null) avif.push([q, a / 1024]);
+      cap.textContent = `Your image: file size vs encoder quality — building… ${++done}/${SWEEP.length}`;
+    }
+    state.sweep = { webp, avif };
+  }
+  cap.textContent = 'Your image: file size vs encoder quality';
+  const { webp, avif } = state.sweep;
+  const jpegKB = state.srcBytes.length / 1024;
+  const ymax = Math.max(jpegKB, ...webp.map(p => p[1]), ...avif.map(p => p[1]), 1) * 1.08;
+  const markers = [];
+  if (state.results.webp?.buf) markers.push({ x: state.webpQ, y: state.results.webp.buf.byteLength / 1024, color: C_WEBP, label: `chosen q${state.webpQ}` });
+  if (state.results.avif?.buf) markers.push({ x: state.avifQ, y: state.results.avif.buf.byteLength / 1024, color: C_AVIF, label: `q${state.avifQ}` });
+  $('chart-size').innerHTML = lineChart({
+    xMin: SWEEP[0], xMax: 100, yMin: 0, yMax: ymax,
+    xLabel: 'encoder quality', yLabel: 'file size (KB)',
+    aria: 'Your image: file size versus encoder quality, with the JPEG size as a baseline',
+    series: [{ points: webp, color: C_WEBP }, { points: avif, color: C_AVIF }],
+    hlines: [{ y: jpegKB, color: C_JPEG, label: `JPEG q${state.jpegQ}: ${jpegKB.toFixed(0)} KB` }],
+    markers,
+    legend: [{ color: C_WEBP, label: 'WebP' }, { color: C_AVIF, label: 'AVIF' }, { color: C_JPEG, label: 'JPEG' }],
+  });
+}
 
 // ─── helpers ───────────────────────────────────────────────────────────────────
 function clamp(q) { return Math.min(100, Math.max(1, Math.round(q ?? 80))); }
