@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Content-aware JPEG → WebP/AVIF conversion: classify image content type, look up calibrated perceptual-quality equivalents, fuzz encoder parameters, and ship the smallest file that meets the quality floor.",
   "type": "module",
+  "private": true,
   "license": "GPL-3.0-or-later",
   "engines": {
     "node": ">=18.14.0"

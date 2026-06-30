@@ -58,9 +58,18 @@ Node.js (ESM, no npm dependencies). On macOS the encoders are `brew install webp
 
 ## Setup
 
-Conversion and classification need **no installation** beyond `cwebp` + `avifenc` — clone and run.
-Everything for regenerating curves (the Python venv, etc.) lives in [`calibration/`](calibration/)
-and is not required to use the tool.
+Conversion and classification need **no installation** beyond `cwebp` + `avifenc`:
+
+```bash
+git clone https://github.com/OWNER/image-tools && cd image-tools
+node convert.mjs photo.jpg out/
+# or run it straight from GitHub without cloning:
+npx -p github:OWNER/image-tools img-convert photo.jpg out/
+```
+
+No npm install step — there are no JavaScript dependencies. (The package isn't on the npm
+registry; use the repo directly, or the zero-install [web demo](#).) Everything for *regenerating*
+curves (the Python venv, etc.) lives in [`calibration/`](calibration/) and isn't needed to use the tool.
 
 ## Datasets
 
