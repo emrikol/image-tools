@@ -75,11 +75,16 @@ To re-run calibration you supply your own datasets under `test-images/<type>/`:
 
 ```bash
 node convert.mjs input.jpg output-dir/                       # FAST: encode at the calibrated quality
-node convert.mjs input.jpg output-dir/ --verify              # fuzz + enforce a per-image SSIMULACRA2 floor
+node convert.mjs photos/ output-dir/                         # BATCH: every JPEG in a folder, in parallel
+node convert.mjs input.jpg output-dir/ --verify              # binary-search to an absolute SSIMULACRA2 floor
+node convert.mjs input.jpg output-dir/ --dry-run             # preview the plan without writing
 node convert.mjs input.jpg output-dir/ --type illustration   # override content type
 node convert.mjs input.jpg output-dir/ --keep-both           # write both WebP and AVIF winners
 node convert.mjs input.jpg output-dir/ --contact-sheet       # also write a visual comparison PNG
 ```
+
+Point it at a **directory** to batch-convert every JPEG in parallel — each file runs in an
+isolated process, so one bad image is reported and skipped rather than crashing the run.
 
 **Two modes.** By default the converter trusts the frozen curves and encodes straight at the
 calibrated quality — fast, and dependency-light (just `cwebp` + `avifenc`). **`--verify`** adds

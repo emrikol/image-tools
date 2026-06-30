@@ -26,10 +26,10 @@
  *                          AVIF at full size, captioned with size + SSIMULACRA2 score
  */
 
-import { execFile }                             from 'child_process';
-import { mkdirSync, writeFileSync, readFileSync, readdirSync, existsSync, unlinkSync, rmSync } from 'fs';
+import { execFile, execFileSync, spawn }        from 'child_process';
+import { mkdirSync, writeFileSync, readFileSync, readdirSync, existsSync, unlinkSync, rmSync, statSync } from 'fs';
 import { join, dirname, basename, extname }     from 'path';
-import { tmpdir }                               from 'os';
+import { tmpdir, availableParallelism }         from 'os';
 import { promisify }                            from 'util';
 import { randomBytes }                          from 'crypto';
 import { fileURLToPath }                        from 'url';
@@ -75,10 +75,78 @@ const TYPE_OVERRIDE   = getArg('--type', 'auto');  // auto|photo|illustration|li
 const SSIM_ONLY = hasFlag('--ssim-only') || hasFlag('--no-lap');
 const CONTACT_SHEET = hasFlag('--contact-sheet') || hasFlag('--compare');  // visual JPEG/WebP/AVIF comparison PNG
 const VERIFY = hasFlag('--verify');  // fuzz + enforce a per-image SSIMULACRA2 floor (default: fast curve-only)
+const DRY_RUN = hasFlag('--dry-run');  // report the plan (type, quality, target) without encoding
 
 if (!INPUT || !existsSync(INPUT)) {
-  console.error('Usage: node convert.mjs <input.jpg> [output-dir] [--verify [--floor N]] [--type auto] [--ssim-only] [--keep-both] [--contact-sheet] [--keep-image-artifacts] [--report]');
+  console.error('Usage: node convert.mjs <input.jpg|dir> [output-dir] [--verify [--floor N]] [--type auto] [--ssim-only] [--keep-both] [--contact-sheet] [--dry-run] [--report]');
   process.exit(1);
+}
+
+// ─── preflight: required tools ────────────────────────────────────────────────
+function toolOnPath(bin) {
+  try { execFileSync('sh', ['-c', `command -v ${bin}`], { stdio: 'ignore' }); return true; }
+  catch { return false; }
+}
+function requireTools() {
+  const missing = [];
+  if (!DRY_RUN) { for (const t of ['cwebp', 'avifenc']) if (!toolOnPath(t)) missing.push(t); }
+  if (VERIFY && !DRY_RUN && !toolOnPath('ssimulacra2')) missing.push('ssimulacra2');
+  if (missing.length) {
+    console.error(`Missing required tool(s) on PATH: ${missing.join(', ')}`);
+    console.error('Install: brew install webp libavif   (or: apt install webp libavif-bin)');
+    if (missing.includes('ssimulacra2')) console.error('ssimulacra2 comes from a libjxl build with devtools; or drop --verify to use fast mode.');
+    process.exit(1);
+  }
+}
+
+// ─── batch mode: a directory of JPEGs ─────────────────────────────────────────
+// Each file is converted in an isolated child process, so one bad image can't crash the run.
+async function runBatch(dir) {
+  const files = readdirSync(dir).filter(f => /\.jpe?g$/i.test(f)).sort();
+  if (!files.length) { console.error(`No .jpg/.jpeg files in ${dir}`); process.exit(1); }
+  requireTools();
+
+  // Reconstruct per-file flags from parsed options (drop positionals, --report, artifacts).
+  const childFlags = [];
+  if (VERIFY) childFlags.push('--verify');
+  childFlags.push('--floor', String(FLOOR));
+  if (TYPE_OVERRIDE !== 'auto') childFlags.push('--type', TYPE_OVERRIDE);
+  if (SSIM_ONLY) childFlags.push('--ssim-only');
+  if (KEEP_BOTH) childFlags.push('--keep-both');
+  if (CONTACT_SHEET) childFlags.push('--contact-sheet');
+  if (DRY_RUN) childFlags.push('--dry-run');
+
+  const self = fileURLToPath(import.meta.url);
+  const runChild = (inPath) => new Promise((resolve) => {
+    const p = spawn(process.execPath, [self, inPath, OUTPUT_DIR, ...childFlags], { stdio: ['ignore', 'pipe', 'pipe'] });
+    let out = '';
+    p.stdout.on('data', d => out += d); p.stderr.on('data', d => out += d);
+    p.on('close', (code) => resolve({ inPath, code, out }));
+  });
+
+  console.log(`Batch: ${files.length} JPEG(s) in ${dir}  (${VERIFY ? 'verify' : 'fast'} mode, ${availableParallelism()} parallel)\n`);
+  let idx = 0, converted = 0, kept = 0, failed = 0;
+  const workers = Array.from({ length: Math.min(availableParallelism(), files.length) }, async () => {
+    while (idx < files.length) {
+      const f = files[idx++];
+      const { code, out } = await runChild(join(dir, f));
+      const win = out.match(/✓ Winner:.*\((\d[\d.]*KB, [\d.]+% smaller[^)]*)\)/);
+      const kpt = /keeping the original/i.test(out);
+      if (code !== 0) { failed++; console.log(`  ✗ ${f}  (failed; rerun without batch to see why)`); }
+      else if (kpt) { kept++; console.log(`  • ${f}  → kept original (no smaller encode)`); }
+      else if (win) { converted++; console.log(`  ✓ ${f}  → ${win[1]}`); }
+      else { converted++; console.log(`  ✓ ${f}`); }
+    }
+  });
+  await Promise.all(workers);
+  console.log(`\nDone: ${converted} converted, ${kept} kept, ${failed} failed.`);
+  process.exit(failed ? 1 : 0);
+}
+
+if (statSync(INPUT).isDirectory()) {
+  await runBatch(INPUT);
+} else {
+  requireTools();
 }
 
 // ─── calibration loading ──────────────────────────────────────────────────────
@@ -260,7 +328,10 @@ if (contentType === 'pixel-art') {
 
 // 1. Detect JPEG quality
 const jpegQ = await detectJpegQuality(INPUT);
-if (jpegQ === null) { console.error('Could not detect JPEG quality.'); process.exit(1); }
+if (jpegQ === null) {
+  console.error(`Could not read a JPEG quantization table from ${basename(INPUT)} — is it a JPEG? (This tool converts JPEGs.)`);
+  process.exit(1);
+}
 console.log(`JPEG quality: ${jpegQ}`);
 
 // 2. Load all calibration curves and take the max quality across all
@@ -280,6 +351,14 @@ for (const cal of calibrations) {
 }
 if (calibrations.length > 1) {
   console.log(`${'Using (max)'.padEnd(16)} — WebP: q=${calibWebP}  AVIF: q=${calibAVIF}`);
+}
+
+if (DRY_RUN) {
+  const cw = Math.min(100, Math.max(1, Math.round(calibWebP)));
+  const ca = Math.min(100, Math.max(1, Math.round(calibAVIF)));
+  console.log(`\n[dry run] would target WebP q${cw} / AVIF q${ca}` +
+              `${VERIFY ? `, searching to SSIMULACRA2 floor ${FLOOR.toFixed(1)}` : ''} — no files written.`);
+  process.exit(0);
 }
 
 // 3. Encode candidates.

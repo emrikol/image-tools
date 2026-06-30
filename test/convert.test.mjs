@@ -57,3 +57,25 @@ test('reads JPEG quality without ImageMagick in fast mode', { skip }, () => {
   const log = run([join(FIX, 'color-q75.jpg'), out, '--type', 'photo']);
   assert.match(log, /JPEG quality:\s*7[45]/, 'detected ~q75 from the DQT');
 });
+
+test('--dry-run writes nothing and reports a plan', { skip }, () => {
+  const out = mkdtempSync(join(tmpdir(), 'imgtest-'));
+  const log = run([join(FIX, 'smooth-q85.jpg'), out, '--type', 'photo', '--dry-run']);
+  assert.match(log, /dry run/i);
+  assert.equal(readdirSync(out).length, 0, 'no files written on dry run');
+});
+
+test('batch mode processes a directory and never crashes the run', { skip }, () => {
+  const out = mkdtempSync(join(tmpdir(), 'imgtest-'));
+  const log = run([FIX, out, '--type', 'photo']);
+  assert.match(log, /Done: \d+ converted, \d+ kept, 0 failed/, 'batch summary, no failures');
+  assert.ok(readdirSync(out).length >= 1, 'at least one output written');
+});
+
+test('rejects a non-JPEG with a clear error', () => {
+  const out = mkdtempSync(join(tmpdir(), 'imgtest-'));
+  assert.throws(
+    () => run([fileURLToPath(import.meta.url), out, '--type', 'photo']),
+    /is it a JPEG|JPEG/i,
+  );
+});
