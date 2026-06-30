@@ -279,14 +279,16 @@ function buildCurveChart() {
 }
 
 // Graph 2 — encode this image across a quality sweep; size vs quality, JPEG baseline + chosen point.
-const SWEEP = [20, 30, 40, 50, 60, 70, 80, 90, 95];
+const SWEEP_FINE = [20, 30, 40, 50, 60, 70, 80, 90, 95];
+const SWEEP_COARSE = [25, 40, 55, 70, 85, 95];   // fewer points for large images → snappier sweep
 async function buildSizeChart() {
   const cap = $('chart-size-cap');
-  const building = (n) => { cap.innerHTML = `<span class="spin" aria-hidden="true"></span>Your image: file size vs encoder quality — building… ${n}/${SWEEP.length}`; };
+  const quals = (state.w * state.h > 1.5e6) ? SWEEP_COARSE : SWEEP_FINE;
+  const building = (n) => { cap.innerHTML = `<span class="spin" aria-hidden="true"></span>Your image: file size vs encoder quality — building… ${n}/${quals.length}`; };
   if (!state.sweep) {                          // cache the sweep so a type toggle doesn't re-encode
     const webp = [], avif = []; let done = 0;
     building(0);
-    for (const q of SWEEP) {
+    for (const q of quals) {
       const [w, a] = await Promise.all([
         workerEncode('webp', q).then(b => b.byteLength).catch(() => null),
         workerEncode('avif', q, AVIF_SPEED).then(b => b.byteLength).catch(() => null),
@@ -305,7 +307,7 @@ async function buildSizeChart() {
   if (state.results.webp?.buf) markers.push({ x: state.webpQ, y: state.results.webp.buf.byteLength / 1024, color: C_WEBP, label: `chosen q${state.webpQ}` });
   if (state.results.avif?.buf) markers.push({ x: state.avifQ, y: state.results.avif.buf.byteLength / 1024, color: C_AVIF, label: `q${state.avifQ}` });
   $('chart-size').innerHTML = lineChart({
-    xMin: SWEEP[0], xMax: 100, yMin: 0, yMax: ymax,
+    xMin: quals[0], xMax: 100, yMin: 0, yMax: ymax,
     xLabel: 'encoder quality', yLabel: 'file size (KB)',
     aria: 'Your image: file size versus encoder quality, with the JPEG size as a baseline',
     series: [{ points: webp, color: C_WEBP }, { points: avif, color: C_AVIF }],
