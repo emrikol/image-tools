@@ -26,6 +26,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true # turn Pages on automatically (no manual Settings step)
       # Publish the repo root so /web/ can import ../lib/ and fetch ./curves.json.
       - uses: actions/upload-pages-artifact@v3
         with:
