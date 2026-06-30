@@ -28,6 +28,4 @@ It's plain Node ESM — there's no build step.
   [`calibration/README.md`](calibration/README.md).
 - **Keep encoder flags in sync** between `calibration/calibrate.mjs` and `lib/convert.mjs`
   (AVIF `--speed 0`, WebP `-m 6`) — if they drift, curves and conversions disagree.
-- **Adding a metric** needs no code change: drop a `{metric}-calibration-{type}.json` at the root.
-
-See [`CLAUDE.md`](CLAUDE.md) for the full as-built architecture and gotchas.
+- **Adding a metric** needs no code change: drop a `{metric}-calibration-{type}.json` in `curves/`.

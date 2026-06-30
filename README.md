@@ -235,9 +235,6 @@ This is a research toolkit. Current rough edges:
 - Datasets are small (24 photo / 25 illustration / 19 line-art) and are not bundled (see
   [Datasets](#datasets)).
 
-See [`CLAUDE.md`](CLAUDE.md) for the full as-built notes and gotchas, and
-[`blog-post.md`](blog-post.md) for the methodology write-up.
-
 ## Support Policy
 
 **This project is shared as-is, with no support.**
