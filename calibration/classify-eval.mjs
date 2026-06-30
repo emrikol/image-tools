@@ -14,33 +14,40 @@ import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { classifyImage } from '../classify.mjs';
 
-const specs = process.argv.slice(2).map(s => { const i = s.indexOf(':'); return [s.slice(0, i), s.slice(i + 1)]; });
+const specs = process.argv.slice(2).map((s) => {
+  const i = s.indexOf(':');
+  return [s.slice(0, i), s.slice(i + 1)];
+});
 if (!specs.length) {
   console.error('Usage: node calibration/classify-eval.mjs <expectedType:dir> [...]');
   process.exit(1);
 }
 const TYPES = ['photo', 'illustration', 'line-art', 'pixel-art', 'mixed'];
-const matrix = {};   // expected → { predicted → count }
-let correct = 0, total = 0;
+const matrix = {}; // expected → { predicted → count }
+let correct = 0,
+  total = 0;
 
 for (const [expected, dir] of specs) {
   matrix[expected] ??= {};
-  const imgs = readdirSync(dir).filter(f => /\.(png|jpe?g)$/i.test(f));
+  const imgs = readdirSync(dir).filter((f) => /\.(png|jpe?g)$/i.test(f));
   for (const f of imgs) {
     let pred = 'error';
-    try { pred = (await classifyImage(join(dir, f))).type ?? 'mixed'; } catch {}
+    try {
+      pred = (await classifyImage(join(dir, f))).type ?? 'mixed';
+    } catch {}
     matrix[expected][pred] = (matrix[expected][pred] ?? 0) + 1;
-    total++; if (pred === expected) correct++;
+    total++;
+    if (pred === expected) correct++;
   }
 }
 
 // print confusion matrix
 const cols = TYPES;
-console.log('\nexpected \\ predicted   ' + cols.map(c => c.slice(0, 5).padStart(6)).join(' '));
+console.log('\nexpected \\ predicted   ' + cols.map((c) => c.slice(0, 5).padStart(6)).join(' '));
 for (const [exp, row] of Object.entries(matrix)) {
-  const cells = cols.map(c => String(row[c] ?? 0).padStart(6)).join(' ');
+  const cells = cols.map((c) => String(row[c] ?? 0).padStart(6)).join(' ');
   const n = Object.values(row).reduce((a, b) => a + b, 0);
   const hit = row[exp] ?? 0;
-  console.log(`${exp.padEnd(22)}${cells}   (${hit}/${n} = ${(100 * hit / n).toFixed(0)}%)`);
+  console.log(`${exp.padEnd(22)}${cells}   (${hit}/${n} = ${((100 * hit) / n).toFixed(0)}%)`);
 }
-console.log(`\nOverall: ${correct}/${total} = ${(100 * correct / total).toFixed(1)}% accuracy`);
+console.log(`\nOverall: ${correct}/${total} = ${((100 * correct) / total).toFixed(1)}% accuracy`);

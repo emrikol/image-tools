@@ -9,7 +9,7 @@
 
 ![JPEG vs WebP vs AVIF at matched quality](assets/hero.webp)
 
-*Same image, same perceptual quality (SSIMULACRA2 ≈ 80 vs the source), at a fraction of the bytes.*
+_Same image, same perceptual quality (SSIMULACRA2 ≈ 80 vs the source), at a fraction of the bytes._
 
 **▶ [Try it in your browser](https://emrikol.github.io/image-tools/web/)** — drop a JPEG, compare
 WebP/AVIF, nothing uploaded. (Or run the CLI below.)
@@ -23,7 +23,7 @@ brew install webp libavif                      # or: apt install webp libavif-bi
 node convert.mjs photo.jpg out/                # → out/photo.avif (or .webp), whichever is smaller
 ```
 
-Why it's not just "pick quality 60": a JPEG quality 80 *photo*, *illustration*, and *line-art*
+Why it's not just "pick quality 60": a JPEG quality 80 _photo_, _illustration_, and _line-art_
 scan each need a **different** WebP/AVIF quality to preserve equivalent perceptual quality. This
 ships pre-computed calibration curves (1% resolution, 10 perceptual metrics × 3 content types)
 that capture exactly how different, so every conversion lands at the right quality automatically.
@@ -59,8 +59,8 @@ photos the least — same reason the right quality setting differs by content ty
 
 ![Calibrated WebP/AVIF quality vs JPEG quality, per content type](assets/curves.png)
 
-Each colored line is one content type. It answers: *to match a JPEG at quality X, what WebP (or
-AVIF) quality do you actually need?* The dashed line is 1:1 — where you'd land if the quality
+Each colored line is one content type. It answers: _to match a JPEG at quality X, what WebP (or
+AVIF) quality do you actually need?_ The dashed line is 1:1 — where you'd land if the quality
 numbers were interchangeable. **They aren't**, and that's the whole point:
 
 - **Read across at JPEG q80:** a **photo** needs **AVIF q60** to match, an **illustration** only
@@ -102,9 +102,9 @@ node convert.mjs photo.jpg out/
 npx -p github:emrikol/image-tools img-convert photo.jpg out/
 ```
 
-No npm install needed to *use* it — there are no runtime JavaScript dependencies (the only
+No npm install needed to _use_ it — there are no runtime JavaScript dependencies (the only
 devDependency is ESLint, for contributors). The package isn't on the npm registry; use the repo
-directly, or the zero-install [web demo](https://emrikol.github.io/image-tools/web/). Everything for *regenerating*
+directly, or the zero-install [web demo](https://emrikol.github.io/image-tools/web/). Everything for _regenerating_
 curves (the Python venv, etc.) lives in [`calibration/`](calibration/) and isn't needed to use the tool.
 
 ## Datasets
@@ -114,6 +114,7 @@ sets are third-party content). The committed calibration JSONs contain only numb
 use `classify.mjs` / `convert.mjs` immediately without any images.
 
 To re-run calibration you supply your own datasets under `test-images/<type>/`:
+
 - **photo** — the [Kodak lossless set](https://r0k.us/graphics/kodak/) (24 public-domain-style benchmark PNGs)
 - **illustration / line-art** — bring your own (flat-color artwork; black-and-white ink/pencil art)
 
@@ -167,7 +168,7 @@ import { convert } from './lib/convert.mjs';
 const r = await convert('photo.jpg', { verify: true, floor: 80 });
 // r.winner === 'avif' | 'webp' | null, r.keptOriginal, r.jpegQ, r.contentType
 if (r.winner && !r.keptOriginal) {
-  const best = r[r.winner];                       // { quality, size, score, buffer, ... }
+  const best = r[r.winner]; // { quality, size, score, buffer, ... }
   writeFileSync(`photo.${r.winner}`, best.buffer);
 }
 ```
@@ -222,10 +223,10 @@ This is a research toolkit. Current rough edges:
 
 - **The classifier is decent but not perfect** — **~91% accuracy** on the labeled sets
   (photo 100% / illustration 92% / line-art 79%), using histogram entropy as the
-  photo↔illustration discriminator. *Painterly* illustrations can still read as photos, and the
+  photo↔illustration discriminator. _Painterly_ illustrations can still read as photos, and the
   entropy threshold is tuned on a small set so treat it as provisional. Measure it yourself:
   `node calibration/classify-eval.mjs <type:dir> …`. Two safety nets regardless: errors skew
-  toward the *conservative* `photo` curve (they cost compression, not quality), and
+  toward the _conservative_ `photo` curve (they cost compression, not quality), and
   **`--verify` is classification-independent** — prefer it (or an explicit `--type`) for anything
   ambiguous.
 - **`mixed` falls back to the photo curves** (conservative) when the classifier isn't confident.

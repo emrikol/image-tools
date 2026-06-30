@@ -21,18 +21,26 @@ const BASE = 'https://r0k.us/graphics/kodak/kodak';
 mkdirSync(OUT, { recursive: true });
 console.log(`Fetching the Kodak set → ${OUT}`);
 
-let got = 0, skipped = 0, failed = 0;
+let got = 0,
+  skipped = 0,
+  failed = 0;
 for (let i = 1; i <= 24; i++) {
   const name = `kodim${String(i).padStart(2, '0')}.png`;
   const dest = join(OUT, name);
-  if (existsSync(dest)) { skipped++; process.stdout.write('·'); continue; }
+  if (existsSync(dest)) {
+    skipped++;
+    process.stdout.write('·');
+    continue;
+  }
   try {
     const res = await fetch(`${BASE}/${name}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     writeFileSync(dest, Buffer.from(await res.arrayBuffer()));
-    got++; process.stdout.write('✓');
+    got++;
+    process.stdout.write('✓');
   } catch (e) {
-    failed++; process.stdout.write('✗');
+    failed++;
+    process.stdout.write('✗');
     process.stderr.write(`\n  ${name}: ${e.message}\n`);
   }
 }

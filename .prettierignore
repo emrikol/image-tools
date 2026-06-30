@@ -1,0 +1,20 @@
+# Generated / data / vendored — not hand-edited, leave as their generators emit them
+curves/
+web/curves.json
+assets/
+package-lock.json
+
+# Gitignored heavy dirs (kept here too so a stray checkout isn't reformatted)
+node_modules/
+calibration/venv/
+encoding-cache/
+encoding-cache-*/
+test-images/
+DIV2K_valid_HR/
+
+# Binaries / fixtures
+*.svg
+test/fixtures/
+
+# Local tooling config (not part of the project)
+.claude/

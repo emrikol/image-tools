@@ -8,22 +8,32 @@ import { dirname, join } from 'node:path';
 import { convert, detectJpegQuality, loadCalibrations } from '../lib/convert.mjs';
 
 const FIX = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
-const has = (b) => { try { execFileSync('sh', ['-c', `command -v ${b}`], { stdio: 'ignore' }); return true; } catch { return false; } };
-const skip = (has('cwebp') && has('avifenc')) ? false : 'requires cwebp + avifenc';
-const skipVerify = (skip || !has('ssimulacra2')) ? 'requires cwebp + avifenc + ssimulacra2' : false;
+const has = (b) => {
+  try {
+    execFileSync('sh', ['-c', `command -v ${b}`], { stdio: 'ignore' });
+    return true;
+  } catch {
+    return false;
+  }
+};
+const skip = has('cwebp') && has('avifenc') ? false : 'requires cwebp + avifenc';
+const skipVerify = skip || !has('ssimulacra2') ? 'requires cwebp + avifenc + ssimulacra2' : false;
 const isWebp = (b) => b.slice(8, 12).toString() === 'WEBP';
 const isAvif = (b) => b.slice(4, 12).toString().includes('ftyp');
 
 test('loadCalibrations finds the shipped curves for a type', () => {
   const c = loadCalibrations('photo');
   assert.ok(c.length >= 10, `expected ~10 photo curves, got ${c.length}`);
-  assert.ok(c.every(x => Array.isArray(x.curve)));
+  assert.ok(c.every((x) => Array.isArray(x.curve)));
 });
 
 test('loadCalibrations remaps mixed → photo (conservative fallback)', () => {
   const mixed = loadCalibrations('mixed');
   assert.ok(mixed.length >= 10, 'mixed should fall back to the photo curve set');
-  assert.ok(mixed.every(x => x.path.includes('photo')), 'fallback curves are the photo files');
+  assert.ok(
+    mixed.every((x) => x.path.includes('photo')),
+    'fallback curves are the photo files',
+  );
 });
 
 test('loadCalibrations ssimOnly returns exactly the ssimulacra2 curve', () => {
@@ -33,7 +43,7 @@ test('loadCalibrations ssimOnly returns exactly the ssimulacra2 curve', () => {
 });
 
 test('detectJpegQuality reads a fixture', async () => {
-  assert.equal(await detectJpegQuality(join(FIX, 'color-q75.jpg')) <= 76, true);
+  assert.equal((await detectJpegQuality(join(FIX, 'color-q75.jpg'))) <= 76, true);
 });
 
 test('convert() fast mode returns a winner buffer of the right format', { skip }, async () => {
@@ -43,7 +53,10 @@ test('convert() fast mode returns a winner buffer of the right format', { skip }
   assert.ok(['webp', 'avif'].includes(r.winner), 'has a winner');
   const best = r[r.winner];
   assert.ok(Buffer.isBuffer(best.buffer), 'winner carries a buffer');
-  assert.ok(r.winner === 'webp' ? isWebp(best.buffer) : isAvif(best.buffer), 'buffer is the right format');
+  assert.ok(
+    r.winner === 'webp' ? isWebp(best.buffer) : isAvif(best.buffer),
+    'buffer is the right format',
+  );
   assert.equal(best.size, best.buffer.length, 'size matches buffer');
 });
 
@@ -67,23 +80,47 @@ test('convert() verify mode meets the absolute floor', { skip: skipVerify }, asy
   assert.equal(r.floor, 80);
   // the winning encode should clear the floor (or be flagged best-effort)
   const best = r[r.winner];
-  assert.ok(best.score >= 80 || best.met === false, `winner score ${best.score} should clear floor 80`);
+  assert.ok(
+    best.score >= 80 || best.met === false,
+    `winner score ${best.score} should clear floor 80`,
+  );
 });
 
-const skipMagick = (skip || !has('magick')) ? 'requires magick + encoders' : false;
-test('convert() normalizes a CMYK JPEG (which cwebp/avifenc reject) to a valid output', { skip: skipMagick }, async () => {
-  const dir = mkdtempSync(join(tmpdir(), 'imgtest-'));
-  const cmyk = join(dir, 'cmyk.jpg');
-  execFileSync('magick', ['-size', '64x64', 'plasma:fractal', '-colorspace', 'CMYK', '-quality', '85', cmyk]);
-  let normalized = false;
-  const r = await convert(cmyk, { type: 'photo', onProgress: (e) => { if (e.type === 'normalize') normalized = true; } });
-  assert.ok(normalized, 'CMYK input should trigger normalization');
-  assert.ok(r.winner, 'produced a winner from CMYK input');
-  assert.ok(Buffer.isBuffer(r[r.winner].buffer) && r[r.winner].buffer.length > 0);
-});
+const skipMagick = skip || !has('magick') ? 'requires magick + encoders' : false;
+test(
+  'convert() normalizes a CMYK JPEG (which cwebp/avifenc reject) to a valid output',
+  { skip: skipMagick },
+  async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'imgtest-'));
+    const cmyk = join(dir, 'cmyk.jpg');
+    execFileSync('magick', [
+      '-size',
+      '64x64',
+      'plasma:fractal',
+      '-colorspace',
+      'CMYK',
+      '-quality',
+      '85',
+      cmyk,
+    ]);
+    let normalized = false;
+    const r = await convert(cmyk, {
+      type: 'photo',
+      onProgress: (e) => {
+        if (e.type === 'normalize') normalized = true;
+      },
+    });
+    assert.ok(normalized, 'CMYK input should trigger normalization');
+    assert.ok(r.winner, 'produced a winner from CMYK input');
+    assert.ok(Buffer.isBuffer(r[r.winner].buffer) && r[r.winner].buffer.length > 0);
+  },
+);
 
 test('convert() emits progress events in order', { skip }, async () => {
   const seen = [];
-  await convert(join(FIX, 'smooth-q85.jpg'), { type: 'photo', onProgress: (e) => seen.push(e.type) });
+  await convert(join(FIX, 'smooth-q85.jpg'), {
+    type: 'photo',
+    onProgress: (e) => seen.push(e.type),
+  });
   assert.deepEqual(seen.slice(0, 4), ['classified', 'quality', 'curves', 'mode']);
 });

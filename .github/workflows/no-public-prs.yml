@@ -14,8 +14,9 @@ permissions:
 jobs:
   gatekeep:
     # Allow only the owner / explicit collaborators (and dependabot); close everyone else.
-    if: ${{ !contains(fromJson('["OWNER","COLLABORATOR"]'), github.event.pull_request.author_association)
-            && github.actor != 'dependabot[bot]' }}
+    if:
+      ${{ !contains(fromJson('["OWNER","COLLABORATOR"]'), github.event.pull_request.author_association)
+      && github.actor != 'dependabot[bot]' }}
     runs-on: ubuntu-latest
     steps:
       - name: Comment and close

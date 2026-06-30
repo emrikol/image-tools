@@ -1,119 +1,155 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>image-tools — content-aware JPEG → WebP / AVIF</title>
-  <meta name="description" content="Drop a JPEG, get a smaller WebP/AVIF at the same perceptual quality — entirely in your browser." />
-  <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>image-tools — content-aware JPEG → WebP / AVIF</title>
+    <meta
+      name="description"
+      content="Drop a JPEG, get a smaller WebP/AVIF at the same perceptual quality — entirely in your browser."
+    />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
 
-  <!-- Social / Open Graph -->
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="image-tools — content-aware JPEG → WebP / AVIF" />
-  <meta property="og:description" content="Drop a JPEG, get a smaller WebP/AVIF at the same perceptual quality — entirely in your browser, nothing uploaded." />
-  <meta property="og:image" content="https://emrikol.github.io/image-tools/assets/hero.webp" />
-  <meta property="og:url" content="https://emrikol.github.io/image-tools/web/" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="image-tools — content-aware JPEG → WebP / AVIF" />
-  <meta name="twitter:description" content="Drop a JPEG, get a smaller WebP/AVIF at the same perceptual quality — in your browser." />
-  <meta name="twitter:image" content="https://emrikol.github.io/image-tools/assets/hero.webp" />
+    <!-- Social / Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="image-tools — content-aware JPEG → WebP / AVIF" />
+    <meta
+      property="og:description"
+      content="Drop a JPEG, get a smaller WebP/AVIF at the same perceptual quality — entirely in your browser, nothing uploaded."
+    />
+    <meta property="og:image" content="https://emrikol.github.io/image-tools/assets/hero.webp" />
+    <meta property="og:url" content="https://emrikol.github.io/image-tools/web/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="image-tools — content-aware JPEG → WebP / AVIF" />
+    <meta
+      name="twitter:description"
+      content="Drop a JPEG, get a smaller WebP/AVIF at the same perceptual quality — in your browser."
+    />
+    <meta name="twitter:image" content="https://emrikol.github.io/image-tools/assets/hero.webp" />
 
-  <link rel="stylesheet" href="./style.css" />
-</head>
-<body>
-  <header class="site">
-    <div class="wrap">
-      <h1>image&#8209;tools</h1>
-      <p class="tag">Drop a JPEG — get a smaller <b>WebP</b>/<b>AVIF</b> at the same perceptual quality.
-         Everything runs <b>in your browser</b>; nothing is uploaded.</p>
-    </div>
-  </header>
-
-  <main class="wrap">
-    <!-- Drop zone -->
-    <label id="drop" class="drop" for="file" tabindex="0">
-      <input id="file" type="file" accept="image/jpeg" hidden />
-      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0 4 4m-4-4-4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
-      <span class="drop-main">Drop a JPEG here</span>
-      <span class="drop-sub">or click to choose · processed locally</span>
-    </label>
-
-    <button id="sample" class="sample" type="button">Try a sample image →</button>
-
-    <p id="status" class="status" hidden></p>
-
-    <!-- Results -->
-    <section id="result" hidden>
-      <div class="meta">
-        <span id="m-name" class="m-name"></span>
-        <span id="m-dims" class="pill"></span>
-        <span id="m-q" class="pill"></span>
-        <span class="seg" role="group" aria-label="Content type">
-          <span class="seg-label">type</span>
-          <button class="seg-btn" data-type="photo">photo</button>
-          <button class="seg-btn" data-type="illustration">illustration</button>
-          <button class="seg-btn" data-type="line-art">line&#8209;art</button>
-        </span>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="site">
+      <div class="wrap">
+        <h1>image&#8209;tools</h1>
+        <p class="tag">
+          Drop a JPEG — get a smaller <b>WebP</b>/<b>AVIF</b> at the same perceptual quality.
+          Everything runs <b>in your browser</b>; nothing is uploaded.
+        </p>
       </div>
+    </header>
 
-      <div class="cards">
-        <article class="card" id="card-jpeg">
-          <div class="card-h"><span class="fmt">JPEG</span><span class="badge">original</span></div>
-          <div class="size" id="s-jpeg">—</div>
-          <div class="sub" id="d-jpeg">source</div>
-        </article>
-        <article class="card" id="card-webp">
-          <div class="card-h"><span class="fmt">WebP</span><span class="badge win" hidden>✓ winner</span></div>
-          <div class="size" id="s-webp">…</div>
-          <div class="sub" id="d-webp">encoding…</div>
-          <a class="dl" id="dl-webp" download hidden>↓ Download .webp</a>
-        </article>
-        <article class="card" id="card-avif">
-          <div class="card-h"><span class="fmt">AVIF</span><span class="badge win" hidden>✓ winner</span></div>
-          <div class="size" id="s-avif">…</div>
-          <div class="sub" id="d-avif">encoding…</div>
-          <a class="dl" id="dl-avif" download hidden>↓ Download .avif</a>
-        </article>
-      </div>
+    <main class="wrap">
+      <!-- Drop zone -->
+      <label id="drop" class="drop" for="file" tabindex="0">
+        <input id="file" type="file" accept="image/jpeg" hidden />
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 16V4m0 0 4 4m-4-4-4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+        </svg>
+        <span class="drop-main">Drop a JPEG here</span>
+        <span class="drop-sub">or click to choose · processed locally</span>
+      </label>
 
-      <!-- Before/after comparison -->
-      <figure class="compare" id="compare" hidden>
-        <div class="cmp-stage">
-          <img id="cmp-after" alt="converted" />
-          <div class="cmp-clip" id="cmp-clip"><img id="cmp-before" alt="original JPEG" /></div>
-          <div class="cmp-handle" id="cmp-handle" role="slider" tabindex="0" aria-label="Comparison slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"></div>
-          <span class="cmp-tag cmp-tag-l">original JPEG</span>
-          <span class="cmp-tag cmp-tag-r" id="cmp-tag-r">converted</span>
+      <button id="sample" class="sample" type="button">Try a sample image →</button>
+
+      <p id="status" class="status" hidden></p>
+
+      <!-- Results -->
+      <section id="result" hidden>
+        <div class="meta">
+          <span id="m-name" class="m-name"></span>
+          <span id="m-dims" class="pill"></span>
+          <span id="m-q" class="pill"></span>
+          <span class="seg" role="group" aria-label="Content type">
+            <span class="seg-label">type</span>
+            <button class="seg-btn" data-type="photo">photo</button>
+            <button class="seg-btn" data-type="illustration">illustration</button>
+            <button class="seg-btn" data-type="line-art">line&#8209;art</button>
+          </span>
         </div>
-        <figcaption>Drag to compare. Same perceptual target — look for any visible difference.</figcaption>
-      </figure>
 
-      <p class="winner" id="winner" hidden></p>
+        <div class="cards">
+          <article class="card" id="card-jpeg">
+            <div class="card-h">
+              <span class="fmt">JPEG</span><span class="badge">original</span>
+            </div>
+            <div class="size" id="s-jpeg">—</div>
+            <div class="sub" id="d-jpeg">source</div>
+          </article>
+          <article class="card" id="card-webp">
+            <div class="card-h">
+              <span class="fmt">WebP</span><span class="badge win" hidden>✓ winner</span>
+            </div>
+            <div class="size" id="s-webp">…</div>
+            <div class="sub" id="d-webp">encoding…</div>
+            <a class="dl" id="dl-webp" download hidden>↓ Download .webp</a>
+          </article>
+          <article class="card" id="card-avif">
+            <div class="card-h">
+              <span class="fmt">AVIF</span><span class="badge win" hidden>✓ winner</span>
+            </div>
+            <div class="size" id="s-avif">…</div>
+            <div class="sub" id="d-avif">encoding…</div>
+            <a class="dl" id="dl-avif" download hidden>↓ Download .avif</a>
+          </article>
+        </div>
 
-      <!-- Per-image graphs (analogues of the README charts) -->
-      <section class="charts" id="charts" hidden>
-        <figure class="chart">
-          <figcaption id="chart-curve-cap">Where your image lands on the calibration curve</figcaption>
-          <div class="chart-svg" id="chart-curve"></div>
+        <!-- Before/after comparison -->
+        <figure class="compare" id="compare" hidden>
+          <div class="cmp-stage">
+            <img id="cmp-after" alt="converted" />
+            <div class="cmp-clip" id="cmp-clip"><img id="cmp-before" alt="original JPEG" /></div>
+            <div
+              class="cmp-handle"
+              id="cmp-handle"
+              role="slider"
+              tabindex="0"
+              aria-label="Comparison slider"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="50"
+            ></div>
+            <span class="cmp-tag cmp-tag-l">original JPEG</span>
+            <span class="cmp-tag cmp-tag-r" id="cmp-tag-r">converted</span>
+          </div>
+          <figcaption>
+            Drag to compare. Same perceptual target — look for any visible difference.
+          </figcaption>
         </figure>
-        <figure class="chart">
-          <figcaption id="chart-size-cap">Your image: file size vs encoder quality</figcaption>
-          <div class="chart-svg" id="chart-size"></div>
-        </figure>
+
+        <p class="winner" id="winner" hidden></p>
+
+        <!-- Per-image graphs (analogues of the README charts) -->
+        <section class="charts" id="charts" hidden>
+          <figure class="chart">
+            <figcaption id="chart-curve-cap">
+              Where your image lands on the calibration curve
+            </figcaption>
+            <div class="chart-svg" id="chart-curve"></div>
+          </figure>
+          <figure class="chart">
+            <figcaption id="chart-size-cap">Your image: file size vs encoder quality</figcaption>
+            <div class="chart-svg" id="chart-size"></div>
+          </figure>
+        </section>
+
+        <button class="again" id="again" hidden>Convert another</button>
       </section>
+    </main>
 
-      <button class="again" id="again" hidden>Convert another</button>
-    </section>
-  </main>
+    <footer class="site">
+      <div class="wrap">
+        <p>
+          Fast preview (curves + WASM encoders). The CLI adds max-effort encoding and an optional
+          per-image SSIMULACRA2 floor.
+          <a id="repo" href="https://github.com/emrikol/image-tools"
+            >Source &amp; calibration data →</a
+          >
+        </p>
+      </div>
+    </footer>
 
-  <footer class="site">
-    <div class="wrap">
-      <p>Fast preview (curves + WASM encoders). The CLI adds max-effort encoding and an optional
-         per-image SSIMULACRA2 floor.
-         <a id="repo" href="https://github.com/emrikol/image-tools">Source &amp; calibration data →</a></p>
-    </div>
-  </footer>
-
-  <script type="module" src="./app.mjs"></script>
-</body>
+    <script type="module" src="./app.mjs"></script>
+  </body>
 </html>

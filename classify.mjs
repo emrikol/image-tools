@@ -38,17 +38,17 @@
  * primary photo/illustration discriminator — no extra ImageMagick cost over the old version.
  */
 
-import { execFile }                from 'child_process';
-import { existsSync }              from 'fs';
-import { promisify }               from 'util';
+import { execFile } from 'child_process';
+import { existsSync } from 'fs';
+import { promisify } from 'util';
 
 const execFileAsync = promisify(execFile);
 
 // ─── CLI args ─────────────────────────────────────────────────────────────────
 
-const args    = process.argv.slice(2);
+const args = process.argv.slice(2);
 const VERBOSE = args.includes('--verbose');
-const BATCH   = args.includes('--batch');
+const BATCH = args.includes('--batch');
 
 function getArg(flag, defaultVal) {
   const i = args.indexOf(flag);
@@ -56,16 +56,19 @@ function getArg(flag, defaultVal) {
 }
 
 const ENTROPY_THRESHOLD = parseFloat(getArg('--entropy-threshold', '0.70'));
-const EDGE_THRESHOLD    = parseFloat(getArg('--edge-threshold', '0.025')); // legacy, accepted
-const SAT_THRESHOLD     = parseFloat(getArg('--sat-threshold',  '0.35'));  // legacy, accepted
+const EDGE_THRESHOLD = parseFloat(getArg('--edge-threshold', '0.025')); // legacy, accepted
+const SAT_THRESHOLD = parseFloat(getArg('--sat-threshold', '0.35')); // legacy, accepted
 
 // Collect positional args (image paths)
 const namedFlagValues = new Set(
   ['--entropy-threshold', '--edge-threshold', '--sat-threshold']
-    .map(f => { const i = args.indexOf(f); return i !== -1 ? args[i + 1] : null; })
-    .filter(Boolean)
+    .map((f) => {
+      const i = args.indexOf(f);
+      return i !== -1 ? args[i + 1] : null;
+    })
+    .filter(Boolean),
 );
-const images = args.filter(a => !a.startsWith('--') && !namedFlagValues.has(a));
+const images = args.filter((a) => !a.startsWith('--') && !namedFlagValues.has(a));
 
 // Only when run directly as a CLI — importing classifyImage must have no side effects.
 if (images.length === 0 && process.argv[1]?.endsWith('classify.mjs')) {
@@ -80,11 +83,14 @@ async function measureEdgeDensity(path) {
   // Illustrations: 0.012–0.025 | Photos: 0.017–0.107
   try {
     const r = await execFileAsync(
-      'magick', ['convert', path, '-canny', '0x2+5%+20%', '-format', '%[fx:mean]', 'info:'],
-      { encoding: 'utf8' }
+      'magick',
+      ['convert', path, '-canny', '0x2+5%+20%', '-format', '%[fx:mean]', 'info:'],
+      { encoding: 'utf8' },
     );
     return parseFloat(r.stdout.trim()) || null;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 async function measureSaturation(path) {
@@ -92,46 +98,65 @@ async function measureSaturation(path) {
   // Illustrations: 0.11–0.29 | Photos: 0.10–0.66 (wide range)
   try {
     const r = await execFileAsync(
-      'magick', ['convert', path,
-                 '-colorspace', 'HSL', '-channel', 'Saturation', '-separate',
-                 '-format', '%[fx:mean]', 'info:'],
-      { encoding: 'utf8' }
+      'magick',
+      [
+        'convert',
+        path,
+        '-colorspace',
+        'HSL',
+        '-channel',
+        'Saturation',
+        '-separate',
+        '-format',
+        '%[fx:mean]',
+        'info:',
+      ],
+      { encoding: 'utf8' },
     );
     return parseFloat(r.stdout.trim()) ?? null;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 async function measureStdDev(path) {
   // Overall standard deviation — supplementary signal
   try {
     const r = await execFileAsync(
-      'magick', ['identify', '-format', '%[standard-deviation]', path],
-      { encoding: 'utf8' }
+      'magick',
+      ['identify', '-format', '%[standard-deviation]', path],
+      { encoding: 'utf8' },
     );
     return parseFloat(r.stdout.trim()) || null;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 async function measureEntropy(path) {
   // Shannon entropy
   try {
-    const r = await execFileAsync(
-      'magick', ['identify', '-format', '%[entropy]', path],
-      { encoding: 'utf8' }
-    );
+    const r = await execFileAsync('magick', ['identify', '-format', '%[entropy]', path], {
+      encoding: 'utf8',
+    });
     return parseFloat(r.stdout.trim()) || null;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 async function measureColorCount16(path) {
   // Unique colors at 16-palette reduction (no dither) — used only for pixel-art detection
   try {
     const r = await execFileAsync(
-      'magick', ['convert', path, '+dither', '-colors', '16', '-format', '%k', 'info:'],
-      { encoding: 'utf8' }
+      'magick',
+      ['convert', path, '+dither', '-colors', '16', '-format', '%k', 'info:'],
+      { encoding: 'utf8' },
     );
     return parseInt(r.stdout.trim()) || null;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 async function measureColorCount(path) {
@@ -140,23 +165,25 @@ async function measureColorCount(path) {
   // near-grayscale line-art page that has too few edges to trip the edge branch, and to
   // grade confidence. (%k counts exact unique colors.)
   try {
-    const r = await execFileAsync(
-      'magick', ['convert', path, '-format', '%k', 'info:'],
-      { encoding: 'utf8' }
-    );
+    const r = await execFileAsync('magick', ['convert', path, '-format', '%k', 'info:'], {
+      encoding: 'utf8',
+    });
     return parseInt(r.stdout.trim()) || null;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 async function measureDimensions(path) {
   try {
-    const r = await execFileAsync(
-      'magick', ['identify', '-format', '%wx%h', path],
-      { encoding: 'utf8' }
-    );
+    const r = await execFileAsync('magick', ['identify', '-format', '%wx%h', path], {
+      encoding: 'utf8',
+    });
     const [w, h] = r.stdout.trim().split('x').map(Number);
     return { width: w, height: h };
-  } catch { return { width: 0, height: 0 }; }
+  } catch {
+    return { width: 0, height: 0 };
+  }
 }
 
 // ─── classification logic ─────────────────────────────────────────────────────
@@ -174,10 +201,10 @@ function classify(edgeDensity, satMean, stdDev, entropy, colorCount16, colorCoun
   //    with sparse ink trips few edges but has very few colors). Both guards keep near-grayscale
   //    illustrations (which have richer palettes) out of this bucket.
   if (satMean !== null && satMean < 0.05) {
-    const hasEdges    = edgeDensity !== null && edgeDensity > 0.05;
-    const tinyPalette = colorCount  !== null && colorCount  < 4096;
+    const hasEdges = edgeDensity !== null && edgeDensity > 0.05;
+    const tinyPalette = colorCount !== null && colorCount < 4096;
     if (hasEdges || tinyPalette) {
-      const confidence = (colorCount !== null && colorCount < 512) ? 'high' : 'medium';
+      const confidence = colorCount !== null && colorCount < 512 ? 'high' : 'medium';
       return { type: 'line-art', confidence };
     }
   }
@@ -188,20 +215,24 @@ function classify(edgeDensity, satMean, stdDev, entropy, colorCount16, colorCoun
   if (entropy !== null) {
     if (entropy < ENTROPY_THRESHOLD) {
       // strong illustration signal when the histogram is very peaky and/or palette is small
-      const confidence = (entropy < 0.55 ||
-                          (colorCount !== null && colorCount < 16000)) ? 'high' : 'medium';
+      const confidence =
+        entropy < 0.55 || (colorCount !== null && colorCount < 16000) ? 'high' : 'medium';
       return { type: 'illustration', confidence };
     }
-    const confidence = (entropy > 0.85) ? 'high' : 'medium';
+    const confidence = entropy > 0.85 ? 'high' : 'medium';
     return { type: 'photo', confidence };
   }
 
   // 4. fallback (entropy unavailable): legacy edge-based heuristic
-  if (edgeDensity !== null && edgeDensity < EDGE_THRESHOLD &&
-      satMean !== null && satMean < SAT_THRESHOLD) {
+  if (
+    edgeDensity !== null &&
+    edgeDensity < EDGE_THRESHOLD &&
+    satMean !== null &&
+    satMean < SAT_THRESHOLD
+  ) {
     return { type: 'illustration', confidence: 'low' };
   }
-  if (edgeDensity !== null && edgeDensity > 0.030) {
+  if (edgeDensity !== null && edgeDensity > 0.03) {
     return { type: 'photo', confidence: 'low' };
   }
 
@@ -214,33 +245,41 @@ function classify(edgeDensity, satMean, stdDev, entropy, colorCount16, colorCoun
 export async function classifyImage(path) {
   if (!existsSync(path)) throw new Error(`File not found: ${path}`);
 
-  const [edgeDensity, satMean, stdDev, entropy, colorCount16, colorCount, dims] = await Promise.all([
-    measureEdgeDensity(path),
-    measureSaturation(path),
-    measureStdDev(path),
-    measureEntropy(path),
-    measureColorCount16(path),
-    measureColorCount(path),
-    measureDimensions(path),
-  ]);
+  const [edgeDensity, satMean, stdDev, entropy, colorCount16, colorCount, dims] = await Promise.all(
+    [
+      measureEdgeDensity(path),
+      measureSaturation(path),
+      measureStdDev(path),
+      measureEntropy(path),
+      measureColorCount16(path),
+      measureColorCount(path),
+      measureDimensions(path),
+    ],
+  );
 
   const { type, confidence } = classify(
-    edgeDensity, satMean, stdDev, entropy, colorCount16, colorCount,
-    dims.width, dims.height
+    edgeDensity,
+    satMean,
+    stdDev,
+    entropy,
+    colorCount16,
+    colorCount,
+    dims.width,
+    dims.height,
   );
 
   const result = { file: path, type, confidence };
 
   if (VERBOSE) {
     result.signals = {
-      edge_density:   edgeDensity,
-      sat_mean:       satMean,
-      std_dev:        stdDev,
-      entropy:        entropy,
+      edge_density: edgeDensity,
+      sat_mean: satMean,
+      std_dev: stdDev,
+      entropy: entropy,
       color_count_16: colorCount16,
-      color_count:    colorCount,
-      width:          dims.width,
-      height:         dims.height,
+      color_count: colorCount,
+      width: dims.width,
+      height: dims.height,
     };
   }
 
@@ -253,26 +292,26 @@ function makeProgress(total) {
   if (!process.stderr.isTTY || total <= 1) return { tick: () => {}, done: () => {} };
 
   const BAR_WIDTH = 32;
-  let completed   = 0;
-  const start     = Date.now();
-  const times     = [];       // rolling window of per-image ms
+  let completed = 0;
+  const start = Date.now();
+  const times = []; // rolling window of per-image ms
 
   return {
     tick(_label) {
-      const now     = Date.now();
+      const now = Date.now();
       const elapsed = now - start;
       times.push(elapsed / ++completed);
       if (times.length > 10) times.shift();
 
-      const avgMs   = times.reduce((a, b) => a + b, 0) / times.length;
-      const eta     = Math.round((avgMs * (total - completed)) / 1000);
-      const pct     = Math.round((completed / total) * 100);
-      const filled  = Math.round((completed / total) * BAR_WIDTH);
-      const bar     = '█'.repeat(filled) + '░'.repeat(BAR_WIDTH - filled);
-      const etaStr  = eta > 0 ? `ETA ${eta}s` : 'done';
+      const avgMs = times.reduce((a, b) => a + b, 0) / times.length;
+      const eta = Math.round((avgMs * (total - completed)) / 1000);
+      const pct = Math.round((completed / total) * 100);
+      const filled = Math.round((completed / total) * BAR_WIDTH);
+      const bar = '█'.repeat(filled) + '░'.repeat(BAR_WIDTH - filled);
+      const etaStr = eta > 0 ? `ETA ${eta}s` : 'done';
 
       process.stderr.write(
-        `\r[${bar}] ${completed}/${total}  ${pct}%  avg ${(avgMs / 1000).toFixed(2)}s/img  ${etaStr}  `
+        `\r[${bar}] ${completed}/${total}  ${pct}%  avg ${(avgMs / 1000).toFixed(2)}s/img  ${etaStr}  `,
       );
     },
     done() {
@@ -291,7 +330,7 @@ if (process.argv[1].endsWith('classify.mjs')) {
     }
 
     const progress = makeProgress(images.length);
-    const results  = [];
+    const results = [];
 
     for (const img of images) {
       try {

@@ -5,7 +5,7 @@
 import { encode as encodeWebp } from 'https://esm.sh/@jsquash/webp@1.5.0';
 import { encode as encodeAvif } from 'https://esm.sh/@jsquash/avif@2.1.0';
 
-let img = null;   // { data, width, height } held across encodes for the current image
+let img = null; // { data, width, height } held across encodes for the current image
 
 self.onmessage = async (e) => {
   const m = e.data;
@@ -16,13 +16,14 @@ self.onmessage = async (e) => {
   }
   if (m.type === 'encode') {
     try {
-      const ab = m.format === 'avif'
-        ? await encodeAvif(img, { quality: m.quality, speed: m.speed })
-        : await encodeWebp(img, { quality: m.quality });
+      const ab =
+        m.format === 'avif'
+          ? await encodeAvif(img, { quality: m.quality, speed: m.speed })
+          : await encodeWebp(img, { quality: m.quality });
       const u8 = new Uint8Array(ab);
       self.postMessage({ id: m.id, ok: true, buf: u8 }, [u8.buffer]);
     } catch (err) {
-      self.postMessage({ id: m.id, ok: false, error: String(err && err.message || err) });
+      self.postMessage({ id: m.id, ok: false, error: String((err && err.message) || err) });
     }
   }
 };

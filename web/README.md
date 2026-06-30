@@ -12,9 +12,9 @@ look up the calibrated WebP/AVIF quality, and encode both — shipping the small
 the source. The classifier is the CLI's **entropy** approach ported to the browser (luminance-
 histogram entropy for photo↔illustration; ~90% on the labeled sets, verified in-browser — see
 `calibration/validate-browser-classifier.mjs` for how the threshold was derived); content-type
-buttons let you override. One simplification vs. the CLI, safe because the result is a *preview*:
+buttons let you override. One simplification vs. the CLI, safe because the result is a _preview_:
 the `--verify` SSIMULACRA2 floor isn't in the browser (no `ssimulacra2` WASM) and AVIF runs at a
-faster speed than the CLI's `--speed 0`, so the demo's savings are a *conservative* preview of what
+faster speed than the CLI's `--speed 0`, so the demo's savings are a _conservative_ preview of what
 the CLI achieves.
 
 ## Run locally

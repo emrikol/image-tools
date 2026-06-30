@@ -9,25 +9,25 @@ every quality constraint is simultaneously satisfied.
 
 ## Required Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `$schema` | `"calibration-schema"` | Identifies this file as a calibration file |
-| `metric` | string | The quality metric used to define equivalence (see Metrics below) |
-| `content_type` | string | Image content type this curve applies to: `photo`, `illustration`, `line-art`, `mixed` |
-| `description` | string | Human-readable explanation of the dataset and methodology |
-| `generated` | ISO date string | When the file was generated |
-| `curve` | array | Quality lookup table — see Curve Entry below |
+| Field          | Type                   | Description                                                                            |
+| -------------- | ---------------------- | -------------------------------------------------------------------------------------- |
+| `$schema`      | `"calibration-schema"` | Identifies this file as a calibration file                                             |
+| `metric`       | string                 | The quality metric used to define equivalence (see Metrics below)                      |
+| `content_type` | string                 | Image content type this curve applies to: `photo`, `illustration`, `line-art`, `mixed` |
+| `description`  | string                 | Human-readable explanation of the dataset and methodology                              |
+| `generated`    | ISO date string        | When the file was generated                                                            |
+| `curve`        | array                  | Quality lookup table — see Curve Entry below                                           |
 
 ## Curve Entry
 
 Each entry in `curve` corresponds to one JPEG quality level:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `jpeg_q` | integer 1–100 | Input JPEG quality level |
-| `webp_q` | integer 1–100 \| null | Minimum WebP quality to achieve equivalent quality |
-| `avif_q` | integer 1–100 \| null | Minimum AVIF quality to achieve equivalent quality |
-| *(metric fields)* | number \| null | Additional fields specific to the metric (e.g., `score`, `lap_ratio`) |
+| Field             | Type                  | Description                                                           |
+| ----------------- | --------------------- | --------------------------------------------------------------------- |
+| `jpeg_q`          | integer 1–100         | Input JPEG quality level                                              |
+| `webp_q`          | integer 1–100 \| null | Minimum WebP quality to achieve equivalent quality                    |
+| `avif_q`          | integer 1–100 \| null | Minimum AVIF quality to achieve equivalent quality                    |
+| _(metric fields)_ | number \| null        | Additional fields specific to the metric (e.g., `score`, `lap_ratio`) |
 
 `null` means no valid encoding was found at that quality level for that format.
 
@@ -36,14 +36,14 @@ at this quality level with the metric being measured. See metric-specific notes.
 
 ## Optional Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `encoders` | object | Exact encoder CLI flags used during calibration |
-| `toolchain` | object | Encoder versions the curve was generated with (`cwebp`, `avifenc`, `aom`, `ssimulacra2`) — for provenance/reproducibility, since sizes vary by encoder build. Recorded by `calibration/check-encoders.mjs`. |
-| `images_done` | integer | Number of images calibrated |
-| `images_total` | integer | Total images in the dataset |
-| `raw` | array | Per-image results (omitted if file size is a concern) |
-| `source` | string | For derived calibrations, path to the source data file |
+| Field          | Type    | Description                                                                                                                                                                                                 |
+| -------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `encoders`     | object  | Exact encoder CLI flags used during calibration                                                                                                                                                             |
+| `toolchain`    | object  | Encoder versions the curve was generated with (`cwebp`, `avifenc`, `aom`, `ssimulacra2`) — for provenance/reproducibility, since sizes vary by encoder build. Recorded by `calibration/check-encoders.mjs`. |
+| `images_done`  | integer | Number of images calibrated                                                                                                                                                                                 |
+| `images_total` | integer | Total images in the dataset                                                                                                                                                                                 |
+| `raw`          | array   | Per-image results (omitted if file size is a concern)                                                                                                                                                       |
+| `source`       | string  | For derived calibrations, path to the source data file                                                                                                                                                      |
 
 ---
 

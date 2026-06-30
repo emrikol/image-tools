@@ -4,8 +4,14 @@ import globals from 'globals';
 export default [
   {
     ignores: [
-      'node_modules/', 'calibration/venv/', 'encoding-cache/', 'encoding-cache-*/',
-      'test-images/', 'DIV2K_valid_HR/', 'assets/', '**/*.json',
+      'node_modules/',
+      'calibration/venv/',
+      'encoding-cache/',
+      'encoding-cache-*/',
+      'test-images/',
+      'DIV2K_valid_HR/',
+      'assets/',
+      '**/*.json',
     ],
   },
   js.configs.recommended,

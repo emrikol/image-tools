@@ -24,7 +24,9 @@
     "classify": "node classify.mjs",
     "convert": "node convert.mjs",
     "calibrate": "node calibration/calibrate.mjs",
-    "prepublishOnly": "npm test"
+    "prepublishOnly": "npm test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "keywords": [
     "image-compression",
@@ -39,6 +41,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "eslint": "^9.39.4",
-    "globals": "^17.7.0"
+    "globals": "^17.7.0",
+    "prettier": "^3.9.4"
   }
 }
