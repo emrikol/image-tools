@@ -39,6 +39,7 @@ at this quality level with the metric being measured. See metric-specific notes.
 | Field | Type | Description |
 |-------|------|-------------|
 | `encoders` | object | Exact encoder CLI flags used during calibration |
+| `toolchain` | object | Encoder versions the curve was generated with (`cwebp`, `avifenc`, `aom`, `ssimulacra2`) — for provenance/reproducibility, since sizes vary by encoder build. Recorded by `calibration/check-encoders.mjs`. |
 | `images_done` | integer | Number of images calibrated |
 | `images_total` | integer | Total images in the dataset |
 | `raw` | array | Per-image results (omitted if file size is a concern) |
