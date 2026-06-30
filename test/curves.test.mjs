@@ -21,6 +21,11 @@ test('interpolate skips null field values', () => {
   assert.equal(interpolate([{ jpeg_q: 10, webp_q: null }], 10, 'webp_q'), null);
 });
 
+test('interpolate sorts an out-of-order curve before interpolating', () => {
+  const curve = [{ jpeg_q: 20, webp_q: 40 }, { jpeg_q: 10, webp_q: 20 }];   // descending input
+  assert.equal(interpolate(curve, 15, 'webp_q'), 30);
+});
+
 // ── shipped calibration data integrity ──
 const calibFiles = readdirSync(ROOT).filter(f => /-calibration-.*\.json$/.test(f));
 
@@ -57,6 +62,15 @@ test('curves trend upward with no corruption-sized backward jumps', () => {
       assert.ok(maxDrop <= maxAllowedDrop, `${f}: ${field} drops by ${maxDrop} (>${maxAllowedDrop}) — looks corrupt`);
       assert.ok(vals[vals.length - 1] >= vals[0], `${f}: ${field} trends downward overall`);
     }
+  }
+});
+
+test('every shipped curve records encoder-version provenance', () => {
+  for (const f of calibFiles) {
+    const d = JSON.parse(readFileSync(join(ROOT, f), 'utf8'));
+    assert.ok(d.toolchain && typeof d.toolchain === 'object', `${f}: missing toolchain provenance`);
+    // either the recorded encoder versions, or the honest "predates tracking" note
+    assert.ok(d.toolchain.note || d.toolchain.cwebp || d.toolchain.avifenc, `${f}: empty toolchain`);
   }
 });
 

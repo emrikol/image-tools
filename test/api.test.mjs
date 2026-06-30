@@ -20,6 +20,18 @@ test('loadCalibrations finds the shipped curves for a type', () => {
   assert.ok(c.every(x => Array.isArray(x.curve)));
 });
 
+test('loadCalibrations remaps mixed → photo (conservative fallback)', () => {
+  const mixed = loadCalibrations('mixed');
+  assert.ok(mixed.length >= 10, 'mixed should fall back to the photo curve set');
+  assert.ok(mixed.every(x => x.path.includes('photo')), 'fallback curves are the photo files');
+});
+
+test('loadCalibrations ssimOnly returns exactly the ssimulacra2 curve', () => {
+  const c = loadCalibrations('photo', { ssimOnly: true });
+  assert.equal(c.length, 1, 'ssim-only loads a single curve');
+  assert.match(c[0].path, /ssimulacra2/, 'and it is the ssimulacra2 curve');
+});
+
 test('detectJpegQuality reads a fixture', async () => {
   assert.equal(await detectJpegQuality(join(FIX, 'color-q75.jpg')) <= 76, true);
 });
