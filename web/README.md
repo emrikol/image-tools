@@ -1,9 +1,11 @@
 # web/ — browser demo
 
 A zero-upload, in-browser version of the converter: drop a JPEG, get a smaller WebP/AVIF at the
-same perceptual quality. It reuses the project's portable logic (`../lib/jpeg-quality.mjs`,
-`../lib/curves.mjs`) plus WASM encoders ([jSquash](https://github.com/jamsinclair/jSquash)),
-and the precomputed `curves.json` (max-across-metrics, generated from the calibration data).
+same perceptual quality, plus two per-image graphs (where your image lands on the calibration
+curve, and its own file-size-vs-quality sweep — the in-browser analogues of the README charts).
+It reuses the project's portable logic (`../lib/jpeg-quality.mjs`, `../lib/curves.mjs`) plus WASM
+encoders ([jSquash](https://github.com/jamsinclair/jSquash)), and the precomputed `curves.json`
+(max-across-metrics, generated from the calibration data).
 
 It runs **fast mode** (curve-only): detect JPEG quality from the file, auto-classify content type,
 look up the calibrated WebP/AVIF quality, and encode both — shipping the smaller, never larger than
