@@ -1,22 +1,40 @@
 # image-tools
 
-Content-aware JPEG → WebP/AVIF conversion. Most quality tables assume your images look like
-photographs — but a JPEG quality 80 *photo*, *illustration*, and *line-art* scan each need a
-**different** WebP/AVIF quality to preserve equivalent perceptual quality. These tools measure
-that difference per content type, then use it to convert each image to the smallest modern file
-that still meets a perceptual-quality floor.
+> **Content-aware JPEG → WebP / AVIF conversion.** Point it at a JPEG, get back a smaller
+> WebP or AVIF at the same perceptual quality — no hand-tuning, no per-image judgment calls.
 
-No hand-tuning, no per-image judgment calls. Point it at a JPEG, get back a smaller WebP or AVIF.
+<!-- Replace OWNER with your GitHub username/org after pushing, to activate the CI badge. -->
+[![CI](https://github.com/OWNER/image-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/image-tools/actions/workflows/ci.yml)
+[![license: GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
+![node: >=18.14](https://img.shields.io/badge/node-%3E%3D18.14-green.svg)
+
+![JPEG vs WebP vs AVIF at matched quality](assets/hero.webp)
+
+*Same image, same perceptual quality (SSIMULACRA2 ≈ 80 vs the source), at a fraction of the bytes.*
+
+```bash
+# Fast mode needs only two encoders — no Python, no ImageMagick, no ssimulacra2.
+brew install webp libavif                      # or: apt install webp libavif-bin
+
+node convert.mjs photo.jpg out/                # → out/photo.avif (or .webp), whichever is smaller
+```
+
+Why it's not just "pick quality 60": a JPEG quality 80 *photo*, *illustration*, and *line-art*
+scan each need a **different** WebP/AVIF quality to preserve equivalent perceptual quality. This
+ships pre-computed calibration curves (1% resolution, 10 perceptual metrics × 3 content types)
+that capture exactly how different, so every conversion lands at the right quality automatically.
 
 ## How it works
 
-1. **Classify** the image by content type (photo / illustration / line-art / pixel-art) from
-   ImageMagick signal extraction.
-2. **Look up** the calibrated WebP/AVIF quality equivalents for that content type and the input
-   JPEG's detected quality.
-3. **Fuzz** encoder parameters in a small window around the calibrated quality.
-4. **Pick** the smallest output whose [SSIMULACRA2](https://github.com/cloudinary/ssimulacra2)
-   score meets the floor set by the original.
+1. **Classify** the image by content type (photo / illustration / line-art / pixel-art).
+2. **Look up** the calibrated WebP/AVIF quality for that content type and the input JPEG's
+   detected quality (read straight from the file — no ImageMagick needed).
+3. **Encode** WebP and AVIF and ship whichever is smaller — and never larger than the source.
+
+That's the default **fast** path (just `cwebp` + `avifenc`). Add **`--verify`** for a per-image
+guarantee: it binary-searches the lowest quality whose encode clears an absolute
+[SSIMULACRA2](https://github.com/cloudinary/ssimulacra2) floor vs the source JPEG — accurate and
+classification-independent, at the cost of needing `ssimulacra2` and more time.
 
 ## Requirements
 
