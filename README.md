@@ -15,6 +15,8 @@
 **▶ [Try it in your browser](https://OWNER.github.io/image-tools/web/)** — drop a JPEG, compare
 WebP/AVIF, nothing uploaded. (Or run the CLI below.)
 
+[![image-tools demo: drop a JPEG, get a smaller WebP/AVIF at matched quality, with per-image quality and size graphs](assets/demo.webp)](https://OWNER.github.io/image-tools/web/)
+
 ```bash
 # Fast mode needs only two encoders — no Python, no ImageMagick, no ssimulacra2.
 brew install webp libavif                      # or: apt install webp libavif-bin
