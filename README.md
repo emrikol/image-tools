@@ -156,6 +156,23 @@ node classify.mjs image.jpg --verbose      # include raw signal values
 node classify.mjs *.png --batch            # JSON array, progress on stderr
 ```
 
+### Use it as a library
+
+```js
+import { convert } from './lib/convert.mjs';
+
+const r = await convert('photo.jpg', { verify: true, floor: 80 });
+// r.winner === 'avif' | 'webp' | null, r.keptOriginal, r.jpegQ, r.contentType
+if (r.winner && !r.keptOriginal) {
+  const best = r[r.winner];                       // { quality, size, score, buffer, ... }
+  fs.writeFileSync(`photo.${r.winner}`, best.buffer);
+}
+```
+
+`convert()` is pure compute — it returns the winning bytes as a Buffer and writes nothing, so
+it drops straight into a build pipeline. Options: `{ type, verify, floor, ssimOnly, dryRun,
+calibrationDir, extraCalibration, onProgress }`.
+
 ### Regenerating calibration curves (optional / archival)
 
 **The curves are already generated and committed — you never need this to use the converter.**
