@@ -1,96 +1,72 @@
 #!/usr/bin/env node
 /**
- * convert.mjs
+ * convert.mjs — CLI for the content-aware JPEG → WebP/AVIF converter.
  *
- * Converts a JPEG to the smallest possible WebP and AVIF at equivalent
- * perceptual quality, using a calibrated quality curve and parameter fuzzing.
+ * Thin wrapper over lib/convert.mjs (the engine). Handles arg parsing, the preflight tool
+ * check, batch/directory mode, printing, writing the winner, and the optional comparison sheet.
  *
  * Usage:
- *   node convert.mjs <input.jpg> [output-dir] [options]
+ *   node convert.mjs <input.jpg|dir> [output-dir] [options]
  *
  * Modes:
- *   (default)              FAST: encode straight at the calibrated quality from the frozen
- *                          curves. Needs only cwebp + avifenc (no ssimulacra2, no ImageMagick).
- *   --verify               Binary-search the lowest quality whose encode clears an absolute
- *                          SSIMULACRA2 floor vs the source JPEG (classification-independent).
- *                          Needs ssimulacra2 + avifdec/dwebp (or ImageMagick) to score.
+ *   (default)        FAST: encode at the calibrated quality from the frozen curves
+ *                    (needs only cwebp + avifenc).
+ *   --verify         Binary-search the lowest quality that clears an absolute SSIMULACRA2
+ *                    floor vs the source (needs ssimulacra2 + avifdec/dwebp or ImageMagick).
  *
  * Options:
- *   --calibration <path>   Path to calibration.json (default: same dir as script)
- *   --floor <n>            [--verify] absolute SSIMULACRA2 floor vs the source JPEG (default: 80;
- *                          higher = stricter fidelity / larger files)
- *   --keep-both            Output both WebP and AVIF even if one wins
- *   --ssim-only            Use only the ssimulacra2 curve; ignore the other metric curves
- *   --report               Print full results table
- *   --contact-sheet        Write <stem>-compare.png: original JPEG vs best WebP vs best
- *                          AVIF at full size, captioned with size + SSIMULACRA2 score
+ *   --floor <n>      [--verify] absolute SSIMULACRA2 floor (default 80; higher = stricter)
+ *   --type <t>       auto|photo|illustration|line-art|mixed|pixel-art (default auto)
+ *   --calibration <path>   add an extra calibration curve
+ *   --ssim-only      use only the ssimulacra2 curve  (--no-lap = deprecated alias)
+ *   --keep-both      write both WebP and AVIF
+ *   --contact-sheet  also write <stem>-compare.png  (--compare alias)
+ *   --dry-run        report the plan without encoding
+ *   --report         print the full candidate table
  */
 
-import { execFile, execFileSync, spawn }        from 'child_process';
-import { mkdirSync, writeFileSync, readFileSync, readdirSync, existsSync, unlinkSync, rmSync, statSync } from 'fs';
-import { join, dirname, basename, extname }     from 'path';
-import { tmpdir, availableParallelism }         from 'os';
-import { promisify }                            from 'util';
-import { randomBytes }                          from 'crypto';
-import { fileURLToPath }                        from 'url';
-import { classifyImage }                        from './classify.mjs';
-import { jpegQualityFromBuffer }                from './lib/jpeg-quality.mjs';
-import { interpolate }                          from './lib/curves.mjs';
+import { execFile, execFileSync, spawn } from 'node:child_process';
+import { mkdirSync, writeFileSync, existsSync, readdirSync, statSync, rmSync } from 'node:fs';
+import { join, dirname, basename, extname } from 'node:path';
+import { tmpdir, availableParallelism } from 'node:os';
+import { randomBytes } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import { promisify } from 'node:util';
+import { convert } from './lib/convert.mjs';
 
 const execFileAsync = promisify(execFile);
-const __dirname     = dirname(fileURLToPath(import.meta.url));
 
-// ─── CLI args ─────────────────────────────────────────────────────────────────
-
+// ─── args ───────────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
+const getArg = (flag, def) => { const i = args.indexOf(flag); return i !== -1 ? args[i + 1] : def; };
+const hasFlag = (flag) => args.includes(flag);
+const namedVals = new Set(['--calibration', '--floor', '--type', '--quality-window', '--ssim-tolerance']
+  .map(f => { const i = args.indexOf(f); return i !== -1 ? args[i + 1] : null; }).filter(Boolean));
+const positional = args.filter(a => !a.startsWith('--') && !namedVals.has(a));
 
-function getArg(flag, defaultVal) {
-  const i = args.indexOf(flag);
-  return i !== -1 ? args[i + 1] : defaultVal;
-}
-function hasFlag(flag) { return args.includes(flag); }
-
-// Collect named-flag values so we can exclude them from positional args
-const namedFlagValues = new Set(
-  ['--calibration', '--quality-window', '--ssim-tolerance', '--floor', '--type']
-    .map(f => { const i = args.indexOf(f); return i !== -1 ? args[i + 1] : null; })
-    .filter(Boolean)
-);
-const positional = args.filter(a => !a.startsWith('--') && !namedFlagValues.has(a));
-
-const INPUT          = positional[0] ?? null;
-const OUTPUT_DIR     = positional[1] ?? dirname(INPUT || '.');
-const QUALITY_WINDOW = parseInt(getArg('--quality-window', '5'));  // (legacy; unused by the floor search)
-// Absolute SSIMULACRA2 floor vs the source JPEG for --verify (content-independent, so
-// "equivalent quality" means the same thing on every image). 80 ≈ high-fidelity reproduction
-// while still compressing well; raise toward 85–88 for stricter fidelity (larger files).
-// --ssim-tolerance is accepted for back-compat but no longer used.
+const INPUT = positional[0] ?? null;
+const OUTPUT_DIR = positional[1] ?? dirname(INPUT || '.');
 const FLOOR = parseFloat(getArg('--floor', '80'));
-const KEEP_BOTH       = hasFlag('--keep-both');
-const REPORT          = hasFlag('--report');
-const KEEP_ARTIFACTS  = hasFlag('--keep-image-artifacts');  // preserve tmp dir for reuse
-const TYPE_OVERRIDE   = getArg('--type', 'auto');  // auto|photo|illustration|line-art|mixed|pixel-art
-// Use only the ssimulacra2 curve, ignoring the other metric curves. (--no-lap is the
-// old, misleading name — kept as a deprecated alias.)
+const TYPE = getArg('--type', 'auto');
 const SSIM_ONLY = hasFlag('--ssim-only') || hasFlag('--no-lap');
-const CONTACT_SHEET = hasFlag('--contact-sheet') || hasFlag('--compare');  // visual JPEG/WebP/AVIF comparison PNG
-const VERIFY = hasFlag('--verify');  // fuzz + enforce a per-image SSIMULACRA2 floor (default: fast curve-only)
-const DRY_RUN = hasFlag('--dry-run');  // report the plan (type, quality, target) without encoding
+const KEEP_BOTH = hasFlag('--keep-both');
+const CONTACT_SHEET = hasFlag('--contact-sheet') || hasFlag('--compare');
+const VERIFY = hasFlag('--verify');
+const DRY_RUN = hasFlag('--dry-run');
+const REPORT = hasFlag('--report');
+const EXTRA_CALIBRATION = getArg('--calibration', null);
 
 if (!INPUT || !existsSync(INPUT)) {
   console.error('Usage: node convert.mjs <input.jpg|dir> [output-dir] [--verify [--floor N]] [--type auto] [--ssim-only] [--keep-both] [--contact-sheet] [--dry-run] [--report]');
   process.exit(1);
 }
 
-// ─── preflight: required tools ────────────────────────────────────────────────
-function toolOnPath(bin) {
-  try { execFileSync('sh', ['-c', `command -v ${bin}`], { stdio: 'ignore' }); return true; }
-  catch { return false; }
-}
+// ─── preflight ────────────────────────────────────────────────────────────────
+const onPath = (bin) => { try { execFileSync('sh', ['-c', `command -v ${bin}`], { stdio: 'ignore' }); return true; } catch { return false; } };
 function requireTools() {
   const missing = [];
-  if (!DRY_RUN) { for (const t of ['cwebp', 'avifenc']) if (!toolOnPath(t)) missing.push(t); }
-  if (VERIFY && !DRY_RUN && !toolOnPath('ssimulacra2')) missing.push('ssimulacra2');
+  if (!DRY_RUN) for (const t of ['cwebp', 'avifenc']) if (!onPath(t)) missing.push(t);
+  if (VERIFY && !DRY_RUN && !onPath('ssimulacra2')) missing.push('ssimulacra2');
   if (missing.length) {
     console.error(`Missing required tool(s) on PATH: ${missing.join(', ')}`);
     console.error('Install: brew install webp libavif   (or: apt install webp libavif-bin)');
@@ -99,503 +75,174 @@ function requireTools() {
   }
 }
 
-// ─── batch mode: a directory of JPEGs ─────────────────────────────────────────
-// Each file is converted in an isolated child process, so one bad image can't crash the run.
+const kb = (b) => (b / 1024).toFixed(1) + 'KB';
+const pct = (a, b) => (((b - a) / b) * 100).toFixed(1) + '%';
+const scoreStr = (s) => (s == null ? 'n/a (fast)' : `score=${s.toFixed(2)}`);
+const convertOpts = { type: TYPE, verify: VERIFY, floor: FLOOR, ssimOnly: SSIM_ONLY, dryRun: DRY_RUN, extraCalibration: EXTRA_CALIBRATION };
+
+// ─── batch: a directory of JPEGs (each in an isolated child process) ───────────
 async function runBatch(dir) {
   const files = readdirSync(dir).filter(f => /\.jpe?g$/i.test(f)).sort();
   if (!files.length) { console.error(`No .jpg/.jpeg files in ${dir}`); process.exit(1); }
   requireTools();
-
-  // Reconstruct per-file flags from parsed options (drop positionals, --report, artifacts).
   const childFlags = [];
   if (VERIFY) childFlags.push('--verify');
   childFlags.push('--floor', String(FLOOR));
-  if (TYPE_OVERRIDE !== 'auto') childFlags.push('--type', TYPE_OVERRIDE);
+  if (TYPE !== 'auto') childFlags.push('--type', TYPE);
   if (SSIM_ONLY) childFlags.push('--ssim-only');
   if (KEEP_BOTH) childFlags.push('--keep-both');
   if (CONTACT_SHEET) childFlags.push('--contact-sheet');
   if (DRY_RUN) childFlags.push('--dry-run');
-
   const self = fileURLToPath(import.meta.url);
-  const runChild = (inPath) => new Promise((resolve) => {
+  const runChild = (inPath) => new Promise((res) => {
     const p = spawn(process.execPath, [self, inPath, OUTPUT_DIR, ...childFlags], { stdio: ['ignore', 'pipe', 'pipe'] });
-    let out = '';
-    p.stdout.on('data', d => out += d); p.stderr.on('data', d => out += d);
-    p.on('close', (code) => resolve({ inPath, code, out }));
+    let out = ''; p.stdout.on('data', d => out += d); p.stderr.on('data', d => out += d);
+    p.on('close', (code) => res({ code, out }));
   });
-
   console.log(`Batch: ${files.length} JPEG(s) in ${dir}  (${VERIFY ? 'verify' : 'fast'} mode, ${availableParallelism()} parallel)\n`);
   let idx = 0, converted = 0, kept = 0, failed = 0;
-  const workers = Array.from({ length: Math.min(availableParallelism(), files.length) }, async () => {
+  await Promise.all(Array.from({ length: Math.min(availableParallelism(), files.length) }, async () => {
     while (idx < files.length) {
       const f = files[idx++];
       const { code, out } = await runChild(join(dir, f));
       const win = out.match(/✓ Winner:.*\((\d[\d.]*KB, [\d.]+% smaller[^)]*)\)/);
-      const kpt = /keeping the original/i.test(out);
       if (code !== 0) { failed++; console.log(`  ✗ ${f}  (failed; rerun without batch to see why)`); }
-      else if (kpt) { kept++; console.log(`  • ${f}  → kept original (no smaller encode)`); }
+      else if (/keeping the original/i.test(out)) { kept++; console.log(`  • ${f}  → kept original (no smaller encode)`); }
       else if (win) { converted++; console.log(`  ✓ ${f}  → ${win[1]}`); }
       else { converted++; console.log(`  ✓ ${f}`); }
     }
-  });
-  await Promise.all(workers);
+  }));
   console.log(`\nDone: ${converted} converted, ${kept} kept, ${failed} failed.`);
   process.exit(failed ? 1 : 0);
 }
 
-if (statSync(INPUT).isDirectory()) {
-  await runBatch(INPUT);
-} else {
+// ─── single-file conversion ────────────────────────────────────────────────────
+async function runSingle() {
   requireTools();
-}
+  const stem = basename(INPUT, extname(INPUT));
+  mkdirSync(OUTPUT_DIR, { recursive: true });
+  console.log(`\nInput:  ${INPUT}`);
 
-// ─── calibration loading ──────────────────────────────────────────────────────
-
-// Auto-discover all calibration files for a content type.
-// Loads every {metric}-calibration-{type}.json in the script directory.
-// Falls back to {metric}-calibration-mixed.json for metrics that have no type-specific file.
-// --calibration <path> explicitly adds an extra curve (useful for testing one-offs).
-function loadCalibrations(type) {
-  // 'mixed' has no dedicated calibration files. Fall back to the photo curves —
-  // photo is the conservative choice (it requires the highest WebP/AVIF quality of
-  // the three content types, so it won't under-encode an ambiguous image).
-  if (type === 'mixed') {
-    console.log('No mixed-specific calibration — falling back to photo curves.');
-    type = 'photo';
-  }
-
-  if (SSIM_ONLY) {
-    // Only load the primary SSIMULACRA2 curve; skip all others
-    const ssimPath = join(__dirname, `ssimulacra2-calibration-${type}.json`);
-    const fallback  = join(__dirname, `ssimulacra2-calibration-photo.json`);
-    const path = existsSync(ssimPath) ? ssimPath : existsSync(fallback) ? fallback : null;
-    if (!path) return [];
-    const data = JSON.parse(readFileSync(path, 'utf8'));
-    return [{ metric: data.metric ?? 'ssimulacra2', description: data.description ?? '', curve: data.curve, path }];
-  }
-
-  const suffix      = `-calibration-${type}.json`;
-  const mixedSuffix = `-calibration-mixed.json`;
-  const all         = readdirSync(__dirname).filter(f => f.endsWith('.json'));
-
-  const loaded    = [];
-  const byMetric  = new Map();  // metric → loaded
-
-  function loadFile(f, descSuffix = '') {
-    try {
-      const data = JSON.parse(readFileSync(join(__dirname, f), 'utf8'));
-      if (!data.curve || !Array.isArray(data.curve)) return null;
-      return {
-        metric:         data.metric ?? f,
-        higherIsBetter: data.higher_is_better ?? true,  // default to higher=better for legacy files
-        description:    (data.description ?? '') + descSuffix,
-        curve:          data.curve,
-        path:           f,
-      };
-    } catch { return null; }
-  }
-
-  for (const f of all.filter(f => f.endsWith(suffix))) {
-    const cal = loadFile(f);
-    if (!cal) continue;
-    byMetric.set(cal.metric, true);
-    loaded.push(cal);
-  }
-
-  // For metrics that only have a mixed file, use it as fallback for unrecognized types
-  if (type !== 'mixed') {
-    for (const f of all.filter(f => f.endsWith(mixedSuffix))) {
-      const cal = loadFile(f, ' (mixed fallback)');
-      if (!cal || byMetric.has(cal.metric)) continue;
-      loaded.push(cal);
-    }
-  }
-
-  // Honour explicit --calibration override (adds to the set)
-  const explicit = getArg('--calibration', null);
-  if (explicit && existsSync(explicit)) {
-    const cal = loadFile(explicit);
-    if (cal) loaded.push(cal);
-  }
-
-  return loaded;
-}
-
-// ─── cwebp / avifenc parameter grids ─────────────────────────────────────────
-
-const WEBP_SNS     = [20, 40, 60, 80];          // spatial noise shaping
-const WEBP_FILTER  = [20, 40, 60, 80];          // deblocking filter strength
-const AVIF_SPEED   = 0;                          // slowest = best compression
-
-// ─── helpers ──────────────────────────────────────────────────────────────────
-
-const TMP = join(tmpdir(), 'convert-' + randomBytes(4).toString('hex'));
-mkdirSync(TMP, { recursive: true });
-if (KEEP_ARTIFACTS) console.log(`Artifacts dir: ${TMP}`);
-
-// Clean up the temp working dir on any exit (normal, error, or early exit),
-// unless --keep-image-artifacts was requested. Runs synchronously in the exit hook.
-process.on('exit', () => {
-  if (!KEEP_ARTIFACTS) { try { rmSync(TMP, { recursive: true, force: true }); } catch {} }
-});
-
-async function exec(cmd, args) {
-  try {
-    return await execFileAsync(cmd, args, { encoding: 'utf8' }).catch(e => e);
-  } catch {
-    return { stdout: '', stderr: '' };
-  }
-}
-
-async function measureQuality(ref, compressed) {
-  // ssimulacra2 only reads PNG/JPEG — decode AVIF/WebP to PNG first. Use the encoders'
-  // own decoders (avifdec/dwebp, which ship alongside avifenc/cwebp); fall back to magick.
-  let cmpPng = compressed;
-  let tmpPng  = null;
-  if (/\.avif$/i.test(compressed)) {
-    tmpPng = compressed + '._ssim.png';
-    let r = await exec('avifdec', ['--quiet', compressed, tmpPng]);
-    if (!existsSync(tmpPng)) await exec('magick', ['convert', compressed, tmpPng]);
-    cmpPng = tmpPng;
-  } else if (/\.webp$/i.test(compressed)) {
-    tmpPng = compressed + '._ssim.png';
-    await exec('dwebp', ['-quiet', compressed, '-o', tmpPng]);
-    if (!existsSync(tmpPng)) await exec('magick', ['convert', compressed, tmpPng]);
-    cmpPng = tmpPng;
-  }
-  try {
-    const result = await exec('ssimulacra2', [ref, cmpPng]);
-    const output = result.stdout || result.stderr || '';
-    const match  = output.match(/(-?[\d.]+)/);
-    return match ? parseFloat(parseFloat(match[1]).toFixed(4)) : null;
-  } finally {
-    if (tmpPng) { try { unlinkSync(tmpPng); } catch {} }
-  }
-}
-
-function fileSize(path) {
-  try { return readFileSync(path).length; } catch { return Infinity; }
-}
-
-async function encodeWebP(src, quality, sns, filter, out) {
-  await exec('cwebp', [
-    '-q', String(quality),
-    '-m', '6',
-    '-sns', String(sns),
-    '-f', String(filter),
-    '-quiet', src, '-o', out,
-  ]);
-}
-
-async function encodeAVIF(src, quality, out) {
-  await exec('avifenc', ['-q', String(quality), '--speed', String(AVIF_SPEED), src, out]);
-}
-
-// ─── JPEG quality detection ───────────────────────────────────────────────────
-// Pure-JS DQT reader (lib/jpeg-quality.mjs); ImageMagick is only a fallback.
-
-async function detectJpegQuality(path) {
-  let q = null;
-  try { q = jpegQualityFromBuffer(readFileSync(path)); } catch {}
-  if (q !== null) return q;
-  // Fallback for non-standard JPEGs: ImageMagick, if available.
-  const result = await exec('magick', ['identify', '-verbose', path]);
-  const output = result.stdout || result.stderr || '';
-  const match  = output.match(/Quality:\s*(\d+)/);
-  return match ? parseInt(match[1]) : null;
-}
-
-// ─── main ──────────────────────────────────────────────────────────────────────
-
-const stem = basename(INPUT, extname(INPUT));
-mkdirSync(OUTPUT_DIR, { recursive: true });
-
-console.log(`\nInput:  ${INPUT}`);
-
-// 0. Classify content type and resolve calibration curve
-let contentType = TYPE_OVERRIDE;
-if (contentType === 'auto') {
-  const classification = await classifyImage(INPUT);
-  contentType = classification.type ?? 'mixed';
-  console.log(`Detected type: ${contentType} (confidence: ${classification.confidence})`);
-} else {
-  console.log(`Content type: ${contentType} (manual override)`);
-}
-
-if (contentType === 'pixel-art') {
-  console.log('Pixel-art detected — lossy encoding not recommended. Use oxipng/optipng on the original PNG instead.');
-  process.exit(0);
-}
-
-// 1. Detect JPEG quality
-const jpegQ = await detectJpegQuality(INPUT);
-if (jpegQ === null) {
-  console.error(`Could not read a JPEG quantization table from ${basename(INPUT)} — is it a JPEG? (This tool converts JPEGs.)`);
-  process.exit(1);
-}
-console.log(`JPEG quality: ${jpegQ}`);
-
-// 2. Load all calibration curves and take the max quality across all
-const calibrations = loadCalibrations(contentType);
-if (calibrations.length === 0) {
-  console.error(`No calibration curves found for content type "${contentType}". Expected {metric}-calibration-${contentType}.json alongside this script (they ship with the repo).`);
-  process.exit(1);
-}
-
-let calibWebP = 1, calibAVIF = 1;
-for (const cal of calibrations) {
-  const wq = interpolate(cal.curve, jpegQ, 'webp_q');
-  const aq = interpolate(cal.curve, jpegQ, 'avif_q');
-  console.log(`${cal.metric.padEnd(16)} — WebP: q=${String(wq ?? '—').padStart(3)}  AVIF: q=${String(aq ?? '—').padStart(3)}  (${cal.path})`);
-  if (wq !== null) calibWebP = Math.max(calibWebP, wq);
-  if (aq !== null) calibAVIF = Math.max(calibAVIF, aq);
-}
-if (calibrations.length > 1) {
-  console.log(`${'Using (max)'.padEnd(16)} — WebP: q=${calibWebP}  AVIF: q=${calibAVIF}`);
-}
-
-if (DRY_RUN) {
-  const cw = Math.min(100, Math.max(1, Math.round(calibWebP)));
-  const ca = Math.min(100, Math.max(1, Math.round(calibAVIF)));
-  console.log(`\n[dry run] would target WebP q${cw} / AVIF q${ca}` +
-              `${VERIFY ? `, searching to SSIMULACRA2 floor ${FLOOR.toFixed(1)}` : ''} — no files written.`);
-  process.exit(0);
-}
-
-// 3. Encode candidates.
-//    FAST (default): one encode each at the calibrated quality — no measurement, so it needs
-//      only cwebp + avifenc. Trusts the frozen curves.
-//    --verify: establish a per-image SSIMULACRA2 floor from a baseline encode, then fuzz the
-//      encoder parameters and keep only candidates that clear the floor.
-const origSize    = fileSize(INPUT);
-const clampQ      = (q) => Math.min(100, Math.max(1, Math.round(q)));
-const webpResults = [];
-const avifResults = [];
-let   scoreFloor  = null;
-
-if (!VERIFY) {
-  console.log('Mode: fast (curve-only). Pass --verify for per-image SSIMULACRA2 fuzzing.\n');
-  const wq   = clampQ(calibWebP);
-  const wout = join(TMP, `${stem}_webp_q${wq}.webp`);
-  await encodeWebP(INPUT, wq, 50, 60, wout);
-  webpResults.push({ q: wq, sns: 50, f: 60, size: fileSize(wout), score: null, out: wout });
-
-  const aq   = clampQ(calibAVIF);
-  const aout = join(TMP, `${stem}_avif_q${aq}.avif`);
-  await encodeAVIF(INPUT, aq, aout);
-  avifResults.push({ q: aq, size: fileSize(aout), score: null, out: aout });
-} else {
-  // VERIFY — binary-search the lowest quality whose re-encode clears the absolute SSIMULACRA2
-  // floor vs the source JPEG. Classification-independent (the calibrated quality from the curves
-  // is just a hint here; the floor is the guarantee). Score is monotonic in quality, so binary
-  // search finds the smallest passing encode in ~7 steps instead of fuzzing a fixed window.
-  scoreFloor = FLOOR;
-  console.log(`Mode: verify. Absolute SSIMULACRA2 floor vs source JPEG: ${FLOOR.toFixed(1)}\n`);
-
-  async function lowestQualityMeetingFloor(label, encodeAtQ) {
-    process.stdout.write(`Searching ${label} `);
-    let lo = 1, hi = 100, best = null;
-    while (lo <= hi) {
-      const mid = (lo + hi) >> 1;
-      const r = await encodeAtQ(mid);
+  // live progress, printed in natural order as the engine reaches each stage
+  let curFmt = null;
+  const onProgress = (e) => {
+    if (e.type === 'classified') {
+      console.log(e.confidence === 'manual'
+        ? `Content type: ${e.contentType} (manual override)`
+        : `Detected type: ${e.contentType} (confidence: ${e.confidence})`);
+    } else if (e.type === 'quality') {
+      console.log(`JPEG quality: ${e.jpegQ}`);
+    } else if (e.type === 'curves') {
+      for (const c of e.curves) console.log(`${c.metric.padEnd(16)} — WebP: q=${String(c.webp_q ?? '—').padStart(3)}  AVIF: q=${String(c.avif_q ?? '—').padStart(3)}  (${c.path})`);
+      if (e.curves.length > 1) console.log(`${'Using (max)'.padEnd(16)} — WebP: q=${e.calibWebP}  AVIF: q=${e.calibAVIF}`);
+    } else if (e.type === 'mode' && !DRY_RUN) {
+      console.log(`Mode: ${e.mode === 'verify' ? `verify (floor ${FLOOR.toFixed(1)})` : 'fast (curve-only)'}\n`);
+    } else if (e.type === 'search') {
+      if (e.format !== curFmt) { if (curFmt) console.log(); process.stdout.write(`Searching ${e.format.toUpperCase()} `); curFmt = e.format; }
       process.stdout.write('.');
-      if (r.score !== null && r.score >= FLOOR) { best = r; hi = mid - 1; }
-      else { lo = mid + 1; }
     }
-    if (best) { console.log(`  → q${best.q} (score ${best.score.toFixed(2)})`); return { ...best, met: true }; }
-    const r = await encodeAtQ(100);  // floor unreachable — best effort at max quality
-    console.log(`  → floor unreachable; q100 (score ${r.score == null ? 'n/a' : r.score.toFixed(2)})`);
-    return { ...r, met: false };
-  }
+  };
 
-  const avif = await lowestQualityMeetingFloor('AVIF', async (q) => {
-    const out = join(TMP, `${stem}_avif_q${q}.avif`);
-    await encodeAVIF(INPUT, q, out);
-    return { q, sns: null, f: null, size: fileSize(out), score: await measureQuality(INPUT, out), out };
-  });
-  if (avif.score === null) {
-    console.error('\nCould not measure encodes — is `ssimulacra2` installed? Omit --verify for fast (curve-only) mode.');
+  let r;
+  try {
+    r = await convert(INPUT, { ...convertOpts, onProgress });
+  } catch (e) {
+    if (e.code === 'ENOTJPEG') console.error(`Could not read a JPEG quantization table from ${basename(INPUT)} — is it a JPEG? (This tool converts JPEGs.)`);
+    else if (e.code === 'ENOCURVES') console.error(`No calibration curves found for this content type — expected {metric}-calibration-*.json beside the script (they ship with the repo).`);
+    else if (e.code === 'ENOSSIM') console.error('Could not measure encodes — is `ssimulacra2` installed? Omit --verify for fast (curve-only) mode.');
+    else console.error(`Conversion failed: ${e.message}`);
     process.exit(1);
   }
-  avifResults.push(avif);
+  if (curFmt) console.log('\n');
 
-  const webp = await lowestQualityMeetingFloor('WebP', async (q) => {
-    const out = join(TMP, `${stem}_webp_q${q}_s50_f60.webp`);
-    await encodeWebP(INPUT, q, 50, 60, out);
-    return { q, sns: 50, f: 60, size: fileSize(out), score: await measureQuality(INPUT, out), out };
-  });
-  webpResults.push(webp);
-  if (webp.met) {
-    // At the floor-meeting quality, fuzz spatial-noise-shaping / filter to shrink further.
-    process.stdout.write('Tuning WebP ');
-    for (const sns of WEBP_SNS) {
-      for (const f of WEBP_FILTER) {
-        const out   = join(TMP, `${stem}_webp_q${webp.q}_s${sns}_f${f}.webp`);
-        await encodeWebP(INPUT, webp.q, sns, f, out);
-        const score = await measureQuality(INPUT, out);
-        if (score !== null && score >= FLOOR) webpResults.push({ q: webp.q, sns, f, size: fileSize(out), score, out });
-        process.stdout.write('.');
-      }
-    }
-    console.log();
+  if (r.pixelArt) {
+    console.log('Pixel-art detected — lossy encoding not recommended. Use oxipng/optipng on the original PNG instead.');
+    return;
   }
-  if (!avif.met || !webp.met) {
-    console.log(`\n⚠  Floor ${FLOOR.toFixed(1)} not reachable for ${[!avif.met && 'AVIF', !webp.met && 'WebP'].filter(Boolean).join(' & ')} below q100 — using best effort.`);
-  }
-  console.log();
-}
-
-// 6. Pick winners
-webpResults.sort((a, b) => a.size - b.size);
-avifResults.sort((a, b) => a.size - b.size);
-
-const bestWebP = webpResults[0] ?? null;
-const bestAVIF = avifResults[0] ?? null;
-
-// 7. Report
-function kb(bytes) { return (bytes / 1024).toFixed(1) + 'KB'; }
-function pct(a, b) { return (((b - a) / b) * 100).toFixed(1) + '%'; }
-function scoreStr(s) { return s == null ? 'n/a (fast)' : `score=${s.toFixed(2)}`; }
-
-console.log(`Original JPEG:  ${kb(origSize)}`);
-if (bestWebP) console.log(`Best WebP:      ${kb(bestWebP.size)}  (${pct(bestWebP.size, origSize)} smaller)  q=${bestWebP.q} sns=${bestWebP.sns} f=${bestWebP.f}  ${scoreStr(bestWebP.score)}`);
-if (bestAVIF) console.log(`Best AVIF:      ${kb(bestAVIF.size)}  (${pct(bestAVIF.size, origSize)} smaller)  q=${bestAVIF.q}  ${scoreStr(bestAVIF.score)}`);
-
-if (REPORT) {
-  console.log('\n── WebP results (sorted by size) ───');
-  for (const r of webpResults.slice(0, 10)) {
-    console.log(`  ${kb(r.size).padStart(8)}  q=${r.q} sns=${r.sns} f=${r.f}  ${scoreStr(r.score)}`);
-  }
-  console.log('\n── AVIF results ─────────────────────────────────────────');
-  for (const r of avifResults) {
-    console.log(`  ${kb(r.size).padStart(8)}  q=${r.q}  ${scoreStr(r.score)}`);
-  }
-}
-
-// 8. Copy winner to output dir
-const overallWinner = (!bestWebP) ? bestAVIF :
-                      (!bestAVIF) ? bestWebP :
-                      bestWebP.size <= bestAVIF.size ? bestWebP : bestAVIF;
-
-if (!overallWinner) {
-  console.error('\nNo valid encodings produced.');
-  process.exit(1);
-}
-
-// Never make the file bigger: if the best encoding isn't smaller than the source JPEG, keep
-// the original. (A migration tool must never bloat — surface it honestly instead.)
-if (overallWinner.size >= origSize && !KEEP_BOTH) {
-  console.log(`\n⚠  No encoding beat the source JPEG (${kb(origSize)}) at floor ${FLOOR.toFixed(1)} — keeping the original JPEG.`);
-  console.log(`   (Lower the bar with --floor <n>, or force a write with --keep-both.)`);
-  process.exit(0);
-}
-
-const winnerExt  = overallWinner === bestAVIF ? 'avif' : 'webp';
-const winnerPath = join(OUTPUT_DIR, `${stem}.${winnerExt}`);
-writeFileSync(winnerPath, readFileSync(overallWinner.out));
-
-console.log(`\n✓ Winner: ${winnerPath}  (${kb(overallWinner.size)}, ${pct(overallWinner.size, origSize)} smaller than JPEG)`);
-
-if (KEEP_BOTH) {
-  if (bestWebP && overallWinner !== bestWebP) {
-    const p = join(OUTPUT_DIR, `${stem}.webp`);
-    writeFileSync(p, readFileSync(bestWebP.out));
-    console.log(`  Also saved: ${p}`);
-  }
-  if (bestAVIF && overallWinner !== bestAVIF) {
-    const p = join(OUTPUT_DIR, `${stem}.avif`);
-    writeFileSync(p, readFileSync(bestAVIF.out));
-    console.log(`  Also saved: ${p}`);
-  }
-}
-
-// 9. Optional: full-size visual comparison sheet.
-//    Shows the original JPEG next to the WebP and AVIF that our calibrated curves +
-//    SSIMULACRA2 floor judge perceptually equivalent — i.e. the smallest encodings the
-//    statistics say look the same as the JPEG. Lets a human sanity-check that claim.
-const FONT_CANDIDATES = [
-  '/System/Library/Fonts/Supplemental/Arial.ttf',
-  '/System/Library/Fonts/Helvetica.ttc',
-  '/Library/Fonts/Arial.ttf',
-  '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-];
-
-async function buildContactSheet() {
-  const ss = (s) => (s == null ? '' : `   ·   SSIMULACRA2 ${s.toFixed(2)}`);
-  const refNote = scoreFloor == null ? 'reference, fast mode' : `reference, floor ${scoreFloor.toFixed(2)}`;
-  const tiles = [];
-  tiles.push({
-    path: INPUT,
-    label: `ORIGINAL JPEG  ·  q${jpegQ}  ·  ${contentType}\n${kb(origSize)}   (${refNote})`,
-  });
-  if (bestWebP) tiles.push({
-    path: bestWebP.out,
-    label: `WebP  ·  q${bestWebP.q} sns${bestWebP.sns} f${bestWebP.f}${overallWinner === bestWebP ? '   ✓ WINNER' : ''}\n`
-         + `${kb(bestWebP.size)}  (${pct(bestWebP.size, origSize)} smaller)${ss(bestWebP.score)}`,
-  });
-  if (bestAVIF) tiles.push({
-    path: bestAVIF.out,
-    label: `AVIF  ·  q${bestAVIF.q}${overallWinner === bestAVIF ? '   ✓ WINNER' : ''}\n`
-         + `${kb(bestAVIF.size)}  (${pct(bestAVIF.size, origSize)} smaller)${ss(bestAVIF.score)}`,
-  });
-
-  // Adaptive layout: landscape images stack vertically (each full width, easy top-to-bottom
-  // compare); portrait images sit side by side.
-  const dims = await exec('magick', ['identify', '-format', '%w %h', INPUT]);
-  const [w, h] = (dims.stdout || '').trim().split(/\s+/).map(Number);
-  const landscape = (w && h) ? w >= h : true;
-  const tile = landscape ? `1x${tiles.length}` : `${tiles.length}x1`;
-
-  const sheetPath  = join(OUTPUT_DIR, `${stem}-compare.png`);
-  const bodyPath   = join(TMP, `${stem}_compare_body.png`);
-  const headerPath = join(TMP, `${stem}_compare_header.png`);
-  const font = FONT_CANDIDATES.find(p => existsSync(p));
-
-  // 1. Montage the full-size tiles. No -title here: montage clips a title wider than the
-  //    canvas, so the header is built separately and stacked on top (step 2).
-  const mArgs = ['montage'];
-  for (const t of tiles) mArgs.push('-label', t.label, t.path);
-  mArgs.push(
-    '-tile', tile,
-    '-geometry', '+14+12',   // '+x+y' with no WxH = full size, no downscaling
-    '-background', 'white',
-    '-fill', '#111111',
-    '-pointsize', '18',
-  );
-  if (font) mArgs.push('-font', font);
-  mArgs.push(bodyPath);
-  const r = await exec('magick', mArgs);
-
-  if (!existsSync(bodyPath)) {
-    console.error(`\n⚠  Could not build comparison sheet: ${(r.stderr || r.message || 'unknown error').split('\n')[0]}`);
+  if (r.dryRun) {
+    console.log(`\n[dry run] would target WebP q${r.calibWebP} / AVIF q${r.calibAVIF}` +
+                `${VERIFY ? `, searching to SSIMULACRA2 floor ${FLOOR.toFixed(1)}` : ''} — no files written.`);
     return;
   }
 
-  // 2. Build a width-matched header that auto-wraps (caption:) so it never clips, then
-  //    append it above the montage body.
-  const bodyW = parseInt(((await exec('magick', ['identify', '-format', '%w', bodyPath])).stdout || '').trim()) || 0;
-  const titleText = `${basename(INPUT)}    ·    perceptually-matched  JPEG / WebP / AVIF    ·    content: ${contentType}`;
-  if (bodyW > 0) {
-    const hArgs = ['-background', '#f2f2f2', '-fill', '#111111'];
-    if (font) hArgs.push('-font', font);
-    hArgs.push('-pointsize', '24', '-size', `${bodyW}x`, '-gravity', 'center', `caption:${titleText}`, headerPath);
-    await exec('magick', hArgs);
-  }
-  if (existsSync(headerPath)) {
-    await exec('magick', [headerPath, bodyPath, '-background', 'white', '-append', sheetPath]);
-  }
-  if (!existsSync(sheetPath)) await exec('magick', [bodyPath, sheetPath]);  // fallback: body only
+  console.log(`Original JPEG:  ${kb(r.origSize)}`);
+  if (r.webp) console.log(`Best WebP:      ${kb(r.webp.size)}  (${pct(r.webp.size, r.origSize)} smaller)  q=${r.webp.quality} sns=${r.webp.sns} f=${r.webp.filter}  ${scoreStr(r.webp.score)}`);
+  if (r.avif) console.log(`Best AVIF:      ${kb(r.avif.size)}  (${pct(r.avif.size, r.origSize)} smaller)  q=${r.avif.quality}  ${scoreStr(r.avif.score)}`);
 
-  if (existsSync(sheetPath)) {
-    console.log(`\n🖼  Comparison sheet: ${sheetPath}`);
-  } else {
-    console.error(`\n⚠  Could not build comparison sheet.`);
+  if (REPORT) {
+    console.log('\n── WebP results (sorted by size) ───');
+    for (const c of r.webpCandidates.slice(0, 10)) console.log(`  ${kb(c.size).padStart(8)}  q=${c.quality} sns=${c.sns} f=${c.filter}  ${scoreStr(c.score)}`);
+    console.log('\n── AVIF results ─────────────────────────────────────────');
+    for (const c of r.avifCandidates) console.log(`  ${kb(c.size).padStart(8)}  q=${c.quality}  ${scoreStr(c.score)}`);
   }
+
+  if (!r.winner) { console.error('\nNo valid encodings produced.'); process.exit(1); }
+
+  // never bloat
+  if (r.keptOriginal && !KEEP_BOTH) {
+    console.log(`\n⚠  No encoding beat the source JPEG (${kb(r.origSize)})${VERIFY ? ` at floor ${FLOOR.toFixed(1)}` : ''} — keeping the original JPEG.`);
+    console.log(`   (Lower the bar with --floor <n>, or force a write with --keep-both.)`);
+    return;
+  }
+
+  const best = r.winner === 'avif' ? r.avif : r.webp;
+  const winnerPath = join(OUTPUT_DIR, `${stem}.${r.winner}`);
+  writeFileSync(winnerPath, best.buffer);
+  console.log(`\n✓ Winner: ${winnerPath}  (${kb(best.size)}, ${pct(best.size, r.origSize)} smaller than JPEG)`);
+
+  if (KEEP_BOTH) {
+    if (r.webp && r.winner !== 'webp') { const p = join(OUTPUT_DIR, `${stem}.webp`); writeFileSync(p, r.webp.buffer); console.log(`  Also saved: ${p}`); }
+    if (r.avif && r.winner !== 'avif') { const p = join(OUTPUT_DIR, `${stem}.avif`); writeFileSync(p, r.avif.buffer); console.log(`  Also saved: ${p}`); }
+  }
+
+  if (CONTACT_SHEET) await buildContactSheet(r, stem);
 }
 
-if (CONTACT_SHEET) await buildContactSheet();
+// ─── comparison sheet ──────────────────────────────────────────────────────────
+const FONT_CANDIDATES = [
+  '/System/Library/Fonts/Supplemental/Arial.ttf', '/System/Library/Fonts/Helvetica.ttc',
+  '/Library/Fonts/Arial.ttf', '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+];
+async function exec(cmd, a) { try { return await execFileAsync(cmd, a, { encoding: 'utf8' }).catch(e => e); } catch { return { stdout: '', stderr: '' }; } }
 
-if (KEEP_ARTIFACTS) {
-  console.log(`\nArtifacts preserved at: ${TMP}`);
-  console.log(`  ${readdirSync(TMP).length} files (encoded candidates + comparison sheet)`);
+async function buildContactSheet(r, stem) {
+  const TMP = join(tmpdir(), 'sheet-' + randomBytes(4).toString('hex'));
+  mkdirSync(TMP, { recursive: true });
+  try {
+    const ss = (s) => (s == null ? '' : `   ·   SSIMULACRA2 ${s.toFixed(2)}`);
+    const tiles = [{ path: INPUT, label: `ORIGINAL JPEG  ·  q${r.jpegQ}  ·  ${r.contentType}\n${kb(r.origSize)}   (reference${r.floor != null ? `, floor ${r.floor.toFixed(2)}` : ', fast mode'})` }];
+    if (r.webp) { const p = join(TMP, `${stem}.webp`); writeFileSync(p, r.webp.buffer); tiles.push({ path: p, label: `WebP  ·  q${r.webp.quality} sns${r.webp.sns} f${r.webp.filter}${r.winner === 'webp' ? '   ✓ WINNER' : ''}\n${kb(r.webp.size)}  (${pct(r.webp.size, r.origSize)} smaller)${ss(r.webp.score)}` }); }
+    if (r.avif) { const p = join(TMP, `${stem}.avif`); writeFileSync(p, r.avif.buffer); tiles.push({ path: p, label: `AVIF  ·  q${r.avif.quality}${r.winner === 'avif' ? '   ✓ WINNER' : ''}\n${kb(r.avif.size)}  (${pct(r.avif.size, r.origSize)} smaller)${ss(r.avif.score)}` }); }
+
+    const dims = await exec('magick', ['identify', '-format', '%w %h', INPUT]);
+    const [w, h] = (dims.stdout || '').trim().split(/\s+/).map(Number);
+    const tile = ((w && h) ? w >= h : true) ? `1x${tiles.length}` : `${tiles.length}x1`;
+    const font = FONT_CANDIDATES.find(p => existsSync(p));
+    const sheetPath = join(OUTPUT_DIR, `${stem}-compare.png`);
+    const bodyPath = join(TMP, 'body.png'), headerPath = join(TMP, 'header.png');
+
+    const mArgs = ['montage'];
+    for (const t of tiles) mArgs.push('-label', t.label, t.path);
+    mArgs.push('-tile', tile, '-geometry', '+14+12', '-background', 'white', '-fill', '#111111', '-pointsize', '18');
+    if (font) mArgs.push('-font', font);
+    mArgs.push(bodyPath);
+    const mr = await exec('magick', mArgs);
+    if (!existsSync(bodyPath)) { console.error(`\n⚠  Could not build comparison sheet: ${(mr.stderr || mr.message || 'unknown').split('\n')[0]}`); return; }
+
+    const bodyW = parseInt(((await exec('magick', ['identify', '-format', '%w', bodyPath])).stdout || '').trim()) || 0;
+    if (bodyW > 0) {
+      const hArgs = ['-background', '#f2f2f2', '-fill', '#111111'];
+      if (font) hArgs.push('-font', font);
+      hArgs.push('-pointsize', '24', '-size', `${bodyW}x`, '-gravity', 'center',
+        `caption:${basename(INPUT)}    ·    perceptually-matched  JPEG / WebP / AVIF    ·    content: ${r.contentType}`, headerPath);
+      await exec('magick', hArgs);
+    }
+    if (existsSync(headerPath)) await exec('magick', [headerPath, bodyPath, '-background', 'white', '-append', sheetPath]);
+    if (!existsSync(sheetPath)) await exec('magick', [bodyPath, sheetPath]);
+    console.log(existsSync(sheetPath) ? `\n🖼  Comparison sheet: ${sheetPath}` : `\n⚠  Could not build comparison sheet.`);
+  } finally { try { rmSync(TMP, { recursive: true, force: true }); } catch {} }
 }
+
+// ─── entry ──────────────────────────────────────────────────────────────────────
+if (statSync(INPUT).isDirectory()) await runBatch(INPUT);
+else await runSingle();

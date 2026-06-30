@@ -67,7 +67,8 @@ const namedFlagValues = new Set(
 );
 const images = args.filter(a => !a.startsWith('--') && !namedFlagValues.has(a));
 
-if (images.length === 0) {
+// Only when run directly as a CLI — importing classifyImage must have no side effects.
+if (images.length === 0 && process.argv[1]?.endsWith('classify.mjs')) {
   console.error('Usage: node classify.mjs <image> [--verbose] [--batch]');
   process.exit(1);
 }
