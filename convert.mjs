@@ -8,10 +8,17 @@
  * Usage:
  *   node convert.mjs <input.jpg> [output-dir] [options]
  *
+ * Modes:
+ *   (default)              FAST: encode straight at the calibrated quality from the frozen
+ *                          curves. Needs only cwebp + avifenc (no ssimulacra2, no ImageMagick).
+ *   --verify               Fuzz encoder parameters and enforce a per-image SSIMULACRA2 floor,
+ *                          picking the smallest candidate that passes. Needs ssimulacra2 +
+ *                          avifdec/dwebp (or ImageMagick) to decode candidates for scoring.
+ *
  * Options:
  *   --calibration <path>   Path to calibration.json (default: same dir as script)
- *   --quality-window <n>   ± quality points to fuzz around calibrated value (default: 5)
- *   --ssim-tolerance <n>   Allow SSIMULACRA2 score to drop this much below baseline (default: 1.0)
+ *   --quality-window <n>   [--verify] ± quality points to fuzz around calibrated value (default: 5)
+ *   --ssim-tolerance <n>   [--verify] allow SSIMULACRA2 to drop this much below baseline (default: 1.0)
  *   --keep-both            Output both WebP and AVIF even if one wins
  *   --ssim-only            Use only the ssimulacra2 curve; ignore the other metric curves
  *   --report               Print full results table
@@ -61,9 +68,10 @@ const TYPE_OVERRIDE   = getArg('--type', 'auto');  // auto|photo|illustration|li
 // old, misleading name — kept as a deprecated alias.)
 const SSIM_ONLY = hasFlag('--ssim-only') || hasFlag('--no-lap');
 const CONTACT_SHEET = hasFlag('--contact-sheet') || hasFlag('--compare');  // visual JPEG/WebP/AVIF comparison PNG
+const VERIFY = hasFlag('--verify');  // fuzz + enforce a per-image SSIMULACRA2 floor (default: fast curve-only)
 
 if (!INPUT || !existsSync(INPUT)) {
-  console.error('Usage: node convert.mjs <input.jpg> [output-dir] [--type auto] [--ssim-only] [--keep-both] [--contact-sheet] [--keep-image-artifacts] [--report]');
+  console.error('Usage: node convert.mjs <input.jpg> [output-dir] [--verify] [--type auto] [--ssim-only] [--keep-both] [--contact-sheet] [--keep-image-artifacts] [--report]');
   process.exit(1);
 }
 
@@ -166,12 +174,19 @@ async function exec(cmd, args) {
 }
 
 async function measureQuality(ref, compressed) {
-  // ssimulacra2 only reads PNG/JPEG — decode AVIF/WebP to PNG before measuring.
+  // ssimulacra2 only reads PNG/JPEG — decode AVIF/WebP to PNG first. Use the encoders'
+  // own decoders (avifdec/dwebp, which ship alongside avifenc/cwebp); fall back to magick.
   let cmpPng = compressed;
   let tmpPng  = null;
-  if (/\.(avif|webp)$/i.test(compressed)) {
+  if (/\.avif$/i.test(compressed)) {
     tmpPng = compressed + '._ssim.png';
-    await exec('magick', ['convert', compressed, tmpPng]);
+    let r = await exec('avifdec', ['--quiet', compressed, tmpPng]);
+    if (!existsSync(tmpPng)) await exec('magick', ['convert', compressed, tmpPng]);
+    cmpPng = tmpPng;
+  } else if (/\.webp$/i.test(compressed)) {
+    tmpPng = compressed + '._ssim.png';
+    await exec('dwebp', ['-quiet', compressed, '-o', tmpPng]);
+    if (!existsSync(tmpPng)) await exec('magick', ['convert', compressed, tmpPng]);
     cmpPng = tmpPng;
   }
   try {
@@ -202,7 +217,86 @@ async function encodeAVIF(src, quality, out) {
   await exec('avifenc', ['-q', String(quality), '--speed', String(AVIF_SPEED), src, out]);
 }
 
+// ─── JPEG quality estimation (no external dependency) ─────────────────────────
+//
+// Reads the DQT quantization table(s) and applies ImageMagick's quality heuristic
+// (coders/jpeg.c) — encoder-agnostic, matches `magick identify -format %Q` within ±1
+// across the full 1–100 range (validated). Lets the fast path avoid ImageMagick entirely.
+
+const JPEG_HASH = [
+  1020,1015,932,848,780,735,702,679,660,645,632,623,613,607,600,594,589,585,581,571,
+  555,542,529,514,494,474,457,439,424,410,397,386,373,364,351,341,334,324,317,309,
+  299,294,287,279,274,267,262,257,251,247,243,237,232,227,222,217,213,207,202,198,
+  192,188,183,177,173,168,163,157,153,148,143,139,132,128,125,119,115,108,104,99,
+  94,90,84,79,74,70,64,59,55,49,45,40,34,30,25,20,15,11,6,4,0];
+const JPEG_SUMS = [
+  32640,32635,32266,31495,30665,29804,29146,28599,28104,27670,27225,26725,26210,25716,25240,
+  24789,24373,23946,23572,22846,21801,20842,19949,19121,18386,17651,16998,16349,15800,15247,
+  14783,14321,13859,13535,13081,12702,12423,12056,11779,11513,11135,10955,10676,10392,10208,
+  9928,9747,9564,9369,9193,9017,8822,8639,8458,8270,8084,7896,7710,7527,7347,7156,6977,6788,
+  6607,6422,6236,6054,5867,5684,5495,5305,5128,4945,4751,4638,4442,4248,4065,3888,3698,3509,
+  3326,3139,2957,2775,2586,2405,2216,2037,1846,1666,1483,1297,1109,927,735,554,375,201,128,0];
+const JPEG_HASH1 = [
+  510,505,422,380,355,338,326,318,311,305,300,297,293,291,288,286,284,283,281,280,
+  279,278,277,273,262,251,243,233,225,218,211,205,198,193,186,181,177,172,168,164,
+  158,156,152,148,145,142,139,136,133,131,129,126,123,120,118,115,113,110,107,105,
+  102,100,97,94,92,89,87,83,81,79,76,74,70,68,66,63,61,57,55,52,50,48,44,42,39,37,
+  34,31,29,26,24,21,18,16,13,11,8,6,3,2,0];
+const JPEG_SUMS1 = [
+  16320,16315,15946,15277,14655,14073,13623,13230,12859,12560,12240,11861,11456,11081,10714,
+  10360,10027,9679,9368,9056,8680,8331,7995,7668,7376,7084,6823,6562,6345,6125,5939,5756,
+  5571,5421,5240,5086,4976,4829,4719,4616,4463,4393,4280,4166,4092,3980,3909,3835,3755,3688,
+  3621,3541,3467,3396,3323,3247,3170,3096,3021,2952,2874,2804,2727,2657,2583,2509,2437,2362,
+  2290,2211,2136,2068,1996,1915,1858,1773,1692,1620,1552,1477,1398,1326,1251,1179,1109,1031,
+  961,884,814,736,667,592,518,441,369,292,221,151,86,64,0];
+
+function jpegQualityFromBytes(path) {
+  let b;
+  try { b = readFileSync(path); } catch { return null; }
+  if (b[0] !== 0xFF || b[1] !== 0xD8) return null;  // not a JPEG
+  const tables = [];
+  let i = 2;
+  while (i < b.length - 1) {
+    if (b[i] !== 0xFF) { i++; continue; }
+    const m = b[i + 1];
+    if (m === 0xD9) break;
+    if (m === 0x01 || (m >= 0xD0 && m <= 0xD7)) { i += 2; continue; }
+    const len = (b[i + 2] << 8) | b[i + 3];
+    if (m === 0xDB) {  // DQT (may pack several tables)
+      let p = i + 4; const end = i + 2 + len;
+      while (p < end) {
+        const pq = b[p] >> 4, tq = b[p] & 0x0F; p++;
+        const t = [];
+        for (let k = 0; k < 64; k++) { t.push(pq ? ((b[p] << 8) | b[p + 1]) : b[p]); p += pq ? 2 : 1; }
+        tables[tq] = t;
+      }
+    }
+    if (m === 0xDA) break;  // start of scan — image data follows
+    i += 2 + len;
+  }
+  const qt = tables.filter(Boolean);
+  if (qt.length === 0) return null;
+  let sum = 0;
+  for (const t of qt) for (const v of t) sum += v;
+  let hash, sums, qvalue;
+  if (qt.length >= 2 && qt[1]) {
+    qvalue = qt[0][2] + qt[0][53] + qt[1][0] + qt[1][63];
+    hash = JPEG_HASH; sums = JPEG_SUMS;
+  } else {
+    qvalue = qt[0][2] + qt[0][53];
+    hash = JPEG_HASH1; sums = JPEG_SUMS1;
+  }
+  for (let k = 0; k < 100; k++) {
+    if (qvalue < hash[k] && sum < sums[k]) continue;
+    return k + 1;
+  }
+  return 100;
+}
+
 async function detectJpegQuality(path) {
+  const q = jpegQualityFromBytes(path);
+  if (q !== null) return q;
+  // Fallback for non-standard JPEGs: ImageMagick, if available.
   const result = await exec('magick', ['identify', '-verbose', path]);
   const output = result.stdout || result.stderr || '';
   const match  = output.match(/Quality:\s*(\d+)/);
@@ -254,7 +348,7 @@ console.log(`JPEG quality: ${jpegQ}`);
 // 2. Load all calibration curves and take the max quality across all
 const calibrations = loadCalibrations(contentType);
 if (calibrations.length === 0) {
-  console.error('No calibration files found. Run calibrate.mjs first.');
+  console.error(`No calibration curves found for content type "${contentType}". Expected {metric}-calibration-${contentType}.json alongside this script (they ship with the repo).`);
   process.exit(1);
 }
 
@@ -270,59 +364,73 @@ if (calibrations.length > 1) {
   console.log(`${'Using (max)'.padEnd(16)} — WebP: q=${calibWebP}  AVIF: q=${calibAVIF}`);
 }
 
-// 3. Encode baseline WebP at calibrated quality, measure score → floor
-const baselinePath  = join(TMP, `${stem}_baseline.webp`);
-await encodeWebP(INPUT, calibWebP, 50, 60, baselinePath);
-const baselineScore = await measureQuality(INPUT, baselinePath);
-const scoreFloor    = baselineScore - SSIM_TOLERANCE;
-console.log(`Baseline score: ${baselineScore?.toFixed(2)}  Floor: ${scoreFloor?.toFixed(2)}\n`);
-
-// 4. Fuzz WebP
-const origSize = fileSize(INPUT);
+// 3. Encode candidates.
+//    FAST (default): one encode each at the calibrated quality — no measurement, so it needs
+//      only cwebp + avifenc. Trusts the frozen curves.
+//    --verify: establish a per-image SSIMULACRA2 floor from a baseline encode, then fuzz the
+//      encoder parameters and keep only candidates that clear the floor.
+const origSize    = fileSize(INPUT);
+const clampQ      = (q) => Math.min(100, Math.max(1, Math.round(q)));
 const webpResults = [];
+const avifResults = [];
+let   scoreFloor  = null;
 
-process.stdout.write('Fuzzing WebP ');
-const webpQualities = Array.from(
-  { length: QUALITY_WINDOW * 2 + 1 },
-  (_, i) => Math.min(100, Math.max(1, calibWebP - QUALITY_WINDOW + i))
-).filter((v, i, a) => a.indexOf(v) === i);
+if (!VERIFY) {
+  console.log('Mode: fast (curve-only). Pass --verify for per-image SSIMULACRA2 fuzzing.\n');
+  const wq   = clampQ(calibWebP);
+  const wout = join(TMP, `${stem}_webp_q${wq}.webp`);
+  await encodeWebP(INPUT, wq, 50, 60, wout);
+  webpResults.push({ q: wq, sns: 50, f: 60, size: fileSize(wout), score: null, out: wout });
 
-for (const q of webpQualities) {
-  for (const sns of WEBP_SNS) {
-    for (const f of WEBP_FILTER) {
-      const out   = join(TMP, `${stem}_webp_q${q}_s${sns}_f${f}.webp`);
-      await encodeWebP(INPUT, q, sns, f, out);
-      const size  = fileSize(out);
-      const score = await measureQuality(INPUT, out);
-      if (score !== null && score >= scoreFloor) {
-        webpResults.push({ q, sns, f, size, score, out });
+  const aq   = clampQ(calibAVIF);
+  const aout = join(TMP, `${stem}_avif_q${aq}.avif`);
+  await encodeAVIF(INPUT, aq, aout);
+  avifResults.push({ q: aq, size: fileSize(aout), score: null, out: aout });
+} else {
+  const baselinePath  = join(TMP, `${stem}_baseline.webp`);
+  await encodeWebP(INPUT, clampQ(calibWebP), 50, 60, baselinePath);
+  const baselineScore = await measureQuality(INPUT, baselinePath);
+  if (baselineScore === null) {
+    console.error('Could not measure baseline — is `ssimulacra2` installed? Omit --verify to use fast (curve-only) mode.');
+    process.exit(1);
+  }
+  scoreFloor = baselineScore - SSIM_TOLERANCE;
+  console.log(`Mode: verify. Baseline score: ${baselineScore.toFixed(2)}  Floor: ${scoreFloor.toFixed(2)}\n`);
+
+  process.stdout.write('Fuzzing WebP ');
+  const webpQualities = Array.from(
+    { length: QUALITY_WINDOW * 2 + 1 },
+    (_, i) => Math.min(100, Math.max(1, clampQ(calibWebP) - QUALITY_WINDOW + i))
+  ).filter((v, i, a) => a.indexOf(v) === i);
+  for (const q of webpQualities) {
+    for (const sns of WEBP_SNS) {
+      for (const f of WEBP_FILTER) {
+        const out   = join(TMP, `${stem}_webp_q${q}_s${sns}_f${f}.webp`);
+        await encodeWebP(INPUT, q, sns, f, out);
+        const size  = fileSize(out);
+        const score = await measureQuality(INPUT, out);
+        if (score !== null && score >= scoreFloor) webpResults.push({ q, sns, f, size, score, out });
+        process.stdout.write('.');
       }
-      process.stdout.write('.');
     }
   }
-}
-console.log();
+  console.log();
 
-// 5. Fuzz AVIF
-const avifResults = [];
-
-process.stdout.write('Fuzzing AVIF ');
-const avifQualities = Array.from(
-  { length: QUALITY_WINDOW * 2 + 1 },
-  (_, i) => Math.min(100, Math.max(1, calibAVIF - QUALITY_WINDOW + i))
-).filter((v, i, a) => a.indexOf(v) === i);
-
-for (const q of avifQualities) {
-  const out   = join(TMP, `${stem}_avif_q${q}.avif`);
-  await encodeAVIF(INPUT, q, out);
-  const size  = fileSize(out);
-  const score = await measureQuality(INPUT, out);
-  if (score !== null && score >= scoreFloor) {
-    avifResults.push({ q, size, score, out });
+  process.stdout.write('Fuzzing AVIF ');
+  const avifQualities = Array.from(
+    { length: QUALITY_WINDOW * 2 + 1 },
+    (_, i) => Math.min(100, Math.max(1, clampQ(calibAVIF) - QUALITY_WINDOW + i))
+  ).filter((v, i, a) => a.indexOf(v) === i);
+  for (const q of avifQualities) {
+    const out   = join(TMP, `${stem}_avif_q${q}.avif`);
+    await encodeAVIF(INPUT, q, out);
+    const size  = fileSize(out);
+    const score = await measureQuality(INPUT, out);
+    if (score !== null && score >= scoreFloor) avifResults.push({ q, size, score, out });
+    process.stdout.write('.');
   }
-  process.stdout.write('.');
+  console.log('\n');
 }
-console.log('\n');
 
 // 6. Pick winners
 webpResults.sort((a, b) => a.size - b.size);
@@ -334,19 +442,20 @@ const bestAVIF = avifResults[0] ?? null;
 // 7. Report
 function kb(bytes) { return (bytes / 1024).toFixed(1) + 'KB'; }
 function pct(a, b) { return (((b - a) / b) * 100).toFixed(1) + '%'; }
+function scoreStr(s) { return s == null ? 'n/a (fast)' : `score=${s.toFixed(2)}`; }
 
 console.log(`Original JPEG:  ${kb(origSize)}`);
-if (bestWebP) console.log(`Best WebP:      ${kb(bestWebP.size)}  (${pct(bestWebP.size, origSize)} smaller)  q=${bestWebP.q} sns=${bestWebP.sns} f=${bestWebP.f}  score=${bestWebP.score.toFixed(2)}`);
-if (bestAVIF) console.log(`Best AVIF:      ${kb(bestAVIF.size)}  (${pct(bestAVIF.size, origSize)} smaller)  q=${bestAVIF.q}  score=${bestAVIF.score.toFixed(2)}`);
+if (bestWebP) console.log(`Best WebP:      ${kb(bestWebP.size)}  (${pct(bestWebP.size, origSize)} smaller)  q=${bestWebP.q} sns=${bestWebP.sns} f=${bestWebP.f}  ${scoreStr(bestWebP.score)}`);
+if (bestAVIF) console.log(`Best AVIF:      ${kb(bestAVIF.size)}  (${pct(bestAVIF.size, origSize)} smaller)  q=${bestAVIF.q}  ${scoreStr(bestAVIF.score)}`);
 
 if (REPORT) {
-  console.log('\n── WebP results (meeting score floor, sorted by size) ───');
+  console.log('\n── WebP results (sorted by size) ───');
   for (const r of webpResults.slice(0, 10)) {
-    console.log(`  ${kb(r.size).padStart(8)}  q=${r.q} sns=${r.sns} f=${r.f}  score=${r.score.toFixed(2)}`);
+    console.log(`  ${kb(r.size).padStart(8)}  q=${r.q} sns=${r.sns} f=${r.f}  ${scoreStr(r.score)}`);
   }
   console.log('\n── AVIF results ─────────────────────────────────────────');
   for (const r of avifResults) {
-    console.log(`  ${kb(r.size).padStart(8)}  q=${r.q}  score=${r.score.toFixed(2)}`);
+    console.log(`  ${kb(r.size).padStart(8)}  q=${r.q}  ${scoreStr(r.score)}`);
   }
 }
 
@@ -391,20 +500,22 @@ const FONT_CANDIDATES = [
 ];
 
 async function buildContactSheet() {
+  const ss = (s) => (s == null ? '' : `   ·   SSIMULACRA2 ${s.toFixed(2)}`);
+  const refNote = scoreFloor == null ? 'reference, fast mode' : `reference, floor ${scoreFloor.toFixed(2)}`;
   const tiles = [];
   tiles.push({
     path: INPUT,
-    label: `ORIGINAL JPEG  ·  q${jpegQ}  ·  ${contentType}\n${kb(origSize)}   (reference, floor ${scoreFloor.toFixed(2)})`,
+    label: `ORIGINAL JPEG  ·  q${jpegQ}  ·  ${contentType}\n${kb(origSize)}   (${refNote})`,
   });
   if (bestWebP) tiles.push({
     path: bestWebP.out,
     label: `WebP  ·  q${bestWebP.q} sns${bestWebP.sns} f${bestWebP.f}${overallWinner === bestWebP ? '   ✓ WINNER' : ''}\n`
-         + `${kb(bestWebP.size)}  (${pct(bestWebP.size, origSize)} smaller)   ·   SSIMULACRA2 ${bestWebP.score.toFixed(2)}`,
+         + `${kb(bestWebP.size)}  (${pct(bestWebP.size, origSize)} smaller)${ss(bestWebP.score)}`,
   });
   if (bestAVIF) tiles.push({
     path: bestAVIF.out,
     label: `AVIF  ·  q${bestAVIF.q}${overallWinner === bestAVIF ? '   ✓ WINNER' : ''}\n`
-         + `${kb(bestAVIF.size)}  (${pct(bestAVIF.size, origSize)} smaller)   ·   SSIMULACRA2 ${bestAVIF.score.toFixed(2)}`,
+         + `${kb(bestAVIF.size)}  (${pct(bestAVIF.size, origSize)} smaller)${ss(bestAVIF.score)}`,
   });
 
   // Adaptive layout: landscape images stack vertically (each full width, easy top-to-bottom

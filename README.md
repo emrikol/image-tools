@@ -20,26 +20,26 @@ No hand-tuning, no per-image judgment calls. Point it at a JPEG, get back a smal
 
 ## Requirements
 
-- **Node.js** (ESM; no npm dependencies)
-- **ImageMagick 7** (`magick`), **`cwebp`** (libwebp), **`avifenc`** (libavif),
-  **`ssimulacra2`** (libjxl devtools) on your `PATH`
-- For full calibration only: `butteraugli_main`, `dssim`, `ffmpeg`, `vmaf`, and the Python venv
-  (`venv/bin/python` — torch, torchvision, piq, lpips, DISTS-pytorch, scipy)
+The converter is deliberately light. Dependencies scale with what you do:
 
-On macOS most of these are available via Homebrew; `ssimulacra2`/`butteraugli_main` come from a
-libjxl build with devtools enabled.
+- **Fast mode (default conversion)** — **`cwebp`** (libwebp) + **`avifenc`** (libavif) on your
+  `PATH`. That's it. No Python, no ImageMagick, no ssimulacra2. JPEG quality is read directly
+  from the file.
+- **`--verify` mode** — additionally **`ssimulacra2`** (libjxl devtools), plus `avifdec`/`dwebp`
+  (ship with libavif/libwebp) or ImageMagick to decode candidates for scoring.
+- **`--contact-sheet`** — **ImageMagick 7** (`magick`), for the comparison montage only.
+- **Regenerating the curves** — see [`calibration/`](calibration/); needs the full toolchain
+  (ssimulacra2, butteraugli, dssim, ffmpeg, ImageMagick, a PyTorch venv). **You never need this
+  to use the converter** — the curves are already generated and committed.
+
+Node.js (ESM, no npm dependencies). On macOS the encoders are `brew install webp libavif`;
+`ssimulacra2` comes from a libjxl build with devtools enabled (only needed for `--verify`).
 
 ## Setup
 
-Conversion and classification need **no installation** beyond the CLI tools above — clone and run.
-
-The Python venv is only required to *regenerate* calibration curves for the PyTorch metrics:
-
-```bash
-python3 -m venv venv
-venv/bin/pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-venv/bin/pip install -r requirements.txt
-```
+Conversion and classification need **no installation** beyond `cwebp` + `avifenc` — clone and run.
+Everything for regenerating curves (the Python venv, etc.) lives in [`calibration/`](calibration/)
+and is not required to use the tool.
 
 ## Datasets
 
@@ -56,18 +56,24 @@ To re-run calibration you supply your own datasets under `test-images/<type>/`:
 ### Convert a JPEG
 
 ```bash
-node convert.mjs input.jpg output-dir/                       # auto-detect content type
+node convert.mjs input.jpg output-dir/                       # FAST: encode at the calibrated quality
+node convert.mjs input.jpg output-dir/ --verify              # fuzz + enforce a per-image SSIMULACRA2 floor
 node convert.mjs input.jpg output-dir/ --type illustration   # override content type
-node convert.mjs input.jpg output-dir/ --report              # print the full candidate table
 node convert.mjs input.jpg output-dir/ --keep-both           # write both WebP and AVIF winners
 node convert.mjs input.jpg output-dir/ --contact-sheet       # also write a visual comparison PNG
 ```
 
-Useful flags: `--quality-window N` (fuzz width, default 5), `--ssim-tolerance N` (how far below
-baseline a candidate may score, default 1.0), `--no-lap` (use only the SSIMULACRA2 curve),
-`--contact-sheet` / `--compare` (write `<stem>-compare.png`: the original JPEG next to the
-perceptually-matched WebP and AVIF at full size, captioned with file size + SSIMULACRA2 score, so
-you can eyeball that the "equivalent quality" claim holds).
+**Two modes.** By default the converter trusts the frozen curves and encodes straight at the
+calibrated quality — fast, and dependency-light (just `cwebp` + `avifenc`). **`--verify`** adds
+the per-image guarantee: it fuzzes encoder parameters and keeps only candidates whose SSIMULACRA2
+score clears a floor derived from the source — at the cost of needing `ssimulacra2` and being
+much slower (AVIF runs at `--speed 0`).
+
+Other flags: `--report` (full candidate table), `--quality-window N` / `--ssim-tolerance N`
+(`--verify` tuning), `--ssim-only` (use only the SSIMULACRA2 curve; `--no-lap` is a deprecated
+alias), `--contact-sheet` / `--compare` (write `<stem>-compare.png`: the original JPEG next to the
+WebP and AVIF at full size, captioned with file size + SSIMULACRA2 score, so you can eyeball the
+result).
 
 ### Classify an image
 
@@ -77,26 +83,22 @@ node classify.mjs image.jpg --verbose      # include raw signal values
 node classify.mjs *.png --batch            # JSON array, progress on stderr
 ```
 
-### Generate calibration curves
+### Regenerating calibration curves (optional / archival)
 
-A one-time, expensive job (AVIF runs at `--speed 0` for the true quality ceiling).
+**The curves are already generated and committed — you never need this to use the converter.**
+The generator lives in [`calibration/`](calibration/) with its own README; it's kept for
+transparency and reproducibility. It's a one-time, multi-hour job needing the full toolchain.
 
 ```bash
-node calibrate.mjs \
+node calibration/calibrate.mjs \
   --dataset photo:test-images/kodak:. \
-  --dataset illustration:test-images/illustrations:. \
-  --dataset line-art:test-images/line-art:. \
   --metrics ssimulacra2,butteraugli,dssim,xpsnr,ms_ssim,lpips,dists,fsim,vif,entropy_diff \
   --step 1
 ```
 
-Encodings are cached in `encoding-cache/`, so re-running (e.g. to add another `--metrics`)
-reuses prior work. Add `--step 10` for a fast coarse pass; merge a finer pass later.
-
-By default it uses every logical CPU core (`--concurrency`) with single-threaded encoders
-(`--avif-jobs 1`) — benchmarked as the fastest layout for many small images. PyTorch metrics
-run through persistent worker pools (the model loads once, not per measurement), which is what
-makes a full step-1 run across all metrics finish in hours rather than overnight.
+It uses every logical CPU core with single-threaded encoders (`--avif-jobs 1`, benchmarked
+fastest for many small images), and PyTorch metrics run through persistent worker pools (model
+loaded once, not per measurement). See [`calibration/README.md`](calibration/README.md).
 
 ## Calibration data
 

@@ -74,7 +74,7 @@ The remaining metrics — `butteraugli`, `dssim`, `xpsnr`, `ms_ssim`, `lpips`, `
 records its own value field (e.g. `butteraugli_dist`, `lpips`, `xpsnr_db`) alongside
 `webp_q` / `avif_q`, and its direction is given by `higher_is_better`. All are calibrated
 at step 1 (1–100) except `vmaf`, which is intentionally limited to a coarse line-art curve.
-See `calibrate.mjs`'s metric registry for how each score is computed.
+See `calibration/calibrate.mjs`'s metric registry for how each score is computed.
 
 ---
 

@@ -9,13 +9,12 @@
   },
   "bin": {
     "img-classify": "./classify.mjs",
-    "img-convert": "./convert.mjs",
-    "img-calibrate": "./calibrate.mjs"
+    "img-convert": "./convert.mjs"
   },
   "scripts": {
     "classify": "node classify.mjs",
     "convert": "node convert.mjs",
-    "calibrate": "node calibrate.mjs"
+    "calibrate": "node calibration/calibrate.mjs"
   },
   "keywords": [
     "image-compression",
@@ -27,5 +26,5 @@
     "image-optimization"
   ],
   "dependencies": {},
-  "comment": "No npm dependencies. Requires external CLI tools on PATH (ImageMagick 7, cwebp, avifenc, ssimulacra2) and — for calibration only — a Python venv (see requirements.txt) plus dssim/ffmpeg/butteraugli_main. See README."
+  "comment": "No npm dependencies. The converter's fast (default) mode needs only cwebp + avifenc on PATH. --verify mode additionally needs ssimulacra2 (+ avifdec/dwebp, or ImageMagick). The calibration generator (calibration/) is archival and needs more — see calibration/README.md."
 }
