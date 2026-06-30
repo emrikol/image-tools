@@ -16,6 +16,9 @@ concurrency:
 
 jobs:
   deploy:
+    # Pages can't serve a private repo on a free plan; skip cleanly while private,
+    # and this auto-activates the moment the repo is made public.
+    if: ${{ github.event.repository.private == false }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
