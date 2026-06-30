@@ -29,6 +29,15 @@ venv/bin/pip install torch torchvision --index-url https://download.pytorch.org/
 venv/bin/pip install -r requirements.txt
 ```
 
+## Datasets & classifier tools
+
+- `fetch-datasets.mjs` — downloads the public Kodak photo set to `test-images/kodak/` so the
+  `photo` curves are reproducible: `node calibration/fetch-datasets.mjs`. (The illustration /
+  line-art sets are third-party and not redistributable — bring your own.)
+- `classify-eval.mjs` — measures classifier accuracy against labeled folders (confusion matrix):
+  `node calibration/classify-eval.mjs photo:test-images/kodak illustration:test-images/illustration …`.
+  Current accuracy is ~46% (illustration is weakest); errors skew conservative (toward `photo`).
+
 ## Regenerating the curves (optional)
 
 From the repo root, supply datasets and write the curves back to the root so the converter

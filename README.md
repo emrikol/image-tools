@@ -154,15 +154,15 @@ and line-art. The one exception is **vmaf**, kept as a coarse 11-point line-art-
 
 ## Status & known limitations
 
-This is a research toolkit, not a polished release. Current rough edges:
+This is a research toolkit. Current rough edges:
 
-- **AVIF scoring requires a working ImageMagick AVIF (`heic`) delegate.** AVIF candidates are
-  scored by decoding to PNG via `magick`; if a Homebrew `libheif` upgrade breaks that delegate,
-  AVIF is silently dropped and only WebP is produced. Check with
-  `magick -list format | grep -i avif` (should be `rw+`); fix with `brew reinstall imagemagick`.
-- **`mixed` content type falls back to the photo curves.** An image the classifier can't
-  confidently categorize is converted using the (conservative) photo calibration. Pass an
-  explicit `--type` for best accuracy.
+- **The classifier is weak on real-world content** — measured **~46% accuracy** on the labeled
+  sets (illustration is the worst; painterly illustrations read as photos). Run it yourself with
+  `node calibration/classify-eval.mjs <type:dir> …`. The saving grace: errors skew toward the
+  *conservative* `photo` curve, so they cost compression efficiency, **not** quality — and
+  **`--verify` is classification-independent**, so for anything ambiguous, prefer `--verify`
+  (or pass an explicit `--type`).
+- **`mixed` falls back to the photo curves** (conservative) when the classifier isn't confident.
 - **`vmaf` is calibrated for line-art only** and is otherwise disabled (it saturates at high
   quality and distorts the max-across-curves logic).
 - Datasets are small (24 photo / 25 illustration / 19 line-art) and are not bundled (see
