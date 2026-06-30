@@ -107,6 +107,13 @@ main.wrap { padding: 24px 0 8px; flex: 1; }
 .sub { color: var(--muted); font-size: .88rem; margin-top: 2px; font-variant-numeric: tabular-nums; }
 .sub .down { color: var(--win); font-weight: 600; }
 .sub .up { color: var(--warn); font-weight: 600; }
+.dl {
+  display: inline-block; margin-top: 12px; font-size: .82rem; font-weight: 600;
+  color: var(--accent-2); text-decoration: none;
+  border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px;
+  transition: border-color .15s, background .15s;
+}
+.dl:hover, .dl:focus-visible { border-color: var(--accent-2); background: #38bdf812; outline: none; }
 
 /* Comparison slider */
 .compare { margin: 22px 0 6px; }

@@ -68,6 +68,7 @@ document.querySelectorAll('.seg-btn').forEach(btn =>
 
 function reset() {
   if (state?.srcBlobUrl) URL.revokeObjectURL(state.srcBlobUrl);
+  for (const k of ['webp', 'avif']) if (dlUrls[k]) { URL.revokeObjectURL(dlUrls[k]); delete dlUrls[k]; }
   state = null; $('result').hidden = true; drop.hidden = false; $('sample').hidden = false;
   $('charts').hidden = true; setStatus(''); fileInput.value = '';
 }
@@ -124,7 +125,7 @@ async function encodeAndRender() {
   state.webpQ = webpQ; state.avifQ = avifQ;
 
   // reset card states (spinner while the worker encodes)
-  for (const k of ['webp', 'avif']) { $(`s-${k}`).innerHTML = '<span class="spin"></span>'; $(`d-${k}`).textContent = 'encoding…'; }
+  for (const k of ['webp', 'avif']) { $(`s-${k}`).innerHTML = '<span class="spin"></span>'; $(`d-${k}`).textContent = 'encoding…'; $(`dl-${k}`).hidden = true; }
   $('s-jpeg').textContent = fmtKB(state.srcBytes.length);
   $('compare').hidden = true; $('winner').hidden = true; $('again').hidden = true;
 
@@ -141,13 +142,23 @@ async function encodeAndRender() {
 }
 function err(e) { console.error(e); return null; }
 
+const dlUrls = {};   // fmt -> object URL, revoked when replaced
+function stem(name) { return name.replace(/\.[^.]+$/, ''); }
+
 function renderCard(fmt, res) {
-  const sizeEl = $(`s-${fmt}`), subEl = $(`d-${fmt}`);
-  if (!res || !res.buf) { sizeEl.textContent = 'failed'; subEl.textContent = 'encoder error'; return; }
+  const sizeEl = $(`s-${fmt}`), subEl = $(`d-${fmt}`), dl = $(`dl-${fmt}`);
+  if (!res || !res.buf) { sizeEl.textContent = 'failed'; subEl.textContent = 'encoder error'; if (dl) dl.hidden = true; return; }
   const bytes = res.buf.byteLength, p = pct(bytes, state.srcBytes.length);
   sizeEl.textContent = fmtKB(bytes);
   const cls = p >= 0 ? 'down' : 'up';
   subEl.innerHTML = `${res.q} · <span class="${cls}">${p >= 0 ? '−' : '+'}${Math.abs(p).toFixed(0)}%</span> vs JPEG`;
+  if (dl) {
+    if (dlUrls[fmt]) URL.revokeObjectURL(dlUrls[fmt]);
+    dlUrls[fmt] = URL.createObjectURL(new Blob([res.buf], { type: `image/${fmt}` }));
+    dl.href = dlUrls[fmt];
+    dl.download = `${stem(state.name)}.${fmt}`;
+    dl.hidden = false;
+  }
 }
 
 function renderWinner() {
