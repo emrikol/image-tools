@@ -175,12 +175,14 @@ and line-art. The one exception is **vmaf**, kept as a coarse 11-point line-art-
 
 This is a research toolkit. Current rough edges:
 
-- **The classifier is weak on real-world content** — measured **~46% accuracy** on the labeled
-  sets (illustration is the worst; painterly illustrations read as photos). Run it yourself with
-  `node calibration/classify-eval.mjs <type:dir> …`. The saving grace: errors skew toward the
-  *conservative* `photo` curve, so they cost compression efficiency, **not** quality — and
-  **`--verify` is classification-independent**, so for anything ambiguous, prefer `--verify`
-  (or pass an explicit `--type`).
+- **The classifier is decent but not perfect** — **~91% accuracy** on the labeled sets
+  (photo 100% / illustration 92% / line-art 79%), using histogram entropy as the
+  photo↔illustration discriminator. *Painterly* illustrations can still read as photos, and the
+  entropy threshold is tuned on a small set so treat it as provisional. Measure it yourself:
+  `node calibration/classify-eval.mjs <type:dir> …`. Two safety nets regardless: errors skew
+  toward the *conservative* `photo` curve (they cost compression, not quality), and
+  **`--verify` is classification-independent** — prefer it (or an explicit `--type`) for anything
+  ambiguous.
 - **`mixed` falls back to the photo curves** (conservative) when the classifier isn't confident.
 - **`vmaf` is calibrated for line-art only** and is otherwise disabled (it saturates at high
   quality and distorts the max-across-curves logic).
