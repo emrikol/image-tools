@@ -3,8 +3,7 @@
 > **Content-aware JPEG → WebP / AVIF conversion.** Point it at a JPEG, get back a smaller
 > WebP or AVIF at the same perceptual quality — no hand-tuning, no per-image judgment calls.
 
-<!-- Replace OWNER with your GitHub username/org after pushing, to activate the CI badge. -->
-[![CI](https://github.com/OWNER/image-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/image-tools/actions/workflows/ci.yml)
+[![CI](https://github.com/emrikol/image-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/emrikol/image-tools/actions/workflows/ci.yml)
 [![license: GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
 ![node: >=18.14](https://img.shields.io/badge/node-%3E%3D18.14-green.svg)
 
@@ -12,10 +11,10 @@
 
 *Same image, same perceptual quality (SSIMULACRA2 ≈ 80 vs the source), at a fraction of the bytes.*
 
-**▶ [Try it in your browser](https://OWNER.github.io/image-tools/web/)** — drop a JPEG, compare
+**▶ [Try it in your browser](https://emrikol.github.io/image-tools/web/)** — drop a JPEG, compare
 WebP/AVIF, nothing uploaded. (Or run the CLI below.)
 
-[![image-tools demo: drop a JPEG, get a smaller WebP/AVIF at matched quality, with per-image quality and size graphs](assets/demo.webp)](https://OWNER.github.io/image-tools/web/)
+[![image-tools demo: drop a JPEG, get a smaller WebP/AVIF at matched quality, with per-image quality and size graphs](assets/demo.webp)](https://emrikol.github.io/image-tools/web/)
 
 ```bash
 # Fast mode needs only two encoders — no Python, no ImageMagick, no ssimulacra2.
@@ -97,15 +96,15 @@ Node.js ≥ 18.14 (ESM, no runtime npm dependencies). On macOS the encoders are 
 Conversion and classification need **no installation** beyond `cwebp` + `avifenc`:
 
 ```bash
-git clone https://github.com/OWNER/image-tools && cd image-tools
+git clone https://github.com/emrikol/image-tools && cd image-tools
 node convert.mjs photo.jpg out/
 # or run it straight from GitHub without cloning:
-npx -p github:OWNER/image-tools img-convert photo.jpg out/
+npx -p github:emrikol/image-tools img-convert photo.jpg out/
 ```
 
 No npm install needed to *use* it — there are no runtime JavaScript dependencies (the only
 devDependency is ESLint, for contributors). The package isn't on the npm registry; use the repo
-directly, or the zero-install [web demo](https://OWNER.github.io/image-tools/web/). Everything for *regenerating*
+directly, or the zero-install [web demo](https://emrikol.github.io/image-tools/web/). Everything for *regenerating*
 curves (the Python venv, etc.) lives in [`calibration/`](calibration/) and isn't needed to use the tool.
 
 ## Datasets

@@ -28,5 +28,5 @@ python3 -m http.server 8765
 ## Deploy
 
 The included GitHub Actions workflow (`.github/workflows/pages.yml`) publishes the repo to GitHub
-Pages on push to `main`; the demo lives at `https://OWNER.github.io/image-tools/web/`. Enable Pages
+Pages on push to `main`; the demo lives at `https://emrikol.github.io/image-tools/web/`. Enable Pages
 (Settings → Pages → Source: GitHub Actions) once.

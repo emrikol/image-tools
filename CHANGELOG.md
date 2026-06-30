@@ -52,4 +52,4 @@ tooling behind it.
 - Calibration datasets are small (24 photo / 25 illustration / 19 line-art) and the
   illustration/line-art sets are not redistributable.
 
-[0.1.0]: https://github.com/OWNER/image-tools/releases/tag/v0.1.0
+[0.1.0]: https://github.com/emrikol/image-tools/releases/tag/v0.1.0
