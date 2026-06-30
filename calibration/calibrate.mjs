@@ -158,6 +158,7 @@ import { fileURLToPath } from 'url';
 import { promisify } from 'util';
 import { createInterface } from 'readline';
 import { availableParallelism } from 'os';
+import { captureVersions } from './check-encoders.mjs';
 
 const execFileAsync = promisify(execFile);
 const __dirname    = dirname(fileURLToPath(import.meta.url));
@@ -789,6 +790,7 @@ for (const m of activeMetrics) {
       step:             STEP,
       data_points:      merged.length,
       encoders:         { cwebp: 'cwebp -m 6', avifenc: `avifenc --speed ${AVIF_SPEED}` },
+      toolchain:        { ...captureVersions(), stamped: 'current' },
       curve:            merged,
     };
 

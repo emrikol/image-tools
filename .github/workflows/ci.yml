@@ -28,11 +28,10 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install webp libavif imagemagick
 
-      - name: Tool versions
+      - name: Tool / encoder versions (provenance)
         run: |
           node --version
-          cwebp -version
-          avifenc --version | head -1
+          node calibration/check-encoders.mjs
 
       - name: Run tests
         run: npm test

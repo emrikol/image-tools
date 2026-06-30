@@ -12,6 +12,9 @@
     "cwebp": "cwebp -m 6",
     "avifenc": "avifenc --speed 0"
   },
+  "toolchain": {
+    "note": "generated 2026-03-12 with an earlier libavif/aom (pre-3.14); versions not recorded"
+  },
   "curve": [
     {
       "jpeg_q": 1,

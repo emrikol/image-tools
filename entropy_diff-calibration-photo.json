@@ -12,6 +12,13 @@
     "cwebp": "cwebp -m 6",
     "avifenc": "avifenc --speed 0"
   },
+  "toolchain": {
+    "cwebp": "1.6.0",
+    "avifenc": "1.3.0",
+    "aom": "3.14.1",
+    "ssimulacra2": "unversioned",
+    "stamped": "current"
+  },
   "curve": [
     {
       "jpeg_q": 1,
