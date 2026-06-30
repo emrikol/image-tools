@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install encoders (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y webp libavif-bin imagemagick
+
+      - name: Install encoders (macOS)
+        if: runner.os == 'macOS'
+        run: brew install webp libavif imagemagick
+
+      - name: Tool versions
+        run: |
+          node --version
+          cwebp -version
+          avifenc --version | head -1
+
+      - name: Run tests
+        run: npm test

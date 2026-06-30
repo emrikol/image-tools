@@ -12,6 +12,7 @@
     "img-convert": "./convert.mjs"
   },
   "scripts": {
+    "test": "node --test \"test/*.test.mjs\"",
     "classify": "node classify.mjs",
     "convert": "node convert.mjs",
     "calibrate": "node calibration/calibrate.mjs"
